@@ -3,11 +3,18 @@ import 'element-plus/es/components/message/style/css'
 </script>
 
 <template>
-  <div>
-    生物样本库
-  </div>
+  <router-view></router-view>
 </template>
 
 <style scoped>
-
+* {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+a {
+    text-decoration: none;
+}
 </style>

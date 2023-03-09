@@ -1,3 +1,6 @@
+/**
+ * @description 路由配置
+ */
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [

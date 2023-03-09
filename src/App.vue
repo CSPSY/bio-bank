@@ -1,12 +1,12 @@
 <script setup>
-import 'element-plus/es/components/message/style/css'
+import 'element-plus/es/components/message/style/css';
 </script>
 
 <template>
   <router-view></router-view>
 </template>
 
-<style scoped>
+<style>
 * {
     margin: 0;
     padding: 0;

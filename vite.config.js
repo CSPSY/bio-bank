@@ -5,7 +5,6 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
-  hmr: true,
   plugins: [
     vue(),
     AutoImport({
@@ -16,8 +15,8 @@ export default defineConfig({
     })
   ],
   server: {
+    hmr: true,
     open: true,
-    port: 8080,
-    inline: true,
+    port: 8080
   },
 })

@@ -37,20 +37,20 @@
   height: 100vh;
 }
 .center {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 .title {
-    font-size: 1.06rem;
-    font-weight: 400;
-    text-align: center;
-    opacity: 0.9;
-    margin: 12px 0;
-    letter-spacing: .3rem;
+  font-size: 1.06rem;
+  font-weight: 400;
+  text-align: center;
+  opacity: 0.9;
+  margin: 12px 0;
+  letter-spacing: .3rem;
 }
 
 .header {
-    height: 90px;
-    background-color: rgb(235, 235, 235);
+  height: 90px;
+  background-color: rgb(235, 235, 235);
 }
 </style>

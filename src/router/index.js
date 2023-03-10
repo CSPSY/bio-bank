@@ -6,7 +6,14 @@ import { createRouter, createWebHistory } from "vue-router";
 const routes = [
   {
     path: '/',
-    component: () => import('../pages/Index.vue'),
+    component: () => import('../pages/user/Index.vue'),
+    meta: {
+      title: '首页'
+    }
+  },
+  {
+    path: '/admin',
+    component: () => import('../pages/admin/Index.vue'),
     meta: {
       title: '首页'
     }

@@ -1,0 +1,153 @@
+<script setup>
+import { ref } from 'vue';
+import { Search, Document, House, SwitchButton } from '@element-plus/icons-vue'
+import { size } from 'lodash';
+
+const inputId = ref('')
+</script>
+
+<template>
+  <div class="common-layout">
+    <el-container>
+      <el-aside width="232px">
+        <el-menu
+          class="menu"
+          background-color="rgb(255, 255, 255)"
+          default-active="1"
+        >
+          <img style="width: 88px; margin: 42px auto;" src="../../assets/imgs/smallD.png" alt="logo">
+          <el-menu-item class="menu-items" index="1">
+              <el-icon><House /></el-icon>
+              <span class="items">首页</span>
+          </el-menu-item>
+          <el-menu-item class="menu-items" index="2">
+            <el-icon><Document /></el-icon>
+            <span class="items">我的存储</span>
+          </el-menu-item>
+        </el-menu>
+      </el-aside>
+      <el-container>
+        <el-header class="header">
+          <h2 class="title">生物样本库</h2>
+          <span class="items">
+            <div class="exit">
+              <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>
+              退出系统              
+            </div>
+          </span>
+        </el-header>
+        <el-main style="background-color: rgb(245, 247, 253);">
+          <div class="main-container">
+            <div class="con-header">
+              <div>
+                <el-input
+                  style="height: 32px; width: 212px; padding: 0 22px 0 0;"
+                  v-model="inputId"  
+                  placeholder="请输入 id"
+                  :suffix-icon="Search"
+                />
+                <el-button class="button">搜索冰箱</el-button>                
+              </div>
+              <div>
+                <el-button class="button">存入样品</el-button>
+                <el-button class="button">取出样品</el-button>
+              </div>    
+            </div>
+            <div style="padding: 16px 0;">
+              <el-row>
+                <el-col
+                  v-for="(o, index) in 9"
+                  :key="o"
+                  :span="6"
+                  :offset="index % 3 ? 3 : 0"
+                  style="margin-bottom: 22px;"
+                >
+                  <el-card style="height: 166px;"
+                    :body-style="{ padding: '0px 12px', display: 'flex', alignItems: 'center', height: '100%', fontSize: '14px' }"
+                  >
+                    <img
+                      src="../../assets/imgs/冰箱.png"
+                      style="width: 120px; padding: 0 6px;"
+                    />
+                    <div style="padding: 14px;">
+                      <div style="margin-bottom: 5px; ">位置：<span>2012号房001号冰箱3层2架1号盒</span></div>
+                      <div style="margin-bottom: 5px; ">温度：<span>-65℃</span></div>
+                      <div style="margin-bottom: 5px; ">容量：<span>520/3000</span></div>
+                      <div style="margin-bottom: 5px; ">设备类型：<span>冰箱</span></div>
+                      <div style="margin-bottom: 5px; ">id：<span>{{ o }}</span></div>
+                    </div>
+                  </el-card>
+                </el-col>
+                <el-pagination style="margin: 0 auto;" layout="prev, pager, next" :total="100" />
+              </el-row>
+            </div>
+          </div>
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
+</template>
+
+<style scoped>
+.menu {
+  padding: 4px 8px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.menu-items {
+  margin-bottom: 4px;
+}
+.menu-items.is-active {
+  background-color: rgb(242, 243, 245);
+  border-radius: 6px;
+}
+.items {
+  font-size: 1.06rem;
+  font-weight: 400;
+  text-align: center;
+  opacity: 0.9;
+  margin: 12px 0;
+  letter-spacing: .12rem;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 56px;
+}
+.title {
+  font-size: 1.2rem;
+  font-weight: 460;
+  text-align: center;
+  opacity: 0.8;
+  margin: 12px 0;
+  letter-spacing: .12rem;
+}
+.exit {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 8px 12px;
+}
+.exit:hover {
+  background-color: rgb(242, 243, 245);
+  border-radius: 5px;
+}
+.main-container {
+  background-color: #fff;
+  padding: 16px;
+  height: 100%;
+}
+.con-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 2px rgb(229, 230, 235) solid;
+  padding-bottom: 16px;
+}
+.button:focus:not(.button:hover) {
+  background-color: var(--el-button-bg-color);
+  border-color: var(--el-button-border-color);
+  color: var(--el-button-text-color);
+};
+</style>

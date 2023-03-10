@@ -11,12 +11,21 @@
           background-color="rgb(194, 194, 194)"
           default-active="1"
         >
-          <img style="width: 88px; margin: 22px auto;" src="../assets/imgs/smallD.png" alt="logo">
+          <img style="width: 88px; margin: 22px auto;" src="../../assets/imgs/smallD.png" alt="logo">
           <el-menu-item class="center" index="1">
               <span class="title">首页</span>
           </el-menu-item>
           <el-menu-item class="center" index="2">
-            <span class="title">我的存储</span>
+            <span class="title">容器管理</span>
+          </el-menu-item>
+          <el-menu-item class="center" index="3">
+            <span class="title">样本管理</span>
+          </el-menu-item>
+          <el-menu-item class="center" index="4">
+            <span class="title">系统管理</span>
+          </el-menu-item>
+          <el-menu-item class="center" index="5">
+            <span class="title">系统监控</span>
           </el-menu-item>
         </el-menu>
       </el-aside>

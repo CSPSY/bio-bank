@@ -22,8 +22,10 @@ const inputId = ref('')
               <span>首页</span>
           </el-menu-item>
           <el-menu-item class="menu-items items" index="2">
-            <el-icon><Document /></el-icon>
-            <span>我的存储</span>
+            <RouterLink :to="{ path: '/my-storage' }">
+              <el-icon><Document /></el-icon>
+              <span>我的存储</span>
+            </RouterLink>
           </el-menu-item>
         </el-menu>
       </el-aside>
@@ -98,6 +100,9 @@ const inputId = ref('')
   display: flex;
   flex-direction: column;
   height: 100vh;
+}
+a {
+  width: 100%;
 }
 .menu-items {
   margin-bottom: 4px;

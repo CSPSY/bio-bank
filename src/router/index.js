@@ -4,6 +4,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
+  // 用户
   {
     path: '/',
     component: () => import('../pages/user/Index.vue'),
@@ -11,6 +12,14 @@ const routes = [
       title: '首页'
     }
   },
+  {
+    path: '/my-storage',
+    component: () => import('../pages/user/MyStorage.vue'),
+    meta: {
+      title: '我的存储'
+    }
+  },
+  // 管理员
   {
     path: '/admin',
     component: () => import('../pages/admin/Index.vue'),

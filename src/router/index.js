@@ -17,6 +17,13 @@ const routes = [
     meta: {
       title: '首页'
     }
+  },
+  {
+    path: '/admin/manage-container',
+    component: () => import('../pages/admin/ManageContainer.vue'),
+    meta: {
+      title: '容器管理'
+    }
   }
 ];
 

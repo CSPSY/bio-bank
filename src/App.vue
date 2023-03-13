@@ -16,5 +16,6 @@ import 'element-plus/es/components/message/style/css';
 }
 a {
   text-decoration: none;
+  color: #000;
 }
 </style>

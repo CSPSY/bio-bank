@@ -17,13 +17,13 @@ const inputId = ref('')
           default-active="1"
         >
           <img style="width: 88px; margin: 42px auto;" src="../../assets/imgs/smallD.png" alt="logo">
-          <el-menu-item class="menu-items" index="1">
+          <el-menu-item class="menu-items items" index="1">
               <el-icon><House /></el-icon>
-              <span class="items">首页</span>
+              <span>首页</span>
           </el-menu-item>
-          <el-menu-item class="menu-items" index="2">
+          <el-menu-item class="menu-items items" index="2">
             <el-icon><Document /></el-icon>
-            <span class="items">我的存储</span>
+            <span>我的存储</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
@@ -109,9 +109,7 @@ const inputId = ref('')
 .items {
   font-size: 1.06rem;
   font-weight: 400;
-  text-align: center;
   opacity: 0.9;
-  margin: 12px 0;
   letter-spacing: .12rem;
 }
 /* 顶部样式 */

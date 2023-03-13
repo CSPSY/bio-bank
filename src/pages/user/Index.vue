@@ -9,6 +9,7 @@ const inputId = ref('')
 <template>
   <div class="common-layout">
     <el-container>
+      <!-- 侧边栏 -->
       <el-aside width="232px">
         <el-menu
           class="menu"
@@ -27,6 +28,7 @@ const inputId = ref('')
         </el-menu>
       </el-aside>
       <el-container>
+        <!-- 顶部 -->
         <el-header class="header">
           <h2 class="title">生物样本库</h2>
           <span class="items">
@@ -36,6 +38,7 @@ const inputId = ref('')
             </div>
           </span>
         </el-header>
+        <!-- 内容区 -->
         <el-main style="background-color: rgb(245, 247, 253);">
           <div class="main-container">
             <div class="con-header">
@@ -89,6 +92,7 @@ const inputId = ref('')
 </template>
 
 <style scoped>
+/* 侧边栏样式 */
 .menu {
   padding: 4px 8px;
   display: flex;
@@ -110,6 +114,7 @@ const inputId = ref('')
   margin: 12px 0;
   letter-spacing: .12rem;
 }
+/* 顶部样式 */
 .header {
   display: flex;
   justify-content: space-between;
@@ -134,6 +139,7 @@ const inputId = ref('')
   background-color: rgb(242, 243, 245);
   border-radius: 5px;
 }
+/* 内容区样式 */
 .main-container {
   background-color: #fff;
   padding: 16px;

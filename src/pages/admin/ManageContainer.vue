@@ -15,7 +15,9 @@ const inputId = ref('')
           background-color="rgb(255, 255, 255)"
           default-active="2"
         >
-          <img style="width: 88px; margin: 42px auto;" src="../../assets/imgs/smallD.png" alt="logo">
+          <div class="title-tag">
+            <el-tag :disable-transitions="true" class="title">生物样本库</el-tag>
+          </div>
           <el-menu-item class="menu-items items" index="1">
             <RouterLink :to="{ path: '/admin' }">
               <el-icon><House /></el-icon>
@@ -47,7 +49,7 @@ const inputId = ref('')
       <el-container>
         <!-- 顶部 -->
         <el-header class="header">
-          <h2 class="title">生物样本库</h2>
+          <h2 class="title">容器管理</h2>
           <span class="items">
             <div class="exit">
               <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>
@@ -68,6 +70,12 @@ const inputId = ref('')
 
 <style scoped>
 /* 侧边栏样式 */
+.title-tag {
+  margin: 12px auto;
+}
+.title-tag .title {
+  padding: 20px;
+}
 .menu {
   padding: 4px 8px;
   display: flex;

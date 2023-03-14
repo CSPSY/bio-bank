@@ -15,7 +15,9 @@ const inputId = ref('')
           background-color="rgb(255, 255, 255)"
           default-active="1"
         >
-          <img style="width: 88px; margin: 42px auto;" src="../../assets/imgs/smallD.png" alt="logo">
+          <div class="title-tag">
+            <el-tag :disable-transitions="true" class="title">生物样本库</el-tag>
+          </div>
           <el-menu-item class="menu-items items" index="1">
               <el-icon><House /></el-icon>
               <span>首页</span>
@@ -47,7 +49,7 @@ const inputId = ref('')
       <el-container>
         <!-- 顶部 -->
         <el-header class="header">
-          <h2 class="title">生物样本库</h2>
+          <h2 class="title">首页</h2>
           <span class="items">
             <div class="exit">
               <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>
@@ -60,17 +62,31 @@ const inputId = ref('')
           <div class="main-container">
             <div class="con-header">
               <div>
+                <label for="refrigerators-id">冰箱 ID：</label>
                 <el-input
+                  id="refrigerators-id"
                   style="height: 32px; width: 212px; padding: 0 22px 0 0;"
                   v-model="inputId"  
-                  placeholder="请输入 id"
-                  :suffix-icon="Search"
+                  placeholder="请输入冰箱 id"
                 />
-                <el-button class="button">搜索冰箱</el-button>                
+                <label for="specimens-id">样本 ID：</label>
+                <el-input
+                  id="specimens-id"
+                  style="height: 32px; width: 212px; padding: 0 22px 0 0;"
+                  v-model="inputId"  
+                  placeholder="请输入样本 id"
+                />
+                <label for="specimens-type">样本类型：</label>
+                <el-input
+                  id="specimens-type"
+                  style="height: 32px; width: 212px; padding: 0 22px 0 0;"
+                  v-model="inputId"  
+                  placeholder="请输入样本类型"
+                />
+                <el-button class="button">搜索冰箱</el-button>            
               </div>
               <div>
                 <el-button class="button">存入样品</el-button>
-                <el-button class="button">取出样品</el-button>
               </div>    
             </div>
             <div style="padding: 16px 0;">
@@ -90,15 +106,15 @@ const inputId = ref('')
                       style="width: 120px; padding: 0 6px;"
                     />
                     <div style="padding: 14px;">
-                      <div style="margin-bottom: 5px; ">位置：<span>2012号房001号冰箱3层2架1号盒</span></div>
-                      <div style="margin-bottom: 5px; ">温度：<span>-65℃</span></div>
-                      <div style="margin-bottom: 5px; ">容量：<span>520/3000</span></div>
-                      <div style="margin-bottom: 5px; ">设备类型：<span>冰箱</span></div>
-                      <div style="margin-bottom: 5px; ">id：<span>{{ o }}</span></div>
+                      <div style="margin-bottom: 5px; ">样本 ID：<span>{{ o.toString().padStart(2, '0') }}</span></div>
+                      <div style="margin-bottom: 5px; ">样本类型：<span>血液库</span></div>
+                      <div style="margin-bottom: 5px; ">所在冰箱 ID：<span>{{ o.toString().padStart(3, '0') }}</span></div>
+                      <div style="margin-bottom: 5px; ">所在冰箱温度：<span>-65℃</span></div>
+                      <div style="margin-bottom: 5px; ">位置：<span>201号房3层2架</span></div>
                     </div>
                   </el-card>
                 </el-col>
-                <el-pagination style="margin: 0 auto;" layout="prev, pager, next" :total="100" />
+                <el-pagination style="margin: 0 auto;" layout="prev, pager, next, jumper" :total="100" />
               </el-row>
             </div>
           </div>
@@ -110,6 +126,12 @@ const inputId = ref('')
 
 <style scoped>
 /* 侧边栏样式 */
+.title-tag {
+  margin: 12px auto;
+}
+.title-tag .title {
+  padding: 20px;
+}
 .menu {
   padding: 4px 8px;
   display: flex;

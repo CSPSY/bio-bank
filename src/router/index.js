@@ -13,6 +13,13 @@ const routes = [
     }
   },
   {
+    path: '/login-user',
+    component: () => import('../pages/user/Login.vue'),
+    meta: {
+      title: '用户登录'
+    }
+  },
+  {
     path: '/my-storage',
     component: () => import('../pages/user/MyStorage.vue'),
     meta: {
@@ -25,6 +32,13 @@ const routes = [
     component: () => import('../pages/admin/Index.vue'),
     meta: {
       title: '首页'
+    }
+  },
+  {
+    path: '/login-admin',
+    component: () => import('../pages/admin/Login.vue'),
+    meta: {
+      title: '管理员登录'
     }
   },
   {

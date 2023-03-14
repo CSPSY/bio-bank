@@ -106,10 +106,11 @@ const inputId = ref('')
                       style="width: 120px; padding: 0 6px;"
                     />
                     <div style="padding: 14px;">
-                      <div style="margin-bottom: 5px; ">样本 ID：<span>{{ o.toString().padStart(2, '0') }}</span></div>
+                      <div style="margin-bottom: 5px; ">冰箱 ID：<span>{{ o.toString().padStart(2, '0') }}</span></div>
                       <div style="margin-bottom: 5px; ">样本类型：<span>血液库</span></div>
-                      <div style="margin-bottom: 5px; ">所在冰箱 ID：<span>{{ o.toString().padStart(3, '0') }}</span></div>
+                      <div style="margin-bottom: 5px; ">冰箱型号：<span>{{ 'A'+o.toString().padStart(4, '0') }}</span></div>
                       <div style="margin-bottom: 5px; ">所在冰箱温度：<span>-65℃</span></div>
+                      <div style="margin-bottom: 5px; ">所在冰箱容量：<span>520/3000</span></div>
                       <div style="margin-bottom: 5px; ">位置：<span>201号房3层2架</span></div>
                     </div>
                   </el-card>

@@ -1,11 +1,13 @@
 <script setup>
-import { User, Lock, Message } from '@element-plus/icons-vue';
+import { User, Lock, Message, Iphone } from '@element-plus/icons-vue';
 import { reactive } from 'vue';
 
 const data = reactive({
     registerInfo: {
         username: '',
+        realname: '',
         password: '',
+        phonenumber: '',
         email: '',
         captcha: ''
     },
@@ -19,17 +21,30 @@ const data = reactive({
     <h2 class="title">生物样本库管理中心</h2>
     <div class="card">
       <div class="mode mode-select">管理员注册</div>
-      <div class="items">
-        <el-input v-model.trim="data.registerInfo.username" placeholder="请输入用户名">
-          <template #prefix>
-            <el-icon><User /></el-icon>
-          </template>
-        </el-input>
+      <div class="items" style="display: flex; justify-content: space-between;">
+        <div style="width: 48%;">
+          <el-input v-model.trim="data.registerInfo.username" placeholder="请输入用户名">
+            <template #prefix>
+              <el-icon><User /></el-icon>
+            </template>
+          </el-input>
+        </div>
+        <div style="width: 45%;">
+          <el-input v-model.trim="data.registerInfo.realname" placeholder="请输入真实姓名">
+          </el-input>
+        </div>
       </div>
       <div class="items">
         <el-input v-model.trim="data.registerInfo.password" type="password" placeholder="请输入密码" show-password>
           <template #prefix>
             <el-icon><Lock /></el-icon>
+          </template>
+        </el-input>
+      </div>
+      <div class="items">
+        <el-input v-model.trim="data.registerInfo.phonenumber" placeholder="请输入电话号码">
+          <template #prefix>
+            <el-icon><Iphone /></el-icon>
           </template>
         </el-input>
       </div>
@@ -41,12 +56,12 @@ const data = reactive({
           </el-input>
       </div>
       <div class="items" style="display: flex; justify-content: space-between;">
-        <div style="width: 45%;">
-          <el-input v-model.trim="data.registerInfo.captcha" placeholder="请输入验证码">
+        <div style="width: 48%;">
+          <el-input v-model.trim="data.registerInfo.captcha" placeholder="请输入邮箱验证码">
           </el-input>
         </div>
         <div style="width: 45%;">
-          <el-button style="width: 100%; height: 38px;" type="primary" plain>获取验证码</el-button>
+          <el-button style="width: 100%; height: 38px;" type="primary" plain>获取邮箱验证码</el-button>
         </div>
       </div>
       <div class="items" style="margin-bottom: 12px;">
@@ -90,7 +105,7 @@ const data = reactive({
   margin-bottom: 12px;
 }
 .card {
-  width: 352px;
+  width: 382px;
   color: whitesmoke;
   border: 1px rgb(121, 121, 121) solid;
   border-radius: 6px;

@@ -84,7 +84,7 @@ const data = reactive({
   margin-bottom: 12px;
 }
 .card {
-  width: 352px;
+  width: 382px;
   color: whitesmoke;
   border: 1px rgb(121, 121, 121) solid;
   border-radius: 6px;

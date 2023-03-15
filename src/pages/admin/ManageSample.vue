@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from 'vue';
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
 
 </script>
@@ -40,8 +39,10 @@ import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@ele
             </RouterLink>
           </el-menu-item>
           <el-menu-item class="menu-items items" index="5">
-            <el-icon><Warning /></el-icon>
-            <span>系统监控</span>
+            <RouterLink :to="{ path: '/admin/monitor-system' }">
+              <el-icon><Warning /></el-icon>
+              <span>系统监控</span>
+            </RouterLink>
           </el-menu-item>
         </el-menu>
       </el-aside>

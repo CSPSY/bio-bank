@@ -63,6 +63,13 @@ const routes = [
     }
   },
   {
+    path: '/admin/manage-sample',
+    component: () => import('../pages/admin/ManageSample.vue'),
+    meta: {
+      title: '样本管理'
+    }
+  },
+  {
     path: '/admin/manage-system',
     component: () => import('../pages/admin/ManageSystem.vue'),
     meta: {
@@ -70,10 +77,10 @@ const routes = [
     }
   },
   {
-    path: '/admin/manage-sample',
-    component: () => import('../pages/admin/ManageSample.vue'),
+    path: '/admin/monitor-system',
+    component: () => import('../pages/admin/MonitorSystem.vue'),
     meta: {
-      title: '样本管理'
+      title: '系统监控'
     }
   },
 ];

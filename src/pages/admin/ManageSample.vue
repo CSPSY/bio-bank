@@ -79,9 +79,6 @@ onMounted(
     }
   }
 )
-
-
-
 </script>
 
 <template>

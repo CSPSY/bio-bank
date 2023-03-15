@@ -1,11 +1,18 @@
 <script setup>
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
 import * as echarts from 'echarts';
-import { ref, onMounted } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 
 const inputId = ref('');
 const chartRef = ref();
 const chart = ref();
+const data = reactive({
+  dialogTransferVisable: false,
+  sampleInfo: {
+    id: '',
+  }
+});
+
 const tableData = ref(
   [
     {
@@ -74,6 +81,10 @@ onMounted(
     }
   }
 )
+
+const changeTransferDialog = () => {
+  data.dialogTransferVisable = true;
+};
 </script>
 
 <template>
@@ -155,7 +166,44 @@ onMounted(
                 </div>
                 <div>
                   <el-button class="button">出库</el-button>
-                  <el-button class="button">移库</el-button>
+                  <el-button class="button" @click="changeTransferDialog">移库</el-button>
+                  <!-- 移库后的弹窗 -->
+                  <el-dialog v-model="data.dialogTransferVisable" :close-on-click-modal="false">
+                    <template #header>
+                      <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">移库</h3>
+                    </template>
+                    <div style="display: flex; align-items: center; font-size: 1.06rem; margin-bottom: 22px;">
+                      样本 ID：
+                      <el-input style="width: 152px;" v-model="data.sampleInfo.id" placeholder="请输入样本 ID" />
+                    </div>
+                    <div style="display: flex; align-items: center; font-size: 1.06rem; margin-bottom: 12px;">移入位置</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.06rem; margin-bottom: 32px;">
+                      <div>
+                        房号：
+                        <el-input style="width: 98px;" v-model="data.sampleInfo.id" placeholder="请输入" />
+                      </div>
+                      <div>
+                        冰箱号：
+                        <el-input style="width: 98px;" v-model="data.sampleInfo.id" placeholder="请输入" />
+                      </div>
+                      <div>
+                        层号：
+                        <el-input style="width: 98px;" v-model="data.sampleInfo.id" placeholder="请输入" />
+                      </div>
+                      <div>
+                        架号：
+                        <el-input style="width: 98px;" v-model="data.sampleInfo.id" placeholder="请输入" />
+                      </div>
+                      <div>
+                        盒号：
+                        <el-input style="width: 98px;" v-model="data.sampleInfo.id" placeholder="请输入" />
+                      </div>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end;">
+                      <el-button style="margin-right: 12px;" class="button" @click="data.dialogTransferVisable = false">取消</el-button>
+                      <el-button style="margin-right: 12px;" class="button">移入</el-button>
+                    </div>
+                  </el-dialog>
                 </div>
               </div>
               <div>
@@ -170,7 +218,6 @@ onMounted(
                   <el-table-column property="sampleType" label="样本类型"   />
                   <el-table-column property="tubeVolume" label="单管体积"   />
                   <el-table-column property="date" label="存入时间" />
-                  <!-- <el-table-column property="operation" label="操作" /> -->
                   <el-table-column fixed="right" label="操作" width="120">
                     <template #default>
                       <el-button link type="primary" size="small">编辑</el-button>

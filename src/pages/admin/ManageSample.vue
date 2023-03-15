@@ -167,8 +167,8 @@ onMounted(
                 <el-table
                   ref="multipleTableRef"
                   :data="tableData"
+                  :border="true"
                   style="width: 100%"
-                  @selection-change="handleSelectionChange"
                 >
                   <el-table-column type="selection" width="55" />
                   <el-table-column property="sampleId" label="样本 ID" />

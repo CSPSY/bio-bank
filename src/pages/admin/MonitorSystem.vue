@@ -1,5 +1,8 @@
 <script setup>
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
+import { ref } from 'vue';
+
+const containerNumber = ref();
 
 </script>
 
@@ -60,7 +63,16 @@ import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@ele
         <!-- 内容区 -->
         <el-main style="background-color: rgb(245, 247, 253);">
           <div class="main-container">
-
+            <div class="con-header">
+              <div style="width: 352px; display: flex; align-items: center; white-space: nowrap; margin-right: 122px;">
+                <span>样本库容量 &lt; ： </span>
+                <el-input v-model="containerNumber" placeholder="请输入" />
+              </div>
+              <div>
+                <el-button class="button">搜索</el-button>
+                <el-button class="button">设置预警</el-button>
+              </div>              
+            </div>
           </div>
         </el-main>
       </el-container>
@@ -129,4 +141,16 @@ a {
   padding: 16px;
   height: 100%;
 }
+.con-header {
+  margin: 55px 0 0 55px;
+  display: flex;
+  height: 56px;
+  
+  align-items: center;
+}
+.button:focus:not(.button:hover) {
+  background-color: var(--el-button-bg-color);
+  border-color: var(--el-button-border-color);
+  color: var(--el-button-text-color);
+};
 </style>

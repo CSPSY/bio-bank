@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
+import { House, SwitchButton, MessageBox, Tickets, Warning, Setting, Search } from '@element-plus/icons-vue'
 
 const inputId = ref('')
 </script>
@@ -70,8 +70,9 @@ const inputId = ref('')
                   style="height: 32px; width: 212px; padding: 0 22px 0 0;"
                   v-model="inputId"  
                   placeholder="请输入冰箱 id"
+                  :suffix-icon="Search"
                 />
-                <label for="specimens-id">样本 ID：</label>
+                <!-- <label for="specimens-id">样本 ID：</label>
                 <el-input
                   id="specimens-id"
                   style="height: 32px; width: 212px; padding: 0 22px 0 0;"
@@ -84,7 +85,7 @@ const inputId = ref('')
                   style="height: 32px; width: 212px; padding: 0 22px 0 0;"
                   v-model="inputId"  
                   placeholder="请输入样本类型"
-                />
+                /> -->
                 <el-button class="button">搜索冰箱</el-button>            
               </div>
               <div>

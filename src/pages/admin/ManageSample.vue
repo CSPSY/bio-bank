@@ -1,5 +1,86 @@
 <script setup>
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
+import * as echarts from 'echarts';
+import { ref, onMounted } from 'vue';
+
+const inputId = ref('');
+const chartRef = ref();
+const chart = ref();
+const tableData = ref(
+  [
+    {
+      sampleId: '001',
+      sampleType: '血液',
+      tubeVolume: '5ml',
+      date: '2023/03/15',
+      operation: '编辑',
+    },
+    {
+      sampleId: '002',
+      sampleType: 'DNA',
+      tubeVolume: '5ml',
+      date: '2023/03/15',
+      operation: '编辑',
+    },
+    {
+      sampleId: '003',
+      sampleType: '血液',
+      tubeVolume: '5ml',
+      date: '2023/03/15',
+      operation: '编辑',
+    },
+    {
+      sampleId: '004',
+      sampleType: '血液',
+      tubeVolume: '5ml',
+      date: '2023/03/15',
+      operation: '编辑',
+    },
+    {
+      sampleId: '005',
+      sampleType: '血液',
+      tubeVolume: '5ml',
+      date: '2023/03/15',
+      operation: '编辑',
+    },
+  ]
+);
+
+onMounted(
+  () => {
+    if (chartRef.value) {
+      chart.value = echarts.init(chartRef.value);
+      const xData = ['DNA', '血液', '尿液', '唾液', '汗液', '肝脏', '肺组织', '心脏', '血浆', '血清'];
+      const yData = [188, 387, 260, 150, 230, 0, 0, 0, 0, 0];
+      const option = {
+        title: {
+          text: '样本类型总览：'
+        },
+        color: '#409eff',
+        xAxis: {
+          type: 'category',
+          data: xData
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            data: yData,
+            type: 'bar',
+            label: {
+              show: true,
+              position: 'top'
+            }
+          }
+        ]
+      };
+      chart.value.setOption(option);
+    }
+  }
+)
+
+
 
 </script>
 
@@ -60,7 +141,50 @@ import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@ele
         <!-- 内容区 -->
         <el-main style="background-color: rgb(245, 247, 253);">
           <div class="main-container">
-
+            <div ref="chartRef" id="main"></div>
+            <div id="container">
+              <div class="con-header">
+                <div>
+                  <label for="specimens-id">样本 ID：</label>
+                  <el-input
+                    id="specimens-id"
+                    style="height: 32px; width: 212px; padding: 0 22px 0 0;"
+                    v-model="inputId"  
+                    placeholder="请输入样本 id"
+                  />
+                  <label for="specimens-type">样本类型：</label>
+                  <el-input
+                    id="specimens-type"
+                    style="height: 32px; width: 212px; padding: 0 22px 0 0;"
+                    v-model="inputId"
+                    placeholder="请输入样本类型"
+                    />
+                    <el-button class="button">搜索</el-button>        
+                </div>
+                <div>
+                  <el-button class="button">出库</el-button>
+                  <el-button class="button">移库</el-button>
+                </div>
+              </div>
+              <div>
+                <el-table
+                  ref="multipleTableRef"
+                  :data="tableData"
+                  style="width: 100%"
+                  @selection-change="handleSelectionChange"
+                >
+                  <el-table-column type="selection" width="55" />
+                  <el-table-column property="sampleId" label="样本 ID" />
+                  <el-table-column property="sampleType" label="样本类型"   />
+                  <el-table-column property="tubeVolume" label="单管体积"   />
+                  <el-table-column property="date" label="存入时间" />
+                  <el-table-column property="operation" label="操作" />
+                </el-table>
+                <div style="display: flex; margin-top: 20px">
+                  <el-pagination style="margin: 0 auto;" layout="prev, pager, next, jumper" :total="100" />
+                </div>
+              </div>
+            </div>
           </div>
         </el-main>
       </el-container>
@@ -129,4 +253,18 @@ a {
   padding: 16px;
   height: 100%;
 }
+#main {
+  height: 300px;
+}
+.con-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 2px rgb(229, 230, 235) solid;
+  padding-bottom: 16px;
+}
+.button:focus:not(.button:hover) {
+  background-color: var(--el-button-bg-color);
+  border-color: var(--el-button-border-color);
+  color: var(--el-button-text-color);
+};
 </style>

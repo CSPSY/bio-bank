@@ -61,7 +61,14 @@ const routes = [
     meta: {
       title: '容器管理'
     }
-  }
+  },
+  {
+    path: '/admin/manage-sample',
+    component: () => import('../pages/admin/ManageSample.vue'),
+    meta: {
+      title: '样本管理'
+    }
+  },
 ];
 
 const router = createRouter({

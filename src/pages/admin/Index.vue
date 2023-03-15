@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { Search, House, SwitchButton, MessageBox, Tickets, Memo, Warning, Setting } from '@element-plus/icons-vue'
+import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
 
 const inputId = ref('')
 </script>
@@ -29,18 +29,16 @@ const inputId = ref('')
             </RouterLink>
           </el-menu-item>
           <el-menu-item class="menu-items items" index="3">
-            <el-icon><Tickets /></el-icon>
-            <span>样本管理</span>
+            <RouterLink :to="{ path: '/admin/manage-sample' }">
+              <el-icon><Tickets /></el-icon>
+              <span>样本管理</span>
+            </RouterLink>
           </el-menu-item>
           <el-menu-item class="menu-items items" index="4">
-            <el-icon><Memo /></el-icon>
-            <span>样本源管理</span>
-          </el-menu-item>
-          <el-menu-item class="menu-items items" index="5">
             <el-icon><Setting /></el-icon>
             <span>系统管理</span>
           </el-menu-item>
-          <el-menu-item class="menu-items items" index="6">
+          <el-menu-item class="menu-items items" index="5">
             <el-icon><Warning /></el-icon>
             <span>系统监控</span>
           </el-menu-item>

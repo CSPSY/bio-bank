@@ -13,10 +13,17 @@ const routes = [
     }
   },
   {
-    path: '/login-user',
+    path: '/user/login',
     component: () => import('../pages/user/Login.vue'),
     meta: {
       title: '用户登录'
+    }
+  },
+  {
+    path: '/user/register',
+    component: () => import('../pages/user/Register.vue'),
+    meta: {
+      title: '用户注册'
     }
   },
   {
@@ -35,10 +42,17 @@ const routes = [
     }
   },
   {
-    path: '/login-admin',
+    path: '/admin/login',
     component: () => import('../pages/admin/Login.vue'),
     meta: {
       title: '管理员登录'
+    }
+  },
+  {
+    path: '/admin/register',
+    component: () => import('../pages/admin/Register.vue'),
+    meta: {
+      title: '管理员注册'
     }
   },
   {

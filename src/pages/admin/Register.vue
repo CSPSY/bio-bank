@@ -1,15 +1,16 @@
 <script setup>
-import { User, Lock } from '@element-plus/icons-vue';
+import { User, Lock, Message } from '@element-plus/icons-vue';
 import { reactive } from 'vue';
 
 const data = reactive({
-    loginInfo: {
-        username: "",
-        password: ""
+    registerInfo: {
+        username: '',
+        password: '',
+        email: '',
+        captcha: ''
     },
     passwordFlag: false
 })
-
 </script>
 
 <template>
@@ -17,42 +18,47 @@ const data = reactive({
   <div class="container">
     <h2 class="title">生物样本库管理中心</h2>
     <div class="card">
-      <div class="mode">
-        <RouterLink :to="{ path: '/admin/login' }" class="mode-select">管理员登录</RouterLink>
-        <RouterLink :to="{ path: '/user/login' }" class="mode-select" style="border-bottom: 2px white solid;">用户登录</RouterLink>
-      </div>
+      <div class="mode mode-select">管理员注册</div>
       <div class="items">
-        <el-input v-model.trim="data.loginInfo.username" placeholder="请输入用户名">
+        <el-input v-model.trim="data.registerInfo.username" placeholder="请输入用户名">
           <template #prefix>
             <el-icon><User /></el-icon>
           </template>
         </el-input>
       </div>
       <div class="items">
-        <el-input v-model.trim="data.loginInfo.password" type="password" placeholder="请输入密码" show-password>
+        <el-input v-model.trim="data.registerInfo.password" type="password" placeholder="请输入密码" show-password>
           <template #prefix>
             <el-icon><Lock /></el-icon>
           </template>
         </el-input>
       </div>
-      <div class="items" style="display: flex; justify-content: space-between; padding: 0 12px;">
-        <div>
-          <el-checkbox v-model="data.passwordFlag" label="记住密码" size="large" style="color: aliceblue;" />
+      <div class="items" style="display: flex; justify-content: space-between;">
+          <el-input v-model.trim="data.registerInfo.email" placeholder="请输入邮箱">
+            <template #prefix>
+              <el-icon><Message /></el-icon>
+            </template>
+          </el-input>
+      </div>
+      <div class="items" style="display: flex; justify-content: space-between;">
+        <div style="width: 45%;">
+          <el-input v-model.trim="data.registerInfo.captcha" placeholder="请输入验证码">
+          </el-input>
         </div>
-        <a style="align-self: center; color: aliceblue; font-size: 14px; cursor: pointer;">
-          忘记密码
-        </a>
+        <div style="width: 45%;">
+          <el-button style="width: 100%; height: 38px;" type="primary" plain>获取验证码</el-button>
+        </div>
       </div>
       <div class="items" style="margin-bottom: 12px;">
         <el-button type="primary"
           style="width: 100%; border-radius: 6px; font-size: 1.1rem; letter-spacing: 0.3rem; padding: 18px;"
-        >登录</el-button>
+        >注册</el-button>
       </div>
       <div class="items">
-        <RouterLink :to="{ path: '/user/register' }">
-          <el-button type="info"
-            style="width: 100%; border-radius: 6px; font-size: 1.1rem; letter-spacing: 0.3rem; padding: 18px;"
-          >注册账号</el-button>
+        <RouterLink :to="{ path: '/admin/login' }">
+            <el-button type="info"
+              style="width: 100%; border-radius: 6px; font-size: 1.1rem; letter-spacing: 0.3rem; padding: 18px;"
+            >返回登录</el-button>
         </RouterLink>
       </div>
     </div>
@@ -91,19 +97,21 @@ const data = reactive({
   box-shadow: 0 4px 8px rgb(0 0 0 / 3%);
   display: flex;
   flex-direction: column;
-  padding: 24px 22px 12px;
+  padding: 16px 22px 12px;
   background-color: rgba(0, 7, 152, .7);
 }
 .mode {
   display: flex;
+  justify-content: center;
   margin-bottom: 16px;
 }
 .mode-select {
   color: whitesmoke;
-  cursor: pointer;
   padding: 6px;
   width: 100%;
-  text-align: center;
+
+  font-size: 1.3rem;
+  letter-spacing: .2rem;
 }
 .items {
   margin-bottom: 18px;

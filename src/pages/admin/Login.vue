@@ -18,18 +18,18 @@ const data = reactive({
     <h2 class="title">生物样本库管理中心</h2>
     <div class="card">
       <div class="mode">
-        <RouterLink :to="{ path: '/login-admin' }" class="mode-select" style="border-bottom: 2px white solid;">管理员登录</RouterLink>
-        <RouterLink :to="{ path: '/login-user' }" class="mode-select">用户登录</RouterLink>
+        <RouterLink :to="{ path: '/admin/login' }" class="mode-select" style="border-bottom: 2px white solid;">管理员登录</RouterLink>
+        <RouterLink :to="{ path: '/user/login' }" class="mode-select">用户登录</RouterLink>
       </div>
       <div class="items">
-        <el-input v-model="data.loginInfo.username" placeholder="请输入用户名">
+        <el-input v-model.trim="data.loginInfo.username" placeholder="请输入用户名">
           <template #prefix>
             <el-icon><User /></el-icon>
           </template>
         </el-input>
       </div>
       <div class="items">
-        <el-input v-model="data.loginInfo.password" type="password" placeholder="请输入密码" show-password>
+        <el-input v-model.trim="data.loginInfo.password" type="password" placeholder="请输入密码" show-password>
           <template #prefix>
             <el-icon><Lock /></el-icon>
           </template>
@@ -37,7 +37,7 @@ const data = reactive({
       </div>
       <div class="items" style="display: flex; justify-content: space-between; padding: 0 12px;">
         <div>
-          <el-checkbox v-model="passwordFlag" label="记住密码" size="large" style="color: aliceblue;" />
+          <el-checkbox v-model="data.passwordFlag" label="记住密码" size="large" style="color: aliceblue;" />
         </div>
         <a style="align-self: center; color: aliceblue; font-size: 14px; cursor: pointer;">
           忘记密码
@@ -49,9 +49,11 @@ const data = reactive({
         >登录</el-button>
       </div>
       <div class="items">
-        <el-button type="info"
-          style="width: 100%; border-radius: 6px; font-size: 1.1rem; letter-spacing: 0.3rem; padding: 18px;"
-        >注册账号</el-button>
+        <RouterLink :to="{ path: '/admin/register' }">
+          <el-button type="info"
+            style="width: 100%; border-radius: 6px; font-size: 1.1rem; letter-spacing: 0.3rem; padding: 18px;"
+          >注册账号</el-button>
+        </RouterLink>
       </div>
     </div>
   </div>
@@ -109,7 +111,7 @@ const data = reactive({
 :deep(.items .el-input__wrapper) {
   font-size: 1rem;
   border-radius: 6px;
-  padding: 6px 12px;
+  padding: 4px 12px;
 }
 .el-button:focus:not(.el-button:hover) {
   background-color: var(--el-button-bg-color);

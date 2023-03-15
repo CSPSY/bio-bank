@@ -12,36 +12,31 @@ const tableData = ref(
       sampleId: '001',
       sampleType: '血液',
       tubeVolume: '5ml',
-      date: '2023/03/15',
-      operation: '编辑',
+      date: '2023/03/15'
     },
     {
       sampleId: '002',
       sampleType: 'DNA',
       tubeVolume: '5ml',
-      date: '2023/03/15',
-      operation: '编辑',
+      date: '2023/03/15'
     },
     {
       sampleId: '003',
       sampleType: '血液',
       tubeVolume: '5ml',
-      date: '2023/03/15',
-      operation: '编辑',
+      date: '2023/03/15'
     },
     {
       sampleId: '004',
       sampleType: '血液',
       tubeVolume: '5ml',
-      date: '2023/03/15',
-      operation: '编辑',
+      date: '2023/03/15'
     },
     {
       sampleId: '005',
       sampleType: '血液',
       tubeVolume: '5ml',
-      date: '2023/03/15',
-      operation: '编辑',
+      date: '2023/03/15'
     },
   ]
 );
@@ -175,7 +170,12 @@ onMounted(
                   <el-table-column property="sampleType" label="样本类型"   />
                   <el-table-column property="tubeVolume" label="单管体积"   />
                   <el-table-column property="date" label="存入时间" />
-                  <el-table-column property="operation" label="操作" />
+                  <!-- <el-table-column property="operation" label="操作" /> -->
+                  <el-table-column fixed="right" label="操作" width="120">
+                    <template #default>
+                      <el-button link type="primary" size="small">编辑</el-button>
+                    </template>
+                  </el-table-column>
                 </el-table>
                 <div style="display: flex; margin-top: 20px">
                   <el-pagination style="margin: 0 auto;" layout="prev, pager, next, jumper" :total="100" />

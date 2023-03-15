@@ -12,7 +12,7 @@ import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@ele
         <el-menu
           class="menu"
           background-color="rgb(255, 255, 255)"
-          default-active="2"
+          default-active="4"
         >
           <div class="title-tag">
             <el-tag :disable-transitions="true" class="title">生物样本库</el-tag>
@@ -24,8 +24,10 @@ import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@ele
             </RouterLink>
           </el-menu-item>
           <el-menu-item class="menu-items items" index="2">
+            <RouterLink :to="{ path: '/admin/manage-container' }">
               <el-icon><MessageBox /></el-icon>
               <span>容器管理</span>
+            </RouterLink>
           </el-menu-item>
           <el-menu-item class="menu-items items" index="3">
             <RouterLink :to="{ path: '/admin/manage-sample' }">
@@ -34,10 +36,8 @@ import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@ele
             </RouterLink>
           </el-menu-item>
           <el-menu-item class="menu-items items" index="4">
-            <RouterLink :to="{ path: '/admin/manage-system' }">
-              <el-icon><Setting /></el-icon>
-              <span>系统管理</span>
-            </RouterLink>
+            <el-icon><Setting /></el-icon>
+            <span>系统管理</span>
           </el-menu-item>
           <el-menu-item class="menu-items items" index="5">
             <el-icon><Warning /></el-icon>
@@ -48,7 +48,7 @@ import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@ele
       <el-container>
         <!-- 顶部 -->
         <el-header class="header">
-          <h2 class="title">容器管理</h2>
+          <h2 class="title">系统管理</h2>
           <span class="items">
             <div class="exit">
               <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>

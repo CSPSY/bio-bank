@@ -34,8 +34,10 @@ import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@ele
             <span>样本管理</span>
           </el-menu-item>
           <el-menu-item class="menu-items items" index="4">
-            <el-icon><Setting /></el-icon>
-            <span>系统管理</span>
+            <RouterLink :to="{ path: '/admin/manage-system' }">
+              <el-icon><Setting /></el-icon>
+              <span>系统管理</span>
+            </RouterLink>
           </el-menu-item>
           <el-menu-item class="menu-items items" index="5">
             <el-icon><Warning /></el-icon>

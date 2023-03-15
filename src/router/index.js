@@ -63,6 +63,13 @@ const routes = [
     }
   },
   {
+    path: '/admin/manage-system',
+    component: () => import('../pages/admin/ManageSystem.vue'),
+    meta: {
+      title: '系统管理'
+    }
+  },
+  {
     path: '/admin/manage-sample',
     component: () => import('../pages/admin/ManageSample.vue'),
     meta: {

@@ -35,8 +35,10 @@ const inputId = ref('')
             </RouterLink>
           </el-menu-item>
           <el-menu-item class="menu-items items" index="4">
-            <el-icon><Setting /></el-icon>
-            <span>系统管理</span>
+            <RouterLink :to="{ path: '/admin/manage-system' }">
+              <el-icon><Setting /></el-icon>
+              <span>系统管理</span>
+            </RouterLink>
           </el-menu-item>
           <el-menu-item class="menu-items items" index="5">
             <el-icon><Warning /></el-icon>

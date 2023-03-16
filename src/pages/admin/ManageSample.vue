@@ -10,6 +10,13 @@ const data = reactive({
   dialogTransferVisable: false,
   sampleInfo: {
     id: '',
+    roomId: '',
+    containerId: '',
+    layerId: '',
+    areaId: '',
+    boxId: '',
+    boxRowId: '',
+    boxColId: ''
   }
 });
 
@@ -18,36 +25,45 @@ const tableData = ref(
     {
       sampleId: '001',
       sampleType: '血液',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
     {
       sampleId: '002',
       sampleType: 'DNA',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
     {
       sampleId: '003',
       sampleType: '血液',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
     {
       sampleId: '004',
-      sampleType: '血液',
+      sampleType: '污水',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
     {
       sampleId: '005',
       sampleType: '血液',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
   ]
 );
-
 onMounted(
   () => {
     if (chartRef.value) {
@@ -174,29 +190,39 @@ const changeTransferDialog = () => {
                     </template>
                     <div style="display: flex; align-items: center; font-size: 1.06rem; margin-bottom: 22px;">
                       样本 ID：
-                      <el-input style="width: 152px;" v-model="data.sampleInfo.id" placeholder="请输入样本 ID" />
+                      <el-input style="width: 152px;" v-model.trim="data.sampleInfo.id" placeholder="请输入样本 ID" />
                     </div>
                     <div style="display: flex; align-items: center; font-size: 1.06rem; margin-bottom: 12px;">移入位置</div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.06rem; margin-bottom: 32px;">
-                      <div>
+                    <div style="display: flex; font-size: 1.06rem; margin-bottom: 12px;">
+                      <div style="margin-right: 42px;">
                         房号：
-                        <el-input style="width: 98px;" v-model="data.sampleInfo.id" placeholder="请输入" />
+                        <el-input style="width: 98px;" v-model.trim="data.sampleInfo.roomId" placeholder="请输入" />
                       </div>
-                      <div>
+                      <div style="margin-right: 42px;">
                         冰箱号：
-                        <el-input style="width: 98px;" v-model="data.sampleInfo.id" placeholder="请输入" />
+                        <el-input style="width: 98px;" v-model.trim="data.sampleInfo.containerId" placeholder="请输入" />
                       </div>
-                      <div>
+                      <div style="margin-right: 42px;">
                         层号：
-                        <el-input style="width: 98px;" v-model="data.sampleInfo.id" placeholder="请输入" />
+                        <el-input style="width: 98px;" v-model.trim="data.sampleInfo.layerId" placeholder="请输入" />
                       </div>
                       <div>
-                        架号：
-                        <el-input style="width: 98px;" v-model="data.sampleInfo.id" placeholder="请输入" />
+                        区号：
+                        <el-input style="width: 98px;" v-model.trim="data.sampleInfo.areaId" placeholder="请输入" />
                       </div>
-                      <div>
+                    </div>
+                    <div style="display: flex; font-size: 1.06rem; margin-bottom: 32px;">
+                      <div style="margin-right: 42px;">
                         盒号：
-                        <el-input style="width: 98px;" v-model="data.sampleInfo.id" placeholder="请输入" />
+                        <el-input style="width: 98px;" v-model.trim="data.sampleInfo.boxId" placeholder="请输入" />
+                      </div>
+                      <div style="margin-right: 42px;">
+                        盒内行 ID：
+                        <el-input style="width: 98px;" v-model.trim="data.sampleInfo.boxRowId" placeholder="请输入" />
+                      </div>
+                      <div>
+                        盒内列 ID：
+                        <el-input style="width: 98px;" v-model.trim="data.sampleInfo.boxColId" placeholder="请输入" />
                       </div>
                     </div>
                     <div style="display: flex; justify-content: flex-end;">
@@ -216,6 +242,8 @@ const changeTransferDialog = () => {
                   <el-table-column type="selection" width="55" />
                   <el-table-column property="sampleId" label="样本 ID" />
                   <el-table-column property="sampleType" label="样本类型"   />
+                  <el-table-column property="sampleDensity" label="样本浓度" />
+                  <el-table-column property="sampleVolume" label="样本体积" />
                   <el-table-column property="tubeVolume" label="单管体积"   />
                   <el-table-column property="date" label="存入时间" />
                   <el-table-column fixed="right" label="操作" width="120">

@@ -197,72 +197,74 @@ const changeSampleDialog = () => {
                   <template #header>
                     <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">样本信息</h3>
                   </template>
-                    <el-descriptions :column="3" border>
-                      <el-descriptions-item
-                        label="样本 ID"
-                        label-align="left"
-                        align="center"
-                        label-class-name="my-label"
-                        class-name="my-content"
-                        width="120px"
-                      >{{ data.sampleInfo.id }}</el-descriptions-item>
-                      <el-descriptions-item label="样本浓度" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.density }} g/ml
-                      </el-descriptions-item>
-                      <el-descriptions-item label="样本类型" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.type }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="单管体积" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.tubeVolume }} ml
-                      </el-descriptions-item>
-                      <el-descriptions-item label="样本采集时间" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.gatherTime }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="样本入库时间" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.addTime }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="样本源类型" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.fromType }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="样本区域大小" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.area }} ㎡
-                      </el-descriptions-item>
-                      <el-descriptions-item label="安全级别" label-align="left" align="center" width="120px"
-                      >
-                        <el-tag size="small">{{ data.sampleInfo.safeLevel }}</el-tag>
-                      </el-descriptions-item>
-                      <el-descriptions-item label="所属用户 ID" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.userId }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="所在房间号" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.roomId }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="所在冰箱号" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.containerId }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="所在层号" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.layerId }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="所在区域号" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.areaId }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="所在盒子号" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.boxId }}
-                      </el-descriptions-item>
-                    </el-descriptions>
-                    <el-descriptions :column="2" border>
-                      <el-descriptions-item label="所在盒子里的行号" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.boxRowId }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="所在盒子里的列号" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.boxColId }}
-                      </el-descriptions-item>
-                    </el-descriptions>
-                    <el-descriptions :column="3" border>
-                      <el-descriptions-item label="治疗信息" label-align="left" align="center" width="135px"
-                      >{{ data.sampleInfo.remedyInfo }}
-                      </el-descriptions-item>
-                    </el-descriptions>
+                  <el-descriptions :column="3" border>
+                    <el-descriptions-item
+                      label="样本 ID"
+                      label-align="left"
+                      align="center"
+                      label-class-name="my-label"
+                      class-name="my-content"
+                      width="120px"
+                    >{{ data.sampleInfo.id }}</el-descriptions-item>
+                    <el-descriptions-item label="样本浓度" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.density }} g/ml
+                    </el-descriptions-item>
+                    <el-descriptions-item label="样本类型" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.type }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="单管体积" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.tubeVolume }} ml
+                    </el-descriptions-item>
+                    <el-descriptions-item label="样本采集时间" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.gatherTime }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="样本入库时间" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.addTime }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="样本源类型" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.fromType }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="样本区域大小" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.area }} ㎡
+                    </el-descriptions-item>
+                    <el-descriptions-item label="安全级别" label-align="left" align="center" width="120px"
+                    >
+                      <el-tag size="small">{{ data.sampleInfo.safeLevel }}</el-tag>
+                    </el-descriptions-item>
+                  </el-descriptions>
+                  <el-descriptions :column="3" border>
+                    <el-descriptions-item label="治疗信息" label-align="left" align="center" width="135px"
+                    >{{ data.sampleInfo.remedyInfo }}
+                    </el-descriptions-item>
+                  </el-descriptions>
+                  <el-descriptions :column="3" border>
+                    <el-descriptions-item label="所属用户 ID" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.userId }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="所在房间号" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.roomId }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="所在冰箱号" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.containerId }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="所在层号" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.layerId }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="所在区域号" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.areaId }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="所在盒子号" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.boxId }}
+                    </el-descriptions-item>
+                  </el-descriptions>
+                  <el-descriptions :column="2" border>
+                    <el-descriptions-item label="所在盒子里的行号" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.boxRowId }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="所在盒子里的列号" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.boxColId }}
+                    </el-descriptions-item>
+                  </el-descriptions>
                 </el-dialog>
               </div>
             </div>

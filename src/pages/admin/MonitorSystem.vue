@@ -1,8 +1,56 @@
 <script setup>
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 
 const containerNumber = ref();
+const data = reactive({
+  tableVisible: false
+});
+
+const tableData = ref(
+  [
+    {
+      id: '01',
+      type: '冰箱',
+      roomId: '201',
+      temprature: '22℃',
+      createTime: '2023/3/16',
+      volume: '520/3000'
+    },
+    {
+      id: '02',
+      type: '冰箱',
+      roomId: '201',
+      temprature: '22℃',
+      createTime: '2023/3/16',
+      volume: '520/3000'
+    },
+    {
+      id: '03',
+      type: '冰箱',
+      roomId: '201',
+      temprature: '22℃',
+      createTime: '2023/3/16',
+      volume: '520/3000'
+    },
+    {
+      id: '04',
+      type: '冰箱',
+      roomId: '201',
+      temprature: '22℃',
+      createTime: '2023/3/16',
+      volume: '520/3000'
+    },
+    {
+      id: '05',
+      type: '冰箱',
+      roomId: '201',
+      temprature: '22℃',
+      createTime: '2023/3/16',
+      volume: '520/3000'
+    },
+  ]
+);
 
 </script>
 
@@ -69,9 +117,27 @@ const containerNumber = ref();
                 <el-input v-model="containerNumber" placeholder="请输入" />
               </div>
               <div>
-                <el-button class="button">搜索</el-button>
+                <el-button class="button" @click="data.tableVisible=true">搜索</el-button>
                 <el-button class="button">设置预警</el-button>
-              </div>              
+              </div>
+            </div>
+            <div v-show="data.tableVisible">
+              <el-table
+                ref="multipleTableRef"
+                :data="tableData"
+                :border="true"
+                style="width: 100%; margin-top: 16px;"
+              >
+                <el-table-column property="id" label="设备 ID" />
+                <el-table-column property="type" label="设备类型"   />
+                <el-table-column property="roomId" label="所在房间号 ID" />
+                <el-table-column property="temprature" label="设备存储温度"   />
+                <el-table-column property="createTime" label="创建时间" />
+                <el-table-column property="volume" label="设备容量" width="120" />
+              </el-table>
+              <div style="display: flex; margin-top: 20px">
+                <el-pagination style="margin: 0 auto;" layout="prev, pager, next, jumper" :total="100" />
+              </div>
             </div>
           </div>
         </el-main>

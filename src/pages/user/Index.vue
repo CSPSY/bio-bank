@@ -12,7 +12,6 @@ const tableData = ref(
       sampleId: '001',
       sampleType: '血液',
       sampleDensity: '3g/ml',
-      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
@@ -20,7 +19,6 @@ const tableData = ref(
       sampleId: '002',
       sampleType: 'DNA',
       sampleDensity: '3g/ml',
-      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
@@ -28,7 +26,6 @@ const tableData = ref(
       sampleId: '003',
       sampleType: '血液',
       sampleDensity: '3g/ml',
-      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
@@ -36,7 +33,6 @@ const tableData = ref(
       sampleId: '004',
       sampleType: '污水',
       sampleDensity: '3g/ml',
-      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
@@ -44,7 +40,6 @@ const tableData = ref(
       sampleId: '005',
       sampleType: '血液',
       sampleDensity: '3g/ml',
-      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
@@ -55,14 +50,13 @@ const data = reactive({
   sampleInfoVisible: false,
   sampleInfo: {
     id: '001',
-    density: '5',
+    density: '3',
     type: '血液',
-    volume: '5',
     gatherTime: '2023/03/15',
     addTime: '2023/03/16',
+    tubeVolume: '5',
     fromType: '采集',
     sum: '12',
-    remedyInfo: 'O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液',
     area: '12',
     safeLevel: '安全',
     userId: '01',
@@ -72,7 +66,8 @@ const data = reactive({
     areaId: '3',
     boxId: '2',
     boxRowId: '1',
-    boxColId: '4'
+    boxColId: '4',
+    remedyInfo: 'O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液'
   }
 });
 
@@ -184,8 +179,7 @@ const changeSampleDialog = () => {
                   <el-table-column type="selection" width="55" />
                   <el-table-column property="sampleId" label="样本 ID" />
                   <el-table-column property="sampleType" label="样本类型"   />
-                  <el-table-column property="sampleDensity" label="样本浓度" />
-                  <el-table-column property="sampleVolume" label="样本体积" />
+                  <el-table-column property="sampleDensity" label="样本浓度" /> 
                   <el-table-column property="tubeVolume" label="单管体积"   />
                   <el-table-column property="date" label="存入时间" />
                   <el-table-column fixed="right" label="操作" width="120">
@@ -217,8 +211,8 @@ const changeSampleDialog = () => {
                       <el-descriptions-item label="样本类型" label-align="left" align="center" width="120px"
                       >{{ data.sampleInfo.type }}
                       </el-descriptions-item>
-                      <el-descriptions-item label="样本体积" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.volume }} ml
+                      <el-descriptions-item label="单管体积" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.tubeVolume }} ml
                       </el-descriptions-item>
                       <el-descriptions-item label="样本采集时间" label-align="left" align="center" width="120px"
                       >{{ data.sampleInfo.gatherTime }}

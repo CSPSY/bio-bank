@@ -26,7 +26,6 @@ const tableData = ref(
       sampleId: '001',
       sampleType: '血液',
       sampleDensity: '3g/ml',
-      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
@@ -34,7 +33,6 @@ const tableData = ref(
       sampleId: '002',
       sampleType: 'DNA',
       sampleDensity: '3g/ml',
-      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
@@ -42,7 +40,6 @@ const tableData = ref(
       sampleId: '003',
       sampleType: '血液',
       sampleDensity: '3g/ml',
-      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
@@ -50,7 +47,6 @@ const tableData = ref(
       sampleId: '004',
       sampleType: '污水',
       sampleDensity: '3g/ml',
-      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
@@ -58,7 +54,6 @@ const tableData = ref(
       sampleId: '005',
       sampleType: '血液',
       sampleDensity: '3g/ml',
-      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
@@ -243,7 +238,6 @@ const changeTransferDialog = () => {
                   <el-table-column property="sampleId" label="样本 ID" />
                   <el-table-column property="sampleType" label="样本类型"   />
                   <el-table-column property="sampleDensity" label="样本浓度" />
-                  <el-table-column property="sampleVolume" label="样本体积" />
                   <el-table-column property="tubeVolume" label="单管体积"   />
                   <el-table-column property="date" label="存入时间" />
                   <el-table-column fixed="right" label="操作" width="120">

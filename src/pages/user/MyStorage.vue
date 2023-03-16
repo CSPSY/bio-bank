@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import { Document, House, SwitchButton } from '@element-plus/icons-vue'
 
 const tableData = ref(
@@ -87,7 +87,37 @@ const tableData = ref(
   ]
 );
 
+const data = reactive({
+  sampleInfoVisible: false,
+  sampleInfo: {
+    id: '001',
+    density: '5',
+    type: '血液',
+    volume: '5',
+    gatherTime: '2023/03/15',
+    addTime: '2023/03/16',
+    fromType: '采集',
+    sum: '12',
+    remedyInfo: 'O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液',
+    area: '12',
+    safeLevel: '安全',
+    userId: '01',
+    roomId: '201',
+    containerId: '002',
+    layerId: '2',
+    areaId: '3',
+    boxId: '2',
+    boxRowId: '1',
+    boxColId: '4'
+  }
+});
+
+
 const inputId = ref('')
+
+const changeSampleDialog = () => {
+  data.sampleInfoVisible = true;
+};
 </script>
 
 <template>
@@ -165,13 +195,85 @@ const inputId = ref('')
                   <el-table-column property="date" label="存入时间" />
                   <el-table-column fixed="right" label="操作" width="120">
                     <template #default>
-                      <el-button link type="primary" size="small">查看</el-button>
+                      <el-button link type="primary" size="small" @click="changeSampleDialog">查看</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
                 <div style="display: flex; margin-top: 20px">
                   <el-pagination style="margin: 0 auto;" layout="prev, pager, next, jumper" :total="100" />
                 </div>
+                <!-- 点击查看后，样本信息的弹窗 -->
+                <el-dialog v-model="data.sampleInfoVisible" :close-on-click-modal="false">
+                  <template #header>
+                    <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">样本信息</h3>
+                  </template>
+                    <el-descriptions :column="3" border>
+                      <el-descriptions-item
+                        label="样本 ID"
+                        label-align="left"
+                        align="center"
+                        label-class-name="my-label"
+                        class-name="my-content"
+                        width="120px"
+                      >{{ data.sampleInfo.id }}</el-descriptions-item>
+                      <el-descriptions-item label="样本浓度" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.density }} g/ml
+                      </el-descriptions-item>
+                      <el-descriptions-item label="样本类型" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.type }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="样本体积" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.volume }} ml
+                      </el-descriptions-item>
+                      <el-descriptions-item label="样本采集时间" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.gatherTime }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="样本入库时间" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.addTime }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="样本源类型" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.fromType }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="样本区域大小" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.area }} ㎡
+                      </el-descriptions-item>
+                      <el-descriptions-item label="安全级别" label-align="left" align="center" width="120px"
+                      >
+                        <el-tag size="small">{{ data.sampleInfo.safeLevel }}</el-tag>
+                      </el-descriptions-item>
+                      <el-descriptions-item label="所属用户 ID" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.userId }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="所在房间号" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.roomId }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="所在冰箱号" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.containerId }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="所在层号" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.layerId }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="所在区域号" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.areaId }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="所在盒子号" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.boxId }}
+                      </el-descriptions-item>
+                    </el-descriptions>
+                    <el-descriptions :column="2" border>
+                      <el-descriptions-item label="所在盒子里的行号" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.boxRowId }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="所在盒子里的列号" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.boxColId }}
+                      </el-descriptions-item>
+                    </el-descriptions>
+                    <el-descriptions :column="3" border>
+                      <el-descriptions-item label="治疗信息" label-align="left" align="center" width="135px"
+                      >{{ data.sampleInfo.remedyInfo }}
+                      </el-descriptions-item>
+                    </el-descriptions>
+                </el-dialog>
               </div>
             </div>
           </div>

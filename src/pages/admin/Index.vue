@@ -113,7 +113,7 @@ const data = reactive({
                 <el-button class="button">搜索冰箱</el-button>            
               </div>
               <div>
-                <el-button class="button" @click="data.sampleInfoVisible=true">存入样品</el-button>
+                <el-button class="button" @click="data.sampleInfoVisible=true">存入样本</el-button>
               </div>
             </div>
             <div style="padding: 16px 0;">
@@ -198,7 +198,7 @@ const data = reactive({
                   <el-button style="margin-right: 12px;" class="button" @click="data.containerInfoVisible = false">取消</el-button>
                 </div>
               </el-dialog>
-              <!-- 存入样品，样品信息弹框 -->
+              <!-- 存入样本，样本信息弹框 -->
               <el-dialog v-model.trim="data.sampleInfoVisible" :close-on-click-modal="false">
                 <template #header>
                   <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">待存样本信息</h3>
@@ -220,7 +220,7 @@ const data = reactive({
                 <div style="display: flex; flex-direction: row;">
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     单管体积：
-                    <el-input style="width: 166px;" v-model.trim="data.sampleInfo.volume" placeholder="请输入单管体积" />
+                    <el-input style="width: 166px;" v-model.trim="data.sampleInfo.tubeVolume" placeholder="请输入单管体积" />
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     采集时间：
@@ -228,7 +228,7 @@ const data = reactive({
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     入库时间：
-                    <el-input style="width: 166px;" v-model.trim="data.container.addTime" placeholder="请输入入库时间" />
+                    <el-input style="width: 166px;" v-model.trim="data.sampleInfo.addTime" placeholder="请输入入库时间" />
                   </div>
                 </div>
                 <div style="display: flex; flex-direction: row;">
@@ -242,8 +242,12 @@ const data = reactive({
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     安全级别：
-                    <el-input style="width: 166px;" v-model.trim="data.container.safeLevel" placeholder="请输入安全级别" />
+                    <el-input style="width: 166px;" v-model.trim="data.sampleInfo.safeLevel" placeholder="请输入安全级别" />
                   </div>
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 22px;">
+                  治疗信息：
+                  <el-input style="width: 75%;" autosize type="textarea" v-model.trim="data.sampleInfo.remedyInfo" placeholder="请输入治疗信息" />
                 </div>
                 <div style="display: flex; flex-direction: row;">
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
@@ -287,6 +291,7 @@ const data = reactive({
                   <el-button style="margin-right: 12px;" class="button"
                     @click="() => { data.sampleInnerVisible = true; data.sampleInfoVisible = false }"
                   >确认</el-button>
+                  <el-button style="margin-right: 12px;" class="button" @click="data.sampleInfoVisible=false">取消</el-button>
                 </div>
                 <template>
                   <el-dialog v-model="data.sampleInnerVisible" width="30%" title="打印样品信息" append-to-body>

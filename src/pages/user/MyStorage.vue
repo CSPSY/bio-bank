@@ -1,7 +1,91 @@
 <script setup>
 import { ref } from 'vue';
-import { Search, Document, House, SwitchButton } from '@element-plus/icons-vue'
-import { size } from 'lodash';
+import { Document, House, SwitchButton } from '@element-plus/icons-vue'
+
+const tableData = ref(
+  [
+    {
+      sampleId: '001',
+      sampleType: '血液',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
+      tubeVolume: '5ml',
+      date: '2023/03/15'
+    },
+    {
+      sampleId: '002',
+      sampleType: 'DNA',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
+      tubeVolume: '5ml',
+      date: '2023/03/15'
+    },
+    {
+      sampleId: '003',
+      sampleType: '血液',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
+      tubeVolume: '5ml',
+      date: '2023/03/15'
+    },
+    {
+      sampleId: '004',
+      sampleType: '血液',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
+      tubeVolume: '5ml',
+      date: '2023/03/15'
+    },
+    {
+      sampleId: '005',
+      sampleType: '血液',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
+      tubeVolume: '5ml',
+      date: '2023/03/15'
+    },
+    {
+      sampleId: '006',
+      sampleType: '血液',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
+      tubeVolume: '5ml',
+      date: '2023/03/15'
+    },
+    {
+      sampleId: '007',
+      sampleType: 'DNA',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
+      tubeVolume: '5ml',
+      date: '2023/03/15'
+    },
+    {
+      sampleId: '008',
+      sampleType: '血液',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
+      tubeVolume: '5ml',
+      date: '2023/03/15'
+    },
+    {
+      sampleId: '009',
+      sampleType: '血液',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
+      tubeVolume: '5ml',
+      date: '2023/03/15'
+    },
+    {
+      sampleId: '010',
+      sampleType: '血液',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
+      tubeVolume: '5ml',
+      date: '2023/03/15'
+    },
+  ]
+);
 
 const inputId = ref('')
 </script>
@@ -45,7 +129,51 @@ const inputId = ref('')
         <!-- 内容区 -->
         <el-main style="background-color: rgb(245, 247, 253);">
           <div class="main-container">
-            
+            <div id="container">
+              <div class="con-header">
+                <div>
+                  <label for="specimens-id">样本 ID：</label>
+                  <el-input
+                    id="specimens-id"
+                    style="height: 32px; width: 212px; padding: 0 22px 0 0;"
+                    v-model="inputId"  
+                    placeholder="请输入样本 id"
+                  />
+                  <label for="specimens-type">样本类型：</label>
+                  <el-input
+                    id="specimens-type"
+                    style="height: 32px; width: 212px; padding: 0 22px 0 0;"
+                    v-model="inputId"
+                    placeholder="请输入样本类型"
+                    />
+                    <el-button class="button">搜索</el-button>        
+                </div>
+              </div>
+              <div>
+                <el-table
+                  ref="multipleTableRef"
+                  :data="tableData"
+                  :border="true"
+                  style="width: 100%"
+                >
+                  <el-table-column type="selection" width="55" />
+                  <el-table-column property="sampleId" label="样本 ID" />
+                  <el-table-column property="sampleType" label="样本类型"   />
+                  <el-table-column property="sampleDensity" label="样本浓度" />
+                  <el-table-column property="sampleVolume" label="样本体积" />
+                  <el-table-column property="tubeVolume" label="单管体积"   />
+                  <el-table-column property="date" label="存入时间" />
+                  <el-table-column fixed="right" label="操作" width="120">
+                    <template #default>
+                      <el-button link type="primary" size="small">查看</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <div style="display: flex; margin-top: 20px">
+                  <el-pagination style="margin: 0 auto;" layout="prev, pager, next, jumper" :total="100" />
+                </div>
+              </div>
+            </div>
           </div>
         </el-main>
       </el-container>
@@ -114,4 +242,15 @@ a {
   padding: 16px;
   height: 100%;
 }
+.con-header {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 2px rgb(229, 230, 235) solid;
+  padding-bottom: 16px;
+}
+.button:focus:not(.button:hover) {
+  background-color: var(--el-button-bg-color);
+  border-color: var(--el-button-border-color);
+  color: var(--el-button-text-color);
+};
 </style>

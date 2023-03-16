@@ -11,30 +11,40 @@ const tableData = ref(
     {
       sampleId: '001',
       sampleType: '血液',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
     {
       sampleId: '002',
       sampleType: 'DNA',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
     {
       sampleId: '003',
       sampleType: '血液',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
     {
       sampleId: '004',
-      sampleType: '血液',
+      sampleType: '污水',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
     {
       sampleId: '005',
       sampleType: '血液',
+      sampleDensity: '3g/ml',
+      sampleVolume: '50ml',
       tubeVolume: '5ml',
       date: '2023/03/15'
     },
@@ -45,8 +55,8 @@ onMounted(
   () => {
     if (chartRef.value) {
       chart.value = echarts.init(chartRef.value);
-      const xData = ['DNA', '血液', '尿液', '唾液', '汗液', '肝脏', '肺组织', '心脏', '血浆', '血清'];
-      const yData = [188, 387, 260, 150, 230, 0, 0, 0, 0, 0];
+      const xData = ['DNA', '血液', '尿液', '唾液', '汗液', '肝脏', '肺组织', '心脏', '血浆', '血清', '污水'];
+      const yData = [188, 387, 260, 150, 230, 0, 0, 0, 0, 0, 0];
       const option = {
         title: {
           text: '样本类型总览：'
@@ -146,8 +156,15 @@ onMounted(
                   <el-table-column type="selection" width="55" />
                   <el-table-column property="sampleId" label="样本 ID" />
                   <el-table-column property="sampleType" label="样本类型"   />
+                  <el-table-column property="sampleDensity" label="样本浓度" />
+                  <el-table-column property="sampleVolume" label="样本体积" />
                   <el-table-column property="tubeVolume" label="单管体积"   />
                   <el-table-column property="date" label="存入时间" />
+                  <el-table-column fixed="right" label="操作" width="120">
+                    <template #default>
+                      <el-button link type="primary" size="small">查看</el-button>
+                    </template>
+                  </el-table-column>
                 </el-table>
                 <div style="display: flex; margin-top: 20px">
                   <el-pagination style="margin: 0 auto;" layout="prev, pager, next, jumper" :total="100" />

@@ -52,8 +52,8 @@ onMounted(
   () => {
     if (chartRef.value) {
       chart.value = echarts.init(chartRef.value);
-      const xData = ['DNA', '血液', '尿液', '唾液', '汗液', '肝脏', '肺组织', '心脏', '血浆', '血清'];
-      const yData = [188, 387, 260, 150, 230, 0, 0, 0, 0, 0];
+      const xData = ['DNA', '血液', '尿液', '唾液', '汗液', '肝脏', '肺组织', '心脏', '血浆', '血清', '污水'];
+      const yData = [188, 387, 260, 150, 230, 0, 0, 0, 0, 0, 0];
       const option = {
         title: {
           text: '样本类型总览：'

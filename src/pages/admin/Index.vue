@@ -1,6 +1,7 @@
 <script setup>
 import { reactive } from 'vue';
-import { House, SwitchButton, MessageBox, Tickets, Warning, Setting, Search } from '@element-plus/icons-vue'
+import { House, SwitchButton, MessageBox, Tickets, Warning, Setting, Search } from '@element-plus/icons-vue';
+import printJS from 'print-js';
 
 const data = reactive({
   searchId: '',
@@ -43,14 +44,14 @@ const data = reactive({
 
 // 打印存入样本信息
 const printSampleInfo = () => {
-  const printInfo = document.getElementById('dialogPrint');
-  const oldHtml = document.body.innerHTML;
-  document.body.innerHTML = printInfo.innerHTML;
-  window.print();
-  document.body.innerHTML = oldHtml;
+  printJS({
+    printable: 'printInfo',
+    type: 'html',
+    targetStyles: ['*'],
+    header: '样本信息'
+  });
   data.sampleInfoVisible = false;
   data.sampleInnerVisible = false;
-  location.reload();
 };
 </script>
 
@@ -210,26 +211,27 @@ const printSampleInfo = () => {
                 </div>
               </el-dialog>
               <!-- 存入样本，样本信息弹框 -->
-              <el-dialog id="dialogPrint" v-model.trim="data.sampleInfoVisible" :close-on-click-modal="false">
+              <el-dialog class="sampleInfoCard" v-model.trim="data.sampleInfoVisible" :close-on-click-modal="false">
                 <template #header>
-                  <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">待存样本信息</h3>
+                  <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">样本信息</h3>
                 </template>
-                <div style="display: flex; flex-direction: row;">
-                  <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                    样本 ID：
-                    <el-input style="width: 166px;" v-model.trim="data.sampleInfo.id" placeholder="请输入样本 id" />
+                <div id="printInfo">
+                  <div style="display: flex; flex-direction: row;">
+                    <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                      样本 ID：
+                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.id" placeholder="请输入样本 id" />
+                    </div>
+                    <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                      样本浓度：
+                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.density" placeholder="请输入样本浓度" />
+                    </div>
+                    <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                      样本类型：
+                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.type" placeholder="请输入样本类型" />
+                    </div>
                   </div>
-                  <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                    样本浓度：
-                    <el-input style="width: 166px;" v-model.trim="data.sampleInfo.density" placeholder="请输入样本浓度" />
-                  </div>
-                  <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                    样本类型：
-                    <el-input style="width: 166px;" v-model.trim="data.sampleInfo.type" placeholder="请输入样本类型" />
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row;">
-                  <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                  <div style="display: flex; flex-direction: row;">
+                    <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     单管体积：
                     <el-input style="width: 166px;" v-model.trim="data.sampleInfo.tubeVolume" placeholder="请输入单管体积" />
                   </div>
@@ -298,9 +300,10 @@ const printSampleInfo = () => {
                     <el-input style="width: 166px;" v-model.trim="data.sampleInfo.boxColId" placeholder="请输入盒子里的列号" />
                   </div>
                 </div>
+                </div>
                 <div style="display: flex; justify-content: flex-end;">
                   <el-button style="margin-right: 12px;" class="button"
-                    @click="() => { data.sampleInnerVisible = true; }"
+                  @click="() => { data.sampleInnerVisible = true; }"
                   >确认</el-button>
                   <el-button style="margin-right: 12px;" class="button" @click="data.sampleInfoVisible=false">取消</el-button>
                 </div>

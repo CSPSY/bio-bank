@@ -44,8 +44,13 @@ const data = reactive({
 // 打印存入样本信息
 const printSampleInfo = () => {
   const printInfo = document.getElementById('dialogPrint');
+  const oldHtml = document.body.innerHTML;
+  document.body.innerHTML = printInfo.innerHTML;
+  window.print();
+  document.body.innerHTML = oldHtml;
   data.sampleInfoVisible = false;
   data.sampleInnerVisible = false;
+  location.reload();
 };
 </script>
 
@@ -240,7 +245,7 @@ const printSampleInfo = () => {
                 <div style="display: flex; flex-direction: row;">
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     样本源<br/>类型：
-                    <el-input style="width: 166px;" v-model.trim="data.sampleInfo.type" placeholder="请输入样本源类型" />
+                    <el-input style="width: 166px;" v-model.trim="data.sampleInfo.fromType" placeholder="请输入样本源类型" />
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     样本区域<br/>大小：

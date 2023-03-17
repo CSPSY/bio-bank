@@ -41,6 +41,12 @@ const data = reactive({
   }
 })
 
+// 打印存入样本信息
+const printSampleInfo = () => {
+  const printInfo = document.getElementById('dialogPrint');
+  data.sampleInfoVisible = false;
+  data.sampleInnerVisible = false;
+};
 </script>
 
 <template>
@@ -199,7 +205,7 @@ const data = reactive({
                 </div>
               </el-dialog>
               <!-- 存入样本，样本信息弹框 -->
-              <el-dialog v-model.trim="data.sampleInfoVisible" :close-on-click-modal="false">
+              <el-dialog id="dialogPrint" v-model.trim="data.sampleInfoVisible" :close-on-click-modal="false">
                 <template #header>
                   <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">待存样本信息</h3>
                 </template>
@@ -289,18 +295,19 @@ const data = reactive({
                 </div>
                 <div style="display: flex; justify-content: flex-end;">
                   <el-button style="margin-right: 12px;" class="button"
-                    @click="() => { data.sampleInnerVisible = true; data.sampleInfoVisible = false }"
+                    @click="() => { data.sampleInnerVisible = true; }"
                   >确认</el-button>
                   <el-button style="margin-right: 12px;" class="button" @click="data.sampleInfoVisible=false">取消</el-button>
                 </div>
-                <template>
-                  <el-dialog v-model="data.sampleInnerVisible" width="30%" title="打印样品信息" append-to-body>
-                    <div style="display: flex; justify-content: flex-end;">
-                      <el-button style="margin-right: 12px;" class="button">确认</el-button>
-                      <el-button style="margin-right: 12px;" class="button" @click="data.sampleInnerVisible=false">取消</el-button>
-                    </div>
-                  </el-dialog>
-                </template>
+              </el-dialog>
+              <el-dialog v-model="data.sampleInnerVisible" width="30%" title="打印样品信息" append-to-body>
+                <div style="display: flex; justify-content: flex-end;">
+                  <el-button
+                    style="margin-right: 12px;" class="button"
+                    @click="printSampleInfo"
+                  >确认</el-button>
+                  <el-button style="margin-right: 12px;" class="button" @click="data.sampleInnerVisible=false">取消</el-button>
+                </div>
               </el-dialog>
             </div>
           </div>

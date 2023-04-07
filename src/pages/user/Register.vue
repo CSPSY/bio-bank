@@ -1,18 +1,84 @@
 <script setup>
 import { User, Lock, Message, Iphone } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
 import { reactive } from 'vue';
+import { userGetCaptcha, userRegister } from '../../apis/index.js';
 
 const data = reactive({
     registerInfo: {
-        username: '',
-        realname: '',
-        password: '',
-        phonenumber: '',
-        email: '',
-        captcha: ''
+      accountInfo: '',
+      fullName: '',
+      passcode: '',
+      phoneNumber: '',
+      email: '',
+      userRole: '用户'
     },
+    captcha: '',
     passwordFlag: false
 })
+
+// 获取验证码
+const getCaptcha = () => {
+  const postObj = { email: data.registerInfo.email, flag: 0 };
+  userGetCaptcha(postObj).then(res => {
+    if (res.status === 200) {
+      ElMessage({
+        showClose: true,
+        message: res.data.msg,
+        type: 'success'
+      })
+    } else {
+      ElMessage({ showClose: true, message: '验证码发送失败', type: 'error' });
+    }
+  });
+};
+
+// 报错信息
+const errorMap = new Map([
+  ['accountInfo', '请填写用户名 ~'], ['fullName', '请填写真实姓名 ~'], ['passcode', '请填写密码 ~'],
+  ['phoneNumber', '请填写电话号码 ~'], ['email', '请填写邮箱 ~'], ['captcha', '请填写邮箱验证码 ~']
+])
+
+/**
+ * @description 检查是否输入了必要信息
+ * @return true: 没有，false: 有
+ */
+const judgeInputNull = (code, postObj) => {
+  for (const key in postObj) {
+    if (postObj[key] === '') {
+      ElMessage({ showClose: true, message: errorMap.get(key), type: 'warning' });
+      return true;
+    }
+  }
+  console.log(code)
+  if (code.code === "") {
+    ElMessage({ showClose: true, message: errorMap.get('captcha'), type: 'warning' });
+    return true;
+  }
+  return false;
+};
+
+// 用户注册
+const sendRegisterInfo = () => {
+  console.log(data.captcha)
+  const code = { code: data.captcha };
+  const postObj = data.registerInfo;
+  if (judgeInputNull(code, postObj)) {
+    return;
+  }
+  userRegister(code, postObj).then(res => {
+    console.log(res);
+    if (res.status === 200) {
+      if (res.data.msg === '添加失败') {
+        ElMessage({ showClose: true, message: '注册失败，请检查输入信息是否有误', type: 'error'});
+      } else {
+        ElMessage({ showClose: false, message: res.data.msg, type: 'success'});
+      }
+    } else {
+      ElMessage({ showClose: true, message: '注册失败', type: 'error' });
+    }
+  });
+};
 </script>
 
 <template>
@@ -20,62 +86,65 @@ const data = reactive({
   <div class="container">
     <h2 class="title">生物样本库管理中心</h2>
     <div class="card">
-      <div class="mode mode-select">用户注册</div>
-      <div class="items" style="display: flex; justify-content: space-between;">
-        <div style="width: 48%;">
-          <el-input v-model.trim="data.registerInfo.username" placeholder="请输入用户名">
+      <form>
+        <div class="mode mode-select">用户注册</div>
+        <div class="items" style="display: flex; justify-content: space-between;">
+          <div style="width: 48%;">
+            <el-input v-model.trim="data.registerInfo.accountInfo" placeholder="请输入用户名">
+              <template #prefix>
+                <el-icon><User /></el-icon>
+              </template>
+            </el-input>
+          </div>
+          <div style="width: 45%;">
+            <el-input v-model.trim="data.registerInfo.fullName" placeholder="请输入真实姓名">
+            </el-input>
+          </div>
+        </div>
+        <div class="items">
+          <el-input v-model.trim="data.registerInfo.passcode" type="password" placeholder="请输入密码" show-password>
             <template #prefix>
-              <el-icon><User /></el-icon>
+              <el-icon><Lock /></el-icon>
             </template>
           </el-input>
         </div>
-        <div style="width: 45%;">
-          <el-input v-model.trim="data.registerInfo.realname" placeholder="请输入真实姓名">
-          </el-input>
-        </div>
-      </div>
-      <div class="items">
-        <el-input v-model.trim="data.registerInfo.password" type="password" placeholder="请输入密码" show-password>
-          <template #prefix>
-            <el-icon><Lock /></el-icon>
-          </template>
-        </el-input>
-      </div>
-      <div class="items">
-        <el-input v-model.trim="data.registerInfo.phonenumber" placeholder="请输入电话号码">
-          <template #prefix>
-            <el-icon><Iphone /></el-icon>
-          </template>
-        </el-input>
-      </div>
-      <div class="items" style="display: flex; justify-content: space-between;">
-          <el-input v-model.trim="data.registerInfo.email" placeholder="请输入邮箱">
+        <div class="items">
+          <el-input v-model.trim="data.registerInfo.phoneNumber" placeholder="请输入电话号码">
             <template #prefix>
-              <el-icon><Message /></el-icon>
+              <el-icon><Iphone /></el-icon>
             </template>
           </el-input>
-      </div>
-      <div class="items" style="display: flex; justify-content: space-between;">
-        <div style="width: 48%;">
-          <el-input v-model.trim="data.registerInfo.captcha" placeholder="请输入邮箱验证码">
-          </el-input>
         </div>
-        <div style="width: 45%;">
-          <el-button style="width: 100%; height: 38px;" type="primary" plain>获取邮箱验证码</el-button>
+        <div class="items" style="display: flex; justify-content: space-between;">
+            <el-input v-model.trim="data.registerInfo.email" placeholder="请输入邮箱">
+              <template #prefix>
+                <el-icon><Message /></el-icon>
+              </template>
+            </el-input>
         </div>
-      </div>
-      <div class="items" style="margin-bottom: 12px;">
-        <el-button type="primary"
-          style="width: 100%; border-radius: 6px; font-size: 1.1rem; letter-spacing: 0.3rem; padding: 18px;"
-        >注册</el-button>
-      </div>
-      <div class="items">
-        <RouterLink :to="{ path: '/user/login' }">
-            <el-button type="info"
-              style="width: 100%; border-radius: 6px; font-size: 1.1rem; letter-spacing: 0.3rem; padding: 18px;"
-            >返回登录</el-button>
-        </RouterLink>
-      </div>
+        <div class="items" style="display: flex; justify-content: space-between;">
+          <div style="width: 48%;">
+            <el-input v-model.trim="data.captcha" placeholder="请输入邮箱验证码">
+            </el-input>
+          </div>
+          <div style="width: 45%;">
+            <el-button style="width: 100%; height: 38px;" type="primary" @click="getCaptcha" plain>获取邮箱验证码</el-button>
+          </div>
+        </div>
+        <div class="items" style="margin-bottom: 12px;">
+          <el-button type="primary"
+            style="width: 100%; border-radius: 6px; font-size: 1.1rem; letter-spacing: 0.3rem; padding: 18px;"
+            @click="sendRegisterInfo"
+          >注册</el-button>
+        </div>
+        <div class="items">
+          <RouterLink :to="{ path: '/user/login' }">
+              <el-button type="info"
+                style="width: 100%; border-radius: 6px; font-size: 1.1rem; letter-spacing: 0.3rem; padding: 18px;"
+              >返回登录</el-button>
+          </RouterLink>
+        </div>
+      </form>
     </div>
   </div>
 </div>

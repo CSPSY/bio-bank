@@ -17,6 +17,14 @@ export default defineConfig({
   server: {
     hmr: true,
     open: true,
-    port: 8080
+    port: 8080,
+    // 跨域配置
+    proxy: {
+      '/api': {
+        target: 'http://150.158.18.74:8082/',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
   },
 })

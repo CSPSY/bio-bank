@@ -1,14 +1,49 @@
 <script setup>
 import { User, Lock } from '@element-plus/icons-vue';
+import { ElMessage } from 'element-plus';
 import { reactive } from 'vue';
+import { userLogin } from '../../apis/index.js';
+import { router } from '../../router/index.js';
+import { judgeInputNull } from '../../utils/index.js';
+import { Base64 } from 'js-base64';
 
 const data = reactive({
     loginInfo: {
-        username: "",
-        password: ""
+        accountInfo: "",
+        passcode: ""
     },
-    passwordFlag: false
-})
+    passcodeFlag: false
+});
+
+const getLoginInfo = () => {
+  const accountInfo = localStorage.getItem('accountInfo');
+  const passcode = localStorage.getItem('passcode');
+  data.loginInfo.accountInfo = accountInfo ? accountInfo : '';
+  data.loginInfo.passcode = passcode ? Base64.decode(passcode) : '';
+};
+getLoginInfo();
+
+// 用户登录
+const sendLoginInfo = () => {
+  const postObj = data.loginInfo;
+  if (judgeInputNull(postObj)) {
+    return;
+  }
+  userLogin(postObj).then(res => {
+    if (res.status === 200) {
+      ElMessage({ showClose: true, message: res.data.msg, type: res.data.code ? 'success' : 'error'});
+      if (res.data.code === 1) {
+        if (data.passcodeFlag) {
+          localStorage.setItem('accountInfo', data.loginInfo.accountInfo);
+          localStorage.setItem('passcode', Base64.encode(data.loginInfo.passcode));
+        }
+        router.push('/');
+      }
+    } else {
+      ElMessage({ showClose: true, message: res.data.msg, type: 'error'});
+    }
+  });
+};
 
 </script>
 
@@ -22,14 +57,14 @@ const data = reactive({
         <RouterLink :to="{ path: '/user/login' }" class="mode-select" style="border-bottom: 2px white solid;">用户登录</RouterLink>
       </div>
       <div class="items">
-        <el-input v-model.trim="data.loginInfo.username" placeholder="请输入用户名">
+        <el-input v-model.trim="data.loginInfo.accountInfo" placeholder="请输入用户名">
           <template #prefix>
             <el-icon><User /></el-icon>
           </template>
         </el-input>
       </div>
       <div class="items">
-        <el-input v-model.trim="data.loginInfo.password" type="password" placeholder="请输入密码" show-password>
+        <el-input v-model.trim="data.loginInfo.passcode" type="password" placeholder="请输入密码" show-password>
           <template #prefix>
             <el-icon><Lock /></el-icon>
           </template>
@@ -37,7 +72,7 @@ const data = reactive({
       </div>
       <div class="items" style="display: flex; justify-content: space-between; padding: 0 12px;">
         <div>
-          <el-checkbox v-model="data.passwordFlag" label="记住密码" size="large" style="color: aliceblue;" />
+          <el-checkbox @change="setPasscodeFlag" v-model="data.passcodeFlag" label="记住密码" size="large" style="color: aliceblue;" />
         </div>
         <a style="align-self: center; color: aliceblue; font-size: 14px; cursor: pointer;">
           忘记密码
@@ -46,6 +81,7 @@ const data = reactive({
       <div class="items" style="margin-bottom: 12px;">
         <el-button type="primary"
           style="width: 100%; border-radius: 6px; font-size: 1.1rem; letter-spacing: 0.3rem; padding: 18px;"
+          @click="sendLoginInfo"
         >登录</el-button>
       </div>
       <div class="items">

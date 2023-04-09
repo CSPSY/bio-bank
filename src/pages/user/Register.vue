@@ -3,6 +3,7 @@ import { User, Lock, Message, Iphone } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import { reactive } from 'vue';
 import { userGetCaptcha, userRegister } from '../../apis/index.js';
+import { errorMap, judgeInputNull } from '../../utils/index.js';
 
 const data = reactive({
     registerInfo: {
@@ -33,43 +34,20 @@ const getCaptcha = () => {
   });
 };
 
-// 报错信息
-const errorMap = new Map([
-  ['accountInfo', '请填写用户名 ~'], ['fullName', '请填写真实姓名 ~'], ['passcode', '请填写密码 ~'],
-  ['phoneNumber', '请填写电话号码 ~'], ['email', '请填写邮箱 ~'], ['captcha', '请填写邮箱验证码 ~']
-])
-
-/**
- * @description 检查是否输入了必要信息
- * @return true: 没有，false: 有
- */
-const judgeInputNull = (code, postObj) => {
-  for (const key in postObj) {
-    if (postObj[key] === '') {
-      ElMessage({ showClose: true, message: errorMap.get(key), type: 'warning' });
-      return true;
-    }
-  }
-  console.log(code)
-  if (code.code === "") {
-    ElMessage({ showClose: true, message: errorMap.get('captcha'), type: 'warning' });
-    return true;
-  }
-  return false;
-};
-
 // 用户注册
 const sendRegisterInfo = () => {
-  console.log(data.captcha)
   const code = { code: data.captcha };
   const postObj = data.registerInfo;
-  if (judgeInputNull(code, postObj)) {
+  if (judgeInputNull(postObj)) {
+    return;
+  }
+  if (data.captcha === '') {
+    ElMessage({ showClose: true, message: errorMap.get('captcha'), type: 'warning' });
     return;
   }
   userRegister(code, postObj).then(res => {
-    console.log(res);
     if (res.status === 200) {
-      if (res.data.msg === '添加失败') {
+      if (res.data.code === 0) {
         ElMessage({ showClose: true, message: '注册失败，请检查输入信息是否有误', type: 'error'});
       } else {
         ElMessage({ showClose: false, message: res.data.msg, type: 'success'});

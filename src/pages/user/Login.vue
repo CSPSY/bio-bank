@@ -9,17 +9,19 @@ import { Base64 } from 'js-base64';
 
 const data = reactive({
     loginInfo: {
-        accountInfo: "",
-        passcode: ""
+        accountInfo: '',
+        passcode: ''
     },
     passcodeFlag: false
 });
 
 const getLoginInfo = () => {
-  const accountInfo = localStorage.getItem('accountInfo');
-  const passcode = localStorage.getItem('passcode');
-  data.loginInfo.accountInfo = accountInfo ? accountInfo : '';
-  data.loginInfo.passcode = passcode ? Base64.decode(passcode) : '';
+  const userLoginInfo = localStorage.getItem('userLoginInfo');
+  if (userLoginInfo) {
+    const { accountInfo, passcode } = JSON.parse(userLoginInfo);
+    data.loginInfo.accountInfo = accountInfo;
+    data.loginInfo.passcode = Base64.decode(passcode);
+  }
 };
 getLoginInfo();
 
@@ -31,14 +33,25 @@ const sendLoginInfo = () => {
   }
   userLogin(postObj).then(res => {
     if (res.status === 200) {
-      ElMessage({ showClose: true, message: res.data.msg, type: res.data.code ? 'success' : 'error'});
       if (res.data.code === 1) {
-        if (data.passcodeFlag) {
-          localStorage.setItem('accountInfo', data.loginInfo.accountInfo);
-          localStorage.setItem('passcode', Base64.encode(data.loginInfo.passcode));
+        const resData = res.data.data;
+        if (resData.userRole === '管理员') {
+          ElMessage({ showClose: true, message: '请切换用户账号登录 ~', type: 'warning' });
+          return;
         }
-        router.push('/');
+        if (data.passcodeFlag) {
+          localStorage.setItem(
+            'userLoginInfo',
+            JSON.stringify({
+              accountInfo: data.loginInfo.accountInfo,
+              passcode: Base64.encode(data.loginInfo.passcode)
+            })
+          );
+        }
+        localStorage.setItem('userInfo', JSON.stringify( resData ));
+        router.push('/user');
       }
+      ElMessage({ showClose: true, message: res.data.msg, type: res.data.code ? 'success' : 'error' });
     } else {
       ElMessage({ showClose: true, message: res.data.msg, type: 'error'});
     }
@@ -52,45 +65,47 @@ const sendLoginInfo = () => {
   <div class="container">
     <h2 class="title">生物样本库管理中心</h2>
     <div class="card">
-      <div class="mode">
-        <RouterLink :to="{ path: '/admin/login' }" class="mode-select">管理员登录</RouterLink>
-        <RouterLink :to="{ path: '/user/login' }" class="mode-select" style="border-bottom: 2px white solid;">用户登录</RouterLink>
-      </div>
-      <div class="items">
-        <el-input v-model.trim="data.loginInfo.accountInfo" placeholder="请输入用户名">
-          <template #prefix>
-            <el-icon><User /></el-icon>
-          </template>
-        </el-input>
-      </div>
-      <div class="items">
-        <el-input v-model.trim="data.loginInfo.passcode" type="password" placeholder="请输入密码" show-password>
-          <template #prefix>
-            <el-icon><Lock /></el-icon>
-          </template>
-        </el-input>
-      </div>
-      <div class="items" style="display: flex; justify-content: space-between; padding: 0 12px;">
-        <div>
-          <el-checkbox @change="setPasscodeFlag" v-model="data.passcodeFlag" label="记住密码" size="large" style="color: aliceblue;" />
+      <form>
+        <div class="mode">
+          <RouterLink :to="{ path: '/admin/login' }" class="mode-select">管理员登录</RouterLink>
+          <RouterLink :to="{ path: '/user/login' }" class="mode-select" style="border-bottom: 2px white solid;">用户登录</RouterLink>
         </div>
-        <a style="align-self: center; color: aliceblue; font-size: 14px; cursor: pointer;">
-          忘记密码
-        </a>
-      </div>
-      <div class="items" style="margin-bottom: 12px;">
-        <el-button type="primary"
-          style="width: 100%; border-radius: 6px; font-size: 1.1rem; letter-spacing: 0.3rem; padding: 18px;"
-          @click="sendLoginInfo"
-        >登录</el-button>
-      </div>
-      <div class="items">
-        <RouterLink :to="{ path: '/user/register' }">
-          <el-button type="info"
+        <div class="items">
+          <el-input v-model.trim="data.loginInfo.accountInfo" placeholder="请输入用户名">
+            <template #prefix>
+              <el-icon><User /></el-icon>
+            </template>
+          </el-input>
+        </div>
+        <div class="items">
+          <el-input v-model.trim="data.loginInfo.passcode" type="password" placeholder="请输入密码" show-password>
+            <template #prefix>
+              <el-icon><Lock /></el-icon>
+            </template>
+          </el-input>
+        </div>
+        <div class="items" style="display: flex; justify-content: space-between; padding: 0 12px;">
+          <div>
+            <el-checkbox v-model="data.passcodeFlag" label="记住密码" size="large" style="color: aliceblue;" />
+          </div>
+          <RouterLink :to="{ path: '/forget-password' }" style="align-self: center; color: aliceblue; font-size: 14px; cursor: pointer;">
+            忘记密码
+          </RouterLink>
+        </div>
+        <div class="items" style="margin-bottom: 12px;">
+          <el-button type="primary"
             style="width: 100%; border-radius: 6px; font-size: 1.1rem; letter-spacing: 0.3rem; padding: 18px;"
-          >注册账号</el-button>
-        </RouterLink>
-      </div>
+            @click="sendLoginInfo"
+          >登录</el-button>
+        </div>
+        <div class="items">
+          <RouterLink :to="{ path: '/user/register' }">
+            <el-button type="info"
+              style="width: 100%; border-radius: 6px; font-size: 1.1rem; letter-spacing: 0.3rem; padding: 18px;"
+            >注册账号</el-button>
+          </RouterLink>
+        </div>
+      </form>
     </div>
   </div>
 </div>

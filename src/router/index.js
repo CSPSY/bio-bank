@@ -4,9 +4,13 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
-  // 用户
   {
     path: '/',
+    redirect: '/user',
+  },
+  // 用户
+  {
+    path: '/user',
     component: () => import('../pages/user/Index.vue'),
     meta: {
       title: '首页'
@@ -77,12 +81,41 @@ const routes = [
     }
   },
   {
+    path: '/admin/manage-auth',
+    component: () => import('../pages/admin/ManageAuth.vue'),
+    meta: {
+      title: '权限管理'
+    }
+  },
+  {
+    path: '/admin/manage-backup',
+    component: () => import('../pages/admin/ManageBackup.vue'),
+    meta: {
+      title: '备份管理'
+    }
+  },
+  {
     path: '/admin/monitor-system',
     component: () => import('../pages/admin/MonitorSystem.vue'),
     meta: {
       title: '系统监控'
     }
   },
+  // 找回密码
+  {
+    path: '/forget-password',
+    component: () => import('../pages/PasswordForget.vue'),
+    meta: {
+      title: '找回密码'
+    }
+  },
+  {
+    path: '/bio_bank/reset-password',
+    component: () => import('../pages/PasswordReset.vue'),
+    meta: {
+      title: '重置密码'
+    }
+  }
 ];
 
 const router = createRouter({

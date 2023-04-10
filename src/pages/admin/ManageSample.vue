@@ -147,12 +147,24 @@ onMounted(
             <el-icon><Tickets /></el-icon>
             <span>样本管理</span>
           </el-menu-item>
-          <el-menu-item class="menu-items items" index="4">
-            <RouterLink :to="{ path: '/admin/manage-system' }">
+          <el-sub-menu class="menu-items items" index = "4">
+            <template #title>
               <el-icon><Setting /></el-icon>
-              <span>系统管理</span>
-            </RouterLink>
-          </el-menu-item>
+              <span class="menu-items items">系统管理</span>
+            </template>
+            <el-menu-item class="menu-items items" index="4-1">
+              <RouterLink :to="{ path: '/admin/manage-auth' }">
+                <el-icon><Tickets /></el-icon>
+                <span>权限管理</span>
+              </RouterLink>
+            </el-menu-item>
+            <el-menu-item class="menu-items items" index="4-2">
+              <RouterLink :to="{ path: '/admin/manage-backup' }">
+                <el-icon><Tickets /></el-icon>
+                <span>备份管理</span>
+              </RouterLink>
+            </el-menu-item>
+          </el-sub-menu>
           <el-menu-item class="menu-items items" index="5">
             <RouterLink :to="{ path: '/admin/monitor-system' }">
               <el-icon><Warning /></el-icon>

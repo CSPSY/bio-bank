@@ -125,7 +125,7 @@ const changeSampleDialog = () => {
             <el-tag :disable-transitions="true" class="title">生物样本库</el-tag>
           </div>
           <el-menu-item class="menu-items items" index="1">
-            <RouterLink :to="{ path: '/' }">
+            <RouterLink :to="{ path: '/user' }">
               <el-icon><House /></el-icon>
               <span>首页</span>
             </RouterLink>

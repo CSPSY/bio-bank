@@ -1,9 +1,7 @@
 <script setup>
 import { User, Lock, Message, Iphone } from '@element-plus/icons-vue';
-import { ElMessage } from 'element-plus';
 import { reactive } from 'vue';
-import { userGetCaptcha, userRegister } from '../../apis/index.js';
-import { errorMap, judgeInputNull } from '../../utils/index.js';
+import { getCaptcha, sendRegisterInfo } from '../../utils/index.js';
 
 const data = reactive({
     registerInfo: {
@@ -16,47 +14,7 @@ const data = reactive({
     },
     captcha: '',
     passwordFlag: false
-})
-
-// 获取验证码
-const getCaptcha = () => {
-  const postObj = { email: data.registerInfo.email, flag: 0 };
-  userGetCaptcha(postObj).then(res => {
-    if (res.status === 200) {
-      ElMessage({
-        showClose: true,
-        message: res.data.msg,
-        type: 'success'
-      })
-    } else {
-      ElMessage({ showClose: true, message: '验证码发送失败', type: 'error' });
-    }
-  });
-};
-
-// 用户注册
-const sendRegisterInfo = () => {
-  const code = { code: data.captcha };
-  const postObj = data.registerInfo;
-  if (judgeInputNull(postObj)) {
-    return;
-  }
-  if (data.captcha === '') {
-    ElMessage({ showClose: true, message: errorMap.get('captcha'), type: 'warning' });
-    return;
-  }
-  userRegister(code, postObj).then(res => {
-    if (res.status === 200) {
-      if (res.data.code === 0) {
-        ElMessage({ showClose: true, message: '注册失败，请检查输入信息是否有误', type: 'error'});
-      } else {
-        ElMessage({ showClose: false, message: res.data.msg, type: 'success'});
-      }
-    } else {
-      ElMessage({ showClose: true, message: '注册失败', type: 'error' });
-    }
-  });
-};
+});
 </script>
 
 <template>
@@ -94,11 +52,11 @@ const sendRegisterInfo = () => {
           </el-input>
         </div>
         <div class="items" style="display: flex; justify-content: space-between;">
-            <el-input v-model.trim="data.registerInfo.email" placeholder="请输入邮箱">
-              <template #prefix>
-                <el-icon><Message /></el-icon>
-              </template>
-            </el-input>
+          <el-input v-model.trim="data.registerInfo.email" placeholder="请输入邮箱">
+            <template #prefix>
+              <el-icon><Message /></el-icon>
+            </template>
+          </el-input>
         </div>
         <div class="items" style="display: flex; justify-content: space-between;">
           <div style="width: 48%;">
@@ -106,13 +64,15 @@ const sendRegisterInfo = () => {
             </el-input>
           </div>
           <div style="width: 45%;">
-            <el-button style="width: 100%; height: 38px;" type="primary" @click="getCaptcha" plain>获取邮箱验证码</el-button>
+            <el-button style="width: 100%; height: 38px;" type="primary"
+            @click="getCaptcha(data.registerInfo.email)" plain
+          >获取邮箱验证码</el-button>
           </div>
         </div>
         <div class="items" style="margin-bottom: 12px;">
           <el-button type="primary"
             style="width: 100%; border-radius: 6px; font-size: 1.1rem; letter-spacing: 0.3rem; padding: 18px;"
-            @click="sendRegisterInfo"
+            @click="sendRegisterInfo(data.captcha, data.registerInfo)"
           >注册</el-button>
         </div>
         <div class="items">

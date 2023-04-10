@@ -2,6 +2,11 @@
 import { Document, House, SwitchButton } from '@element-plus/icons-vue'
 import * as echarts from 'echarts';
 import { ref, reactive, onMounted } from 'vue';
+import { router } from '../../router/index.js';
+import { getSample } from '../../apis/user/index.js';
+import { ElMessage } from 'element-plus';
+
+getSample();
 
 const inputId = ref('');
 const chartRef = ref();
@@ -107,6 +112,13 @@ onMounted(
 const changeSampleDialog = () => {
   data.sampleInfoVisible = true;
 };
+
+// 退出系统
+const logout = () => {
+  localStorage.removeItem('userInfo');
+  ElMessage({ showClose: true, message: '退出成功', type: 'success' });
+  router.push('/user/login');
+};
 </script>
 
 <template>
@@ -139,10 +151,14 @@ const changeSampleDialog = () => {
         <el-header class="header">
           <h2 class="title">首页</h2>
           <span class="items">
-            <div class="exit">
-              <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>
-              退出系统              
-            </div>
+            <el-popconfirm title="要退出系统吗 ？" @confirm="logout">
+              <template #reference>
+                <div class="exit">
+                  <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>
+                  退出系统
+                </div>
+              </template>
+            </el-popconfirm>
           </span>
         </el-header>
         <!-- 内容区 -->

@@ -2,6 +2,7 @@
 import { reactive } from 'vue';
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting, Search } from '@element-plus/icons-vue';
 import printJS from 'print-js';
+import { router } from '../../router';
 
 const data = reactive({
   searchId: '',
@@ -53,6 +54,13 @@ const printSampleInfo = () => {
   data.sampleInfoVisible = false;
   data.sampleInnerVisible = false;
 };
+
+// 退出系统
+const logout = () => {
+  localStorage.removeItem('userInfo');
+  ElMessage({ showClose: true, message: '退出成功', type: 'success' });
+  router.push('/admin/login');
+};
 </script>
 
 <template>
@@ -84,12 +92,28 @@ const printSampleInfo = () => {
               <span>样本管理</span>
             </RouterLink>
           </el-menu-item>
-          <el-menu-item class="menu-items items" index="4">
-            <RouterLink :to="{ path: '/admin/manage-system' }">
-              <el-icon><Setting /></el-icon>
-              <span>系统管理</span>
-            </RouterLink>
-          </el-menu-item>
+          <el-sub-menu class="menu-items items" index = "4">
+              <template #title>
+                  <el-icon>
+                      <Setting />
+                  </el-icon>
+                  <span class="menu-items items">系统管理</span>
+              </template>
+              <el-menu-item class="menu-items items" index="4-1">
+                  <RouterLink :to="{ path: '/admin/manage-auth' }">
+                      <el-icon>
+                          <Tickets />
+                      </el-icon>
+                      <span>权限管理</span>
+                  </RouterLink>
+              </el-menu-item>
+              <el-menu-item class="menu-items items" index="4-2">
+                  <el-icon>
+                      <Tickets />
+                  </el-icon>
+              备份管理
+              </el-menu-item>
+          </el-sub-menu>
           <el-menu-item class="menu-items items" index="5">
             <RouterLink :to="{ path: '/admin/monitor-system' }">
               <el-icon><Warning /></el-icon>
@@ -103,10 +127,14 @@ const printSampleInfo = () => {
         <el-header class="header">
           <h2 class="title">首页</h2>
           <span class="items">
-            <div class="exit">
-              <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>
-              退出系统              
-            </div>
+            <el-popconfirm title="要退出系统吗 ？" @confirm="logout">
+              <template #reference>
+                <div class="exit">
+                  <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>
+                  退出系统
+                </div>
+              </template>
+            </el-popconfirm>
           </span>
         </el-header>
         <!-- 内容区 -->

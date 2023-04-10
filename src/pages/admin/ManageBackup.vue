@@ -11,7 +11,8 @@ import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@ele
         <el-menu
           class="menu"
           background-color="rgb(255, 255, 255)"
-          default-active="4"
+          default-active="4-2"
+          :default-openeds="['4']"
         >
           <div class="title-tag">
             <el-tag :disable-transitions="true" class="title">生物样本库</el-tag>
@@ -37,7 +38,7 @@ import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@ele
           <el-sub-menu class="menu-items items" index = "4">
             <template #title>
               <el-icon><Setting /></el-icon>
-              <span class="menu-items items">系统管理</span>
+              <span class="items">系统管理</span>
             </template>
             <el-menu-item class="menu-items items" index="4-1">
               <RouterLink :to="{ path: '/admin/manage-auth' }">
@@ -46,7 +47,7 @@ import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@ele
               </RouterLink>
             </el-menu-item>
             <el-menu-item class="menu-items items" index="4-2">
-              <RouterLink :to="{ path: '/admin/manage-backup' }">
+              <RouterLink style="color: rgb(83, 168, 255);" :to="{ path: '/admin/manage-backup' }">
                 <el-icon><Tickets /></el-icon>
                 <span>备份管理</span>
               </RouterLink>
@@ -63,7 +64,7 @@ import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@ele
       <el-container>
         <!-- 顶部 -->
         <el-header class="header">
-          <h2 class="title">系统管理</h2>
+          <h2 class="title">备份管理</h2>
           <span class="items">
             <div class="exit">
               <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>

@@ -3,6 +3,7 @@
  */
 import { userGetCaptcha, userRegister } from '../apis/index.js';
 import { router } from '../router/index.js';
+import md5 from 'js-md5';
 
 // 报错信息
 const errorMap = new Map([
@@ -66,6 +67,7 @@ const getCaptcha = (email) => {
 // 注册
 const sendRegisterInfo = (captcha, registerInfo) => {
   const code = { code: captcha };
+  registerInfo.passcode = md5(registerInfo.passcode);
   const postObj = registerInfo;
   if (judgeInputNull(postObj)) {
     return;

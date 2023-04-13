@@ -6,6 +6,7 @@ import { userLogin } from '../../apis/index.js';
 import { router } from '../../router/index.js';
 import { judgeInputNull } from '../../utils/index.js';
 import { Base64 } from 'js-base64';
+import { md5 } from 'js-md5';
 
 const data = reactive({
     loginInfo: {
@@ -27,7 +28,10 @@ getLoginInfo();
 
 // 用户登录
 const sendLoginInfo = () => {
-  const postObj = data.loginInfo;
+  const postObj = {
+    accountInfo: data.loginInfo.accountInfo,
+    passcode: md5(data.loginInfo.passcode)
+  };
   if (judgeInputNull(postObj)) {
     return;
   }

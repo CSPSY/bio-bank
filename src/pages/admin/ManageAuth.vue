@@ -1,47 +1,97 @@
 <script setup>
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
-import * as echarts from 'echarts';
-import { ref, reactive, onMounted } from 'vue';
-const input1 = ref('');
-const input2 = ref('');
-const input3 = ref('');
-const input4 = ref('');
-const input5 = ref('');
-const input6 = ref('');
-const input7 = ref('');
-const input8 = ref('');
-const input9 = ref('');
+import { ref, reactive } from 'vue';
+import { logout } from '../../utils/index.js';
+import { getAllUser, getSpecialUser } from '../../apis/admin/index.js';
+import { ElMessage } from 'element-plus';
+import { get } from 'lodash';
+
+// 获取用户名，信息展示
+const userName = ref('');
+const userInfo = localStorage.getItem('userInfo');
+if (userInfo) {
+  userName.value = JSON.parse(userInfo).accountInfo;
+}
+
+
 const data = reactive({
-  dialogTransferVisable: false
+  searchUserId: '',
+  createUserCardVisiable: false,
+  editUserCardVisiable: false,
+  userDatasets: [],
+  totals: 0,
+  pageInfo: {
+    currentPage: 1,
+    size: 10,
+  }
+});
+
+// 获取用户信息列表
+const getUsers = () => {
+  const getObj = data.pageInfo;
+  getAllUser(getObj).then(res => {
+    if (res.status === 200) {
+      const resData = res.data;
+      if (resData.code === 0) {
+        ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+      } else {
+        data.userDatasets = resData.list;
+      }
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+    }
   });
+};
+getUsers();
 
+const newUserInfo = reactive({
+  id: '',
+  accountInfo: '',
+  passCode: '',
+  fullName: '',
+  userRole: '',
+  phoneNumber: '',
+  email: ''
+});
 
-const tableData = ref(
-  [
-    {
-      sampleId: '001',
-      sampleType: '张三',
-    },
-    {
-      sampleId: '002',
-      sampleType: '李四',
-    },
-    {
-      sampleId: '003',
-      sampleType: '王五',
-    },
-    {
-      sampleId: '004',
-      sampleType: '赵六',
-    },
-    {
-      sampleId: '005',
-      sampleType: '孙奇',
-    },
-  ]
-);
+const editUserInfo = reactive({
+  id: '',
+  accountInfo: '',
+  passCode: '',
+  fullName: '',
+  userRole: '',
+  phoneNumber: '',
+  email: ''
+});
 
+// 根据用户 ID 搜索指定用户
+const searchSpecialUser = () => {
+  if (data.searchUserId === '') {
+    ElMessage({ showClose: true, message: '请输入用户 ID', type: 'warning' });
+    return;
+  }
+  const getObj = { userId: data.searchUserId };
+  getSpecialUser(getObj).then(res => {
+    const resData = res.data;
+    if (resData.code === 1) {
+      data.userDatasets = resData.data;
+    } else {
+      ElMessage({ showClose: true, message: resData.msg, type: 'error' });
+    }
+  });
+};
 
+// 编辑用户信息
+const editUser = (rowData) => {
+  editUserInfo.id = rowData.id;
+  editUserInfo.accountInfo = rowData.accountInfo;
+  editUserInfo.passCode = rowData.passCode;
+  editUserInfo.fullName = rowData.fullName;
+  editUserInfo.userRole = rowData.userRole;
+  editUserInfo.phoneNumber = rowData.phoneNumber;
+  editUserInfo.email = rowData.email;
+  data.editUserCardVisiable = true;
+};
 </script>
 
 <template>
@@ -106,89 +156,130 @@ const tableData = ref(
         <!-- 顶部 -->
         <el-header class="header">
           <h2 class="title">权限管理</h2>
-          <span class="items">
-            <div class="exit">
-              <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>
-              退出系统              
-            </div>
-          </span>
+          <div class="items" style="display: flex; align-items: center;">
+            <span style="margin-right: 12px;">Hi! 用户 {{ userName }}</span>
+            <el-popconfirm title="要退出系统吗 ？" @confirm="logout">
+              <template #reference>
+                <div class="exit">
+                  <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>
+                  退出系统
+                </div>
+              </template>
+            </el-popconfirm>
+          </div>
         </el-header>
         <!-- 内容区 -->
         <el-main style="background-color: rgb(245, 247, 253);">
           <div class="main-container">
-            <div class="con-header">
-              <div>
-                <label for="specimens-id">用户ID：</label>
-                <el-input
-                  id="specimens-id"
-                  style="height: 32px; width: 212px; padding: 0 22px 0 0;"
-                  v-model="input1"
-                  placeholder="请输入用户ID"
-                />
-                  <el-button class="button">搜索</el-button>
-                  <el-button class="button" @click="data.dialogCreateUserVisable = true;">添加用户</el-button>
-                  <el-dialog v-model="data.dialogCreateUserVisable" :close-on-click-modal="false">
-                    <template #header>
-                      <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">添加用户</h3>
-                    </template>
-                    <div style="display: flex; flex-direction: row;">
-                        <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                          用户编号：
-                          <el-input style="width: 256px;" v-model="input3" placeholder="请输入用户编号" />
-                        </div>
-                        <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                          用户账号：
-                          <el-input style="width: 256px;" v-model="input4" placeholder="请输入用户账号" />
-                        </div>
-                        <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                          用户密码：
-                          <el-input style="width: 256px;" v-model="input5" placeholder="请输入用户密码" />
-                        </div>
-                    </div>
-                    <div style="display: flex; flex-direction: row;">
-                        <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                          用户姓名：
-                          <el-input style="width: 256px;" v-model="input6" placeholder="请输入用户姓名" />
-                        </div>
-                        <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                          用户权限：
-                          <el-input style="width: 256px;" v-model="input7" placeholder="请输入用户权限" />
-                        </div>
-                        <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                          用户电话：
-                          <el-input style="width: 256px;" v-model="input8" placeholder="请输入用户电话" />
-                        </div>
-                    </div>
-                    <div style="display: flex; flex-direction: row;">
-                      <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                        用户邮箱：
-                        <el-input style="width: 256px;" v-model="input9" placeholder="请输入用户邮箱" />
-                      </div>
-                    </div>
-                    <div style="display: flex; justify-content: flex-end;">
-                      <el-button style="margin-right: 12px;" class="button">确认</el-button>
-                      <el-button style="margin-right: 12px;" class="button" @click="data.dialogCreateUserVisable = false">取消</el-button>
-                    </div>
-                  </el-dialog>
-               </div>
-              </div>
+            <div class="main-top">
+              <label for="specimens-id">用户 ID：</label>
+              <el-input
+                id="specimens-id" v-model.trim="data.searchUserId"
+                style="height: 32px; width: 212px; padding: 0 22px 0 0;"
+                placeholder="请输入用户ID"
+              />
+              <el-button class="button" @click="searchSpecialUser">搜索</el-button>
+              <el-button class="button" @click="data.createUserCardVisiable = true;">添加用户</el-button>
+              <!-- 添加用户信息弹框 -->
+              <el-dialog v-model="data.createUserCardVisiable" :close-on-click-modal="false">
+                <template #header>
+                  <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">添加用户</h3>
+                </template>
+                <div style="display: flex; flex-direction: row;">
+                  <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                    用户名：
+                    <el-input style="width: 186px;" v-model.trim="newUserInfo.accountInfo" placeholder="请输入用户名" />
+                  </div>
+                  <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                    密码：
+                    <el-input style="width: 186px;" v-model.trim="newUserInfo.passCode" placeholder="请输入用户密码" />
+                  </div>
+                  <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                    姓名：
+                    <el-input style="width: 186px;" v-model.trim="newUserInfo.fullName" placeholder="请输入用户真实姓名" />
+                  </div>
+                </div>
+                <div style="display: flex; flex-direction: row;">
+                  <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                    用户<br>权限：
+                    <el-input style="width: 186px;" v-model.trim="newUserInfo.userRole" placeholder="请输入用户权限" />
+                  </div>
+                  <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                    用户<br>电话：
+                    <el-input style="width: 186px;" v-model.trim="newUserInfo.phoneNumber" placeholder="请输入用户电话" />
+                  </div>
+                  <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                    用户<br>邮箱：
+                    <el-input style="width: 186px;" v-model.trim="newUserInfo.email" placeholder="请输入用户邮箱" />
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end;">
+                  <el-button style="margin-right: 12px;" class="button">确认</el-button>
+                  <el-button style="margin-right: 12px;" class="button" @click="data.createUserCardVisiable = false">取消</el-button>
+                </div>
+              </el-dialog>
+            </div>
+            <div class="main-bottom">
               <el-table
                 ref="multipleTableRef"
-                :data="tableData"
+                :data="data.userDatasets"
                 :border="true"
-                style="width: 100%"
+                style="width: 1072px"
               >
-                <el-table-column type="selection" width="55" />
-                <el-table-column property="sampleId" label="用户ID" />
-                <el-table-column property="sampleType" label="用户角色"   />
-                <el-table-column fixed="right" label="操作" width="300">
-                  <template #default>
-                    <el-button link type="primary" size="small" @click="data.dialogCreateUserVisable=true">编辑</el-button>
+                <el-table-column type="selection" width="42" />
+                <el-table-column property="id" label="用户 ID" width="190" />
+                <el-table-column property="accountInfo" label="用户名" width="120" />
+                <el-table-column property="fullName" label="姓名" width="110" />
+                <el-table-column property="userRole" label="用户角色" width="120" />
+                <el-table-column property="phoneNumber" label="电话号码" width="140" />
+                <el-table-column property="email" label="邮箱" width="230" />
+                <el-table-column label="操作" width="120">
+                  <template v-slot="scope" #default>
+                    <el-button link type="primary" size="small" @click="editUser(scope.row)">编辑</el-button>
                     <el-button link type="primary" size="small" >删除</el-button>
-                    <el-button link type="primary" size="small" >权限设置</el-button>
                   </template>
                 </el-table-column>
               </el-table>
+              <!-- 编辑用户信息弹框 -->
+              <el-dialog v-model="data.editUserCardVisiable" :close-on-click-modal="false">
+                <template #header>
+                  <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">编辑用户</h3>
+                </template>
+                <div style="display: flex; flex-direction: row;">
+                  <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                    用户名：
+                    <el-input style="width: 186px;" v-model="editUserInfo.accountInfo" placeholder="请输入用户名" />
+                  </div>
+                  <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                    姓名：
+                    <el-input style="width: 186px;" v-model="editUserInfo.fullName" placeholder="请输入用户真实姓名" />
+                  </div>
+                  <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                    用户<br>权限：
+                    <el-input style="width: 186px;" v-model="editUserInfo.userRole" placeholder="请输入用户权限" />
+                  </div>
+                </div>
+                <div style="display: flex; flex-direction: row;">
+                  <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                    用户<br>电话：
+                    <el-input style="width: 186px;" v-model="editUserInfo.phoneNumber" placeholder="请输入用户电话" />
+                  </div>
+                  <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                    用户<br>邮箱：
+                    <el-input style="width: 186px;" v-model="editUserInfo.email" placeholder="请输入用户邮箱" />
+                  </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end;">
+                  <el-button style="margin-right: 12px;" class="button">确认</el-button>
+                  <el-button style="margin-right: 12px;" class="button" @click="data.editUserCardVisiable = false">取消</el-button>
+                </div>
+              </el-dialog>
+              <el-pagination
+                style="position: absolute; bottom: 5%; left: 43%;"
+                layout="prev, pager, next, jumper" :total="data.totals"
+                v-model:current-page="data.pageInfo.currentPage"
+              />
+            </div>
           </div>
         </el-main>
       </el-container>
@@ -257,4 +348,18 @@ a {
   padding: 16px;
   height: 100%;
 }
+.main-top {
+  margin: 25px 0 0 55px;
+  display: flex;
+  
+  align-items: center;
+}
+.main-bottom {
+  margin: 25px 0 0 32px;
+}
+.button:focus:not(.button:hover) {
+  background-color: var(--el-button-bg-color);
+  border-color: var(--el-button-border-color);
+  color: var(--el-button-text-color);
+};
 </style>

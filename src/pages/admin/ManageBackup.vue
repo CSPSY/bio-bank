@@ -1,6 +1,30 @@
 <script setup>
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
+import { logout } from '../../utils/index.js';
+import { reactive, ref } from 'vue';
+import { UploadFilled } from '@element-plus/icons-vue';
 
+// 获取用户名，信息展示
+const userName = ref('');
+const userInfo = localStorage.getItem('userInfo');
+if (userInfo) {
+  userName.value = JSON.parse(userInfo).accountInfo;
+}
+
+const data = reactive({
+  backupVisible: true,
+  recoverVisible: false
+});
+
+const showBackup = () => {
+  data.recoverVisible = false;
+  data.backupVisible = true;
+};
+
+const showRecover = () => {
+  data.backupVisible = false;
+  data.recoverVisible = true;
+};
 </script>
 
 <template>
@@ -65,17 +89,51 @@ import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@ele
         <!-- 顶部 -->
         <el-header class="header">
           <h2 class="title">备份管理</h2>
-          <span class="items">
-            <div class="exit">
-              <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>
-              退出系统              
-            </div>
-          </span>
+          <div class="items" style="display: flex; align-items: center;">
+            <span style="margin-right: 12px;">Hi! 用户 {{ userName }}</span>
+            <el-popconfirm title="要退出系统吗 ？" @confirm="logout">
+              <template #reference>
+                <div class="exit">
+                  <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>
+                  退出系统
+                </div>
+              </template>
+            </el-popconfirm>
+          </div>
         </el-header>
         <!-- 内容区 -->
         <el-main style="background-color: rgb(245, 247, 253);">
           <div class="main-container">
-
+            <div class="con-header">
+              <div class="con-header-left">
+                <el-button class="button" @click="showBackup">样本库备份</el-button>
+                <el-button class="button" @click="showRecover">样本库恢复</el-button>
+              </div>
+              <!-- 样本库恢复 -->
+              <div class="con-header-right" v-show="data.recoverVisible">
+                  <el-card class="box-card">
+                    <template #header>
+                      <div class="card-header">
+                        <span>样本库恢复</span>
+                      </div>
+                    </template>
+                    <el-upload
+                    action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+                    drag multiple
+                    >
+                    <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+                    <div class="el-upload__text">
+                      拖拽文件到该区域或 <em>点击此处进行上传</em>
+                    </div>
+                    <!-- <template #tip>
+                      <div class="el-upload__tip">
+                        上传文件格式：
+                      </div>
+                    </template> -->
+                  </el-upload>
+                </el-card>
+              </div>
+            </div>
           </div>
         </el-main>
       </el-container>
@@ -144,4 +202,35 @@ a {
   padding: 16px;
   height: 100%;
 }
+.con-header {
+  margin: 55px 0 0 55px;
+  display: flex;
+  
+  align-items: center;
+}
+.con-header-left {
+  display: flex;
+  flex-direction: column;
+
+  align-self: flex-start;
+  padding-top: 32px;
+}
+.con-header-right {
+  padding: 12px;
+}
+.button {
+  margin: 0;
+  margin-right: 52px;
+}
+.button:not(:first-child) {
+  margin-top: 12px;
+}
+.box-card {
+  width: 328px;
+}
+.button:focus:not(.button:hover) {
+  background-color: var(--el-button-bg-color);
+  border-color: var(--el-button-border-color);
+  color: var(--el-button-text-color);
+};
 </style>

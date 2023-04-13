@@ -2,11 +2,15 @@
 import { Document, House, SwitchButton } from '@element-plus/icons-vue'
 import * as echarts from 'echarts';
 import { ref, reactive, onMounted } from 'vue';
-import { router } from '../../router/index.js';
-import { getSample } from '../../apis/user/index.js';
-import { ElMessage } from 'element-plus';
+import { getSample, getSampleTypeCnt } from '../../apis/user/index.js';
+import { logout } from '../../utils/index.js';
 
-getSample();
+// 获取用户名，信息展示
+const userName = ref('');
+const userInfo = localStorage.getItem('userInfo');
+if (userInfo) {
+  userName.value = JSON.parse(userInfo).accountInfo;
+}
 
 const inputId = ref('');
 const chartRef = ref();
@@ -16,36 +20,36 @@ const tableData = ref(
     {
       sampleId: '001',
       sampleType: '血液',
-      sampleDensity: '3g/ml',
-      tubeVolume: '5ml',
+      sampleDensity: '3',
+      tubeVolume: '5',
       date: '2023/03/15'
     },
     {
       sampleId: '002',
       sampleType: 'DNA',
-      sampleDensity: '3g/ml',
-      tubeVolume: '5ml',
+      sampleDensity: '3',
+      tubeVolume: '5',
       date: '2023/03/15'
     },
     {
       sampleId: '003',
       sampleType: '血液',
-      sampleDensity: '3g/ml',
-      tubeVolume: '5ml',
+      sampleDensity: '3',
+      tubeVolume: '5',
       date: '2023/03/15'
     },
     {
       sampleId: '004',
       sampleType: '污水',
-      sampleDensity: '3g/ml',
-      tubeVolume: '5ml',
+      sampleDensity: '3',
+      tubeVolume: '5',
       date: '2023/03/15'
     },
     {
       sampleId: '005',
       sampleType: '血液',
-      sampleDensity: '3g/ml',
-      tubeVolume: '5ml',
+      sampleDensity: '3',
+      tubeVolume: '5',
       date: '2023/03/15'
     },
   ]
@@ -54,26 +58,32 @@ const tableData = ref(
 const data = reactive({
   sampleInfoVisible: false,
   sampleInfo: {
-    id: '001',
-    density: '3',
+    num: '001',
+    concentration: '3',
     type: '血液',
-    gatherTime: '2023/03/15',
-    addTime: '2023/03/16',
-    tubeVolume: '5',
-    fromType: '采集',
-    sum: '12',
-    area: '12',
-    safeLevel: '安全',
+    acquisitionTime: '2023/03/15',
+    depositNum: '23',
+    storeTime: '2023/03/16',
+    volume: '5',
+    sampleSourceId: '03',
+    areaNum: '12',
+    securityLevel: '安全',
     userId: '01',
-    roomId: '201',
-    containerId: '002',
-    layerId: '2',
-    areaId: '3',
-    boxId: '2',
-    boxRowId: '1',
-    boxColId: '4',
-    remedyInfo: 'O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液'
-  }
+    roomNum: '201',
+    fridgeNum: '002',
+    levelNum: '2',
+    occupy: '3',
+    boxNum: '2',
+    sampleRow: '1',
+    sampleColumn: '4',
+    treatInfo: 'O 型血的红细胞不被其他 3 种血型的血清凝集，不会发生溶血反应，在紧急情况下，可考虑少量给其他血型者输入，但不可过多输入。',
+    specialInfo: '这是一个来自于加工厂的污水，里面拥有许多待研究与发现的病菌。'
+  },
+});
+
+// 接口请求，样本数据
+const sample = reactive({
+  
 });
 
 onMounted(
@@ -112,13 +122,6 @@ onMounted(
 const changeSampleDialog = () => {
   data.sampleInfoVisible = true;
 };
-
-// 退出系统
-const logout = () => {
-  localStorage.removeItem('userInfo');
-  ElMessage({ showClose: true, message: '退出成功', type: 'success' });
-  router.push('/user/login');
-};
 </script>
 
 <template>
@@ -150,7 +153,8 @@ const logout = () => {
         <!-- 顶部 -->
         <el-header class="header">
           <h2 class="title">首页</h2>
-          <span class="items">
+          <div class="items" style="display: flex; align-items: center;">
+            <span style="margin-right: 12px;">Hi! 用户 {{ userName }}</span>
             <el-popconfirm title="要退出系统吗 ？" @confirm="logout">
               <template #reference>
                 <div class="exit">
@@ -159,7 +163,7 @@ const logout = () => {
                 </div>
               </template>
             </el-popconfirm>
-          </span>
+          </div>
         </el-header>
         <!-- 内容区 -->
         <el-main style="background-color: rgb(245, 247, 253);">
@@ -194,9 +198,9 @@ const logout = () => {
                 >
                   <el-table-column type="selection" width="55" />
                   <el-table-column property="sampleId" label="样本 ID" />
-                  <el-table-column property="sampleType" label="样本类型"   />
-                  <el-table-column property="sampleDensity" label="样本浓度" /> 
-                  <el-table-column property="tubeVolume" label="单管体积"   />
+                  <el-table-column property="sampleType" label="样本类型" />
+                  <el-table-column property="sampleDensity" label="样本浓度(g/ml)" /> 
+                  <el-table-column property="tubeVolume" label="溶液体积(ml)" />
                   <el-table-column property="date" label="存入时间" />
                   <el-table-column fixed="right" label="操作" width="120">
                     <template #default>
@@ -204,9 +208,7 @@ const logout = () => {
                     </template>
                   </el-table-column>
                 </el-table>
-                <div style="display: flex; margin-top: 20px">
-                  <el-pagination style="margin: 0 auto;" layout="prev, pager, next, jumper" :total="100" />
-                </div>
+                <el-pagination style="position: absolute; bottom: 5%; left: 43%;" layout="prev, pager, next, jumper" :total="100" />
                 <!-- 点击查看后，样本信息的弹窗 -->
                 <el-dialog v-model="data.sampleInfoVisible" :close-on-click-modal="false">
                   <template #header>
@@ -220,36 +222,39 @@ const logout = () => {
                         label-class-name="my-label"
                         class-name="my-content"
                         width="120px"
-                      >{{ data.sampleInfo.id }}</el-descriptions-item>
-                      <el-descriptions-item label="样本浓度" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.density }} g/ml
+                      >{{ data.sampleInfo.num }}</el-descriptions-item>
+                      <el-descriptions-item label="样本浓度(g/ml)" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.concentration }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="样本数量" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.depositNum }}
                       </el-descriptions-item>
                       <el-descriptions-item label="样本类型" label-align="left" align="center" width="120px"
                       >{{ data.sampleInfo.type }}
                       </el-descriptions-item>
-                      <el-descriptions-item label="单管体积" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.tubeVolume }} ml
+                      <el-descriptions-item label="样本源 ID" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.sampleSourceId }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="溶液体积(ml)" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.volume }}
                       </el-descriptions-item>
                       <el-descriptions-item label="样本采集时间" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.gatherTime }}
+                      >{{ data.sampleInfo.acquisitionTime }}
                       </el-descriptions-item>
                       <el-descriptions-item label="样本入库时间" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.addTime }}
+                      >{{ data.sampleInfo.storeTime }}
                       </el-descriptions-item>
-                      <el-descriptions-item label="样本源类型" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.fromType }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="样本区域大小" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.area }} ㎡
+                      <el-descriptions-item label="样本区域大小(㎡)" label-align="left" align="center" width="120px"
+                      >{{ data.sampleInfo.occupy }}
                       </el-descriptions-item>
                     <el-descriptions-item label="安全级别" label-align="left" align="center" width="120px"
                     >
-                      <el-tag size="small">{{ data.sampleInfo.safeLevel }}</el-tag>
+                      <el-tag size="small">{{ data.sampleInfo.securityLevel }}</el-tag>
                     </el-descriptions-item>
                   </el-descriptions>
                   <el-descriptions :column="3" border>
                     <el-descriptions-item label="治疗信息" label-align="left" align="center" width="135px"
-                    >{{ data.sampleInfo.remedyInfo }}
+                    >{{ data.sampleInfo.treatInfo }}
                     </el-descriptions-item>
                   </el-descriptions>
                   <el-descriptions :column="3" border>
@@ -257,28 +262,31 @@ const logout = () => {
                     >{{ data.sampleInfo.userId }}
                     </el-descriptions-item>
                     <el-descriptions-item label="所在房间号" label-align="left" align="center" width="120px"
-                    >{{ data.sampleInfo.roomId }}
+                    >{{ data.sampleInfo.roomNum }}
                     </el-descriptions-item>
                     <el-descriptions-item label="所在冰箱号" label-align="left" align="center" width="120px"
-                    >{{ data.sampleInfo.containerId }}
+                    >{{ data.sampleInfo.fridgeNum }}
                     </el-descriptions-item>
                     <el-descriptions-item label="所在层号" label-align="left" align="center" width="120px"
-                    >{{ data.sampleInfo.layerId }}
+                    >{{ data.sampleInfo.levelNum }}
                     </el-descriptions-item>
                     <el-descriptions-item label="所在区域号" label-align="left" align="center" width="120px"
-                    >{{ data.sampleInfo.areaId }}
+                    >{{ data.sampleInfo.areaNum }}
                     </el-descriptions-item>
                     <el-descriptions-item label="所在盒子号" label-align="left" align="center" width="120px"
-                    >{{ data.sampleInfo.boxId }}
+                    >{{ data.sampleInfo.boxNum }}
                     </el-descriptions-item>
-                  </el-descriptions>
-                  <el-descriptions :column="2" border>
                     <el-descriptions-item label="所在盒子里的行号" label-align="left" align="center" width="120px"
-                    >{{ data.sampleInfo.boxRowId }}
+                    >{{ data.sampleInfo.sampleRow }}
                     </el-descriptions-item>
                     <el-descriptions-item label="所在盒子里的列号" label-align="left" align="center" width="120px"
-                    >{{ data.sampleInfo.boxColId }}
+                    >{{ data.sampleInfo.sampleColumn }}
                     </el-descriptions-item>
+                  </el-descriptions>
+                  <el-descriptions v-show="data.sampleInfo.specialInfo" :column="3" border>
+                    <el-descriptions-item
+                      label="特例样本" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.specialInfo }}</el-descriptions-item>
                   </el-descriptions>
                 </el-dialog>
               </div>

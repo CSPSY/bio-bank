@@ -1,10 +1,28 @@
 <script setup>
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
 import { ref, reactive } from 'vue';
+import { logout } from '../../utils/index.js';
+import { setAlertNum, searchSampleConVal } from '../../apis/admin/index.js';
+import { ElMessage } from 'element-plus';
 
-const containerNumber = ref();
+// 获取用户名，信息展示
+const userName = ref('');
+const userInfo = localStorage.getItem('userInfo');
+if (userInfo) {
+  userName.value = JSON.parse(userInfo).accountInfo;
+}
+
 const data = reactive({
-  tableVisible: false
+  tableVisible: false,
+  setWarnCard: false,
+  alertNum: '',
+  total: 0,
+});
+
+const searchInfo = reactive({
+  pageNum: 1,
+  pageSize: 10,
+  givenValue: '',
 });
 
 const tableData = ref(
@@ -48,10 +66,41 @@ const tableData = ref(
       temprature: '22℃',
       createTime: '2023/3/16',
       volume: '520/3000'
-    },
+    }
   ]
 );
 
+// 设置预警阈值
+const sendAlertNum = () => {
+  if (data.alertNum === '') {
+    ElMessage({ showClose: true, message: '请填写预警值 ~', type: 'warning' });
+    return;
+  }
+  const postObj = { alertThreshold: data.alertNum };
+  setAlertNum(postObj).then(res => {
+    console.log(res);
+    const resData = res.data;
+    if (resData.code === 1) {
+      ElMessage({ showClose: true, message: resData.msg, type: 'success' });
+    } else {
+      ElMessage({ showClose: true, message: resData.msg, type: 'error' });
+    }
+    data.setWarnCard = false;
+  });
+};
+
+// 搜索样本库
+const searchSampleContainer = () => {
+  if (searchInfo.givenValue === '') {
+    ElMessage({ showClose: true, message: '请填写样本库容量 ~', type: 'warning' });
+    return;
+  }
+  const getObj = searchInfo;
+  searchSampleConVal(getObj).then(res => {
+    console.log(res)
+    data.tableVisible = true;
+  });
+};
 </script>
 
 <template>
@@ -113,12 +162,17 @@ const tableData = ref(
         <!-- 顶部 -->
         <el-header class="header">
           <h2 class="title">系统监控</h2>
-          <span class="items">
-            <div class="exit">
-              <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>
-              退出系统              
-            </div>
-          </span>
+          <div class="items" style="display: flex; align-items: center;">
+            <span style="margin-right: 12px;">Hi! 用户 {{ userName }}</span>
+            <el-popconfirm title="要退出系统吗 ？" @confirm="logout">
+              <template #reference>
+                <div class="exit">
+                  <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>
+                  退出系统
+                </div>
+              </template>
+            </el-popconfirm>
+          </div>
         </el-header>
         <!-- 内容区 -->
         <el-main style="background-color: rgb(245, 247, 253);">
@@ -126,11 +180,11 @@ const tableData = ref(
             <div class="con-header">
               <div style="width: 352px; display: flex; align-items: center; white-space: nowrap; margin-right: 122px;">
                 <span>样本库容量 &lt; ： </span>
-                <el-input v-model="containerNumber" placeholder="请输入" />
+                <el-input v-model.trim="searchInfo.givenValue" placeholder="请输入样本库容量" />
               </div>
               <div>
-                <el-button class="button" @click="data.tableVisible=true">搜索</el-button>
-                <el-button class="button">设置预警</el-button>
+                <el-button class="button" @click="searchSampleContainer">搜索</el-button>
+                <el-button class="button" @click="data.setWarnCard=true">设置预警</el-button>
               </div>
             </div>
             <div v-show="data.tableVisible">
@@ -147,10 +201,29 @@ const tableData = ref(
                 <el-table-column property="createTime" label="创建时间" />
                 <el-table-column property="volume" label="设备容量" width="120" />
               </el-table>
-              <div style="display: flex; margin-top: 20px">
-                <el-pagination style="margin: 0 auto;" layout="prev, pager, next, jumper" :total="100" />
-              </div>
+              <el-pagination
+                style="position: absolute; bottom: 5%; left: 43%;"
+                layout="prev, pager, next, jumper" :total="data.total"
+                v-model:current-page="searchInfo.pageNum"
+              />
             </div>
+            <el-dialog class="setWarnCard"
+              v-model.trim="data.setWarnCard" :close-on-click-modal="false"
+            >
+              <template #header>
+                <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">设置预警</h3>
+              </template>
+              <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 22px;">
+                预警值(%)：
+                <el-input style="width: 30%;" autosize type="text"
+                  v-model.trim="data.alertNum" placeholder="请输入预警值"
+                />
+              </div>
+              <div style="display: flex; justify-content: flex-end;">
+                <el-button style="margin-right: 12px;" class="button" @click="sendAlertNum">确认</el-button>
+                <el-button style="margin-right: 12px;" class="button" @click="data.setWarnCard=false">取消</el-button>
+              </div>
+            </el-dialog>
           </div>
         </el-main>
       </el-container>

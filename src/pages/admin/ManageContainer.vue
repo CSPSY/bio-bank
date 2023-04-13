@@ -1,6 +1,14 @@
 <script setup>
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
 import { ref ,reactive } from 'vue'
+import { logout } from '../../utils/index.js';
+
+// 获取用户名，信息展示
+const userName = ref('');
+const userInfo = localStorage.getItem('userInfo');
+if (userInfo) {
+  userName.value = JSON.parse(userInfo).accountInfo;
+}
 
 const inputId = ref('');
 const input1 = ref('');
@@ -198,12 +206,17 @@ const data = reactive({
         <!-- 顶部 -->
         <el-header class="header">
           <h2 class="title">容器管理</h2>
-          <span class="items">
-            <div class="exit">
-              <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>
-              退出系统              
-            </div>
-          </span>
+          <div class="items" style="display: flex; align-items: center;">
+            <span style="margin-right: 12px;">Hi! 用户 {{ userName }}</span>
+            <el-popconfirm title="要退出系统吗 ？" @confirm="logout">
+              <template #reference>
+                <div class="exit">
+                  <el-icon style="margin-right: 6px;"><SwitchButton /></el-icon>
+                  退出系统
+                </div>
+              </template>
+            </el-popconfirm>
+          </div>
         </el-header>
         <!-- 内容区 -->
 				<el-main style="background-color: rgb(245, 247, 253);">
@@ -421,7 +434,7 @@ const data = reactive({
                       <el-table-column type="selection" width="55" />
                       <el-table-column property="sampleId" label="样品ID" />
                       <el-table-column property="sampleType" label="样品类型" />
-                      <el-table-column property="tubeVolume" label="单管体积" />
+                      <el-table-column property="tubeVolume" label="溶液体积" />
                       <el-table-column property="date" label="存入时间" />
                       <el-table-column fixed="right" label="操作" width="120">
                         <template #default>

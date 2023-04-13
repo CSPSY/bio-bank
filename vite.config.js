@@ -22,9 +22,9 @@ export default defineConfig({
     proxy: {
       '/api': {
         // 正式环境
-        // target: 'http://150.158.18.74:8082',
+        target: 'http://150.158.18.74:8082',
         // 测试
-        target: 'http://10.161.5.233:80',
+        // target: 'http://10.161.5.233:80',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       }

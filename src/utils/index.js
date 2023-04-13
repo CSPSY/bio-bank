@@ -92,6 +92,14 @@ const sendRegisterInfo = (captcha, registerInfo) => {
   });
 };
 
+// 退出系统
+const logout = () => {
+  localStorage.removeItem('userInfo');
+  ElMessage({ showClose: true, message: '退出成功', type: 'success' });
+  router.push('/user/login');
+};
+
 export { errorMap, judgeInputNull };
-export { getCaptcha, sendRegisterInfo }
+export { getCaptcha, sendRegisterInfo };
+export { logout };
 export { getCookie, delCookie };

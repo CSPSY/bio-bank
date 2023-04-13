@@ -28,6 +28,9 @@ API.interceptors.response.use((res) => {
   return res;
 });
 
+/**
+ * @description 首页部分
+ */
 // 获取样本数据
 const getSample = (getObj) => {
   return API.get('biobank/sample/' + Qs.stringify(getObj));

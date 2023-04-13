@@ -2,9 +2,8 @@
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
 import { ref, reactive } from 'vue';
 import { logout } from '../../utils/index.js';
-import { getAllUser, getSpecialUser } from '../../apis/admin/index.js';
+import { getAllUser, getSpecialUser, deleteUser, editUser } from '../../apis/admin/index.js';
 import { ElMessage } from 'element-plus';
-import { get } from 'lodash';
 
 // 获取用户名，信息展示
 const userName = ref('');
@@ -70,11 +69,15 @@ const searchSpecialUser = () => {
     ElMessage({ showClose: true, message: '请输入用户 ID', type: 'warning' });
     return;
   }
-  const getObj = { userId: data.searchUserId };
-  getSpecialUser(getObj).then(res => {
+  const id = data.searchUserId;
+  getSpecialUser(id).then(res => {
     const resData = res.data;
     if (resData.code === 1) {
-      data.userDatasets = resData.data;
+      data.userDatasets = [resData.data];
+      if (data.userDatasets[0] === null) {
+        ElMessage({ showClose: true, message: '无此用户 ~', type: 'warning' });
+        data.userDatasets = [];
+      }
     } else {
       ElMessage({ showClose: true, message: resData.msg, type: 'error' });
     }
@@ -82,15 +85,33 @@ const searchSpecialUser = () => {
 };
 
 // 编辑用户信息
-const editUser = (rowData) => {
+const editUserCard = (rowData) => {
   editUserInfo.id = rowData.id;
   editUserInfo.accountInfo = rowData.accountInfo;
-  editUserInfo.passCode = rowData.passCode;
   editUserInfo.fullName = rowData.fullName;
   editUserInfo.userRole = rowData.userRole;
   editUserInfo.phoneNumber = rowData.phoneNumber;
   editUserInfo.email = rowData.email;
   data.editUserCardVisiable = true;
+};
+
+const sendEditInfo = () => {
+  const putObj = editUserInfo;
+  editUser(putObj).then(res => {
+    const resData = res.data;
+    ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+    data.editUserCardVisiable = false;
+    location.reload();
+  });
+};
+
+// 根据用户 ID，删除用户
+const deleteUserById = (id) => {
+  deleteUser(id).then(res => {
+    console.log(res);
+    const resData = res.data;
+    ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+  });
 };
 </script>
 
@@ -235,8 +256,8 @@ const editUser = (rowData) => {
                 <el-table-column property="email" label="邮箱" width="230" />
                 <el-table-column label="操作" width="120">
                   <template v-slot="scope" #default>
-                    <el-button link type="primary" size="small" @click="editUser(scope.row)">编辑</el-button>
-                    <el-button link type="primary" size="small" >删除</el-button>
+                    <el-button link type="primary" size="small" @click="editUserCard(scope.row)">编辑</el-button>
+                    <el-button link type="primary" size="small" @click="deleteUserById(scope.row.id)">删除</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -270,7 +291,7 @@ const editUser = (rowData) => {
                   </div>
                 </div>
                 <div style="display: flex; justify-content: flex-end;">
-                  <el-button style="margin-right: 12px;" class="button">确认</el-button>
+                  <el-button style="margin-right: 12px;" class="button" @click="sendEditInfo">确认</el-button>
                   <el-button style="margin-right: 12px;" class="button" @click="data.editUserCardVisiable = false">取消</el-button>
                 </div>
               </el-dialog>

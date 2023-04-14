@@ -16,7 +16,8 @@ const data = reactive({
   tableVisible: false,
   setWarnCard: false,
   alertNum: '',
-  total: 0,
+  containerDatasets: [],
+  total: 0
 });
 
 const searchInfo = reactive({
@@ -25,7 +26,7 @@ const searchInfo = reactive({
   givenValue: '',
 });
 
-const tableData = ref(
+const containerDatasets = ref(
   [
     {
       id: '01',
@@ -78,14 +79,17 @@ const sendAlertNum = () => {
   }
   const postObj = { alertThreshold: data.alertNum };
   setAlertNum(postObj).then(res => {
-    console.log(res);
-    const resData = res.data;
-    if (resData.code === 1) {
-      ElMessage({ showClose: true, message: resData.msg, type: 'success' });
+    if (res.status === 200) {
+      const resData = res.data;
+      if (resData.code === 1) {
+        ElMessage({ showClose: true, message: resData.msg, type: 'success' });
+      } else {
+        ElMessage({ showClose: true, message: resData.msg, type: 'error' });
+      }
+      data.setWarnCard = false;
     } else {
-      ElMessage({ showClose: true, message: resData.msg, type: 'error' });
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
-    data.setWarnCard = false;
   });
 };
 
@@ -97,8 +101,11 @@ const searchSampleContainer = () => {
   }
   const getObj = searchInfo;
   searchSampleConVal(getObj).then(res => {
-    console.log(res)
-    data.tableVisible = true;
+    if (res.status === 200) {
+      data.tableVisible = true;
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+    }
   });
 };
 </script>
@@ -190,16 +197,16 @@ const searchSampleContainer = () => {
             <div v-show="data.tableVisible">
               <el-table
                 ref="multipleTableRef"
-                :data="tableData"
+                :data="containerDatasets"
                 :border="true"
                 style="width: 100%; margin-top: 16px;"
               >
-                <el-table-column property="id" label="设备 ID" />
+                <el-table-column property="num" label="设备 ID" />
                 <el-table-column property="type" label="设备类型"   />
-                <el-table-column property="roomId" label="所在房间号 ID" />
-                <el-table-column property="temprature" label="设备存储温度"   />
-                <el-table-column property="createTime" label="创建时间" />
-                <el-table-column property="volume" label="设备容量" width="120" />
+                <el-table-column property="roomNum" label="所在房间号" />
+                <el-table-column property="storageTemp" label="设备存储温度"   />
+                <el-table-column property="buildTime" label="创建时间" />
+                <el-table-column property="capacity" label="设备容量" width="120" />
               </el-table>
               <el-pagination
                 style="position: absolute; bottom: 5%; left: 43%;"

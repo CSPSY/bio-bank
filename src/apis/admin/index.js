@@ -27,6 +27,19 @@ API.interceptors.response.use((res) => {
 });
 
 /**
+ * @description 首页部分
+ */
+// 查询所有冰箱数据
+const getAllFridges = (getObj) => {
+  return API.get('/biobank/fridge/' + Qs.stringify(getObj));
+};
+
+// 搜索冰箱的编号，返回冰箱信息
+const getSpecialFridge = (getObj) => {
+  return API.get('/biobank/fridge/getByNum' + Qs.stringify(getObj));
+};
+
+/**
  * @description 权限管理部分
  */
 // 查询所有用户
@@ -49,17 +62,9 @@ const editUser = (putObj) => {
   return API.put('/biobank/user/', putObj);
 };
 
-/**
- * @description 系统监控部分
- */
-// 设置预警阈值
-const setAlertNum = (postObj) => {
-  return API.post('/system/alert?' + Qs.stringify(postObj));
-};
-
-// 查询样本库容量
-const searchSampleConVal = (getObj) => {
-  return API.get('/system/?' + Qs.stringify(getObj));
+// 添加用户
+const addUser = (postObj) => {
+  return API.post('/biobank/user/addUser', postObj);
 };
 
 /**
@@ -95,9 +100,29 @@ const deleteSampleData = (deleteData) => {
   return API.delete('/biobank/sample/batchDelete', deleteData);
 };
 
+// 新增样本数据
+const addNewSample = (postObj) => {
+  return API.post('/biobank/sample/', postObj);
+};
+
+/**
+ * @description 系统监控部分
+ */
+// 查询样本库容量
+const searchSampleConVal = (getObj) => {
+  return API.get('/system/?' + Qs.stringify(getObj));
+};
+
+// 设置预警阈值
+const setAlertNum = (postObj) => {
+  return API.post('/system/alert?' + Qs.stringify(postObj));
+};
+
+
 export {
   getSample, getSampleTypeCnt, getSampleBySampleId,
   editSampleInfo, moveSampleArea, deleteSampleData
 };
-export { getAllUser, getSpecialUser, deleteUser, editUser };
+export { getAllFridges, getSpecialFridge, addNewSample };
+export { getAllUser, getSpecialUser, deleteUser, editUser, addUser };
 export { setAlertNum, searchSampleConVal };

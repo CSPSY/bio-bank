@@ -1,8 +1,8 @@
 <script setup>
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
 import { ref, reactive } from 'vue';
-import { logout } from '../../utils/index.js';
-import { getAllUser, getSpecialUser, deleteUser, editUser } from '../../apis/admin/index.js';
+import { judgeInputNull, logout } from '../../utils/index.js';
+import { getAllUser, getSpecialUser, deleteUser, editUser, addUser } from '../../apis/admin/index.js';
 import { ElMessage } from 'element-plus';
 
 // 获取用户名，信息展示
@@ -51,9 +51,8 @@ const getUsers = () => {
 getUsers();
 
 const newUserInfo = reactive({
-  id: '',
   accountInfo: '',
-  passCode: '',
+  passcode: '',
   fullName: '',
   userRole: '',
   phoneNumber: '',
@@ -63,7 +62,7 @@ const newUserInfo = reactive({
 const editUserInfo = reactive({
   id: '',
   accountInfo: '',
-  passCode: '',
+  passcode: '',
   fullName: '',
   userRole: '',
   phoneNumber: '',
@@ -78,16 +77,20 @@ const searchSpecialUser = () => {
   }
   const id = data.searchUserId;
   getSpecialUser(id).then(res => {
-    const resData = res.data;
-    if (resData.code === 1) {
-      data.userDatasets = [resData.data];
-      data.total = 1;
-      if (data.userDatasets[0] === null) {
-        ElMessage({ showClose: true, message: '无此用户 ~', type: 'warning' });
-        data.userDatasets = [];
+    if (res.status === 200) {
+      const resData = res.data;
+      if (resData.code === 1) {
+        data.userDatasets = [resData.data];
+        data.total = 1;
+        if (data.userDatasets[0] === null) {
+          ElMessage({ showClose: true, message: '无此用户 ~', type: 'warning' });
+          data.userDatasets = [];
+        }
+      } else {
+        ElMessage({ showClose: true, message: resData.msg, type: 'error' });
       }
     } else {
-      ElMessage({ showClose: true, message: resData.msg, type: 'error' });
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
   });
 };
@@ -106,23 +109,57 @@ const editUserCard = (rowData) => {
 const sendEditInfo = () => {
   const putObj = editUserInfo;
   editUser(putObj).then(res => {
-    const resData = res.data;
-    ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
-    data.editUserCardVisiable = false;
-    location.reload();
+    if (res.status === 200) {
+      const resData = res.data;
+      ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+      data.editUserCardVisiable = false;
+      location.reload();
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+    }
   });
 };
 
 // 根据用户 ID，删除用户
 const deleteUserById = (id) => {
   deleteUser(id).then(res => {
-    const resData = res.data;
-    ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
-    if (resData.code === 1) {
-      location.reload();
+    if (res.status === 200) {
+      const resData = res.data;
+      ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+      if (resData.code === 1) {
+        location.reload();
+      }
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
   });
 };
+
+// 添加用户
+const addNewUser = () => {
+  const postObj = newUserInfo;
+  console.log(postObj)
+  if (judgeInputNull(postObj)) {
+    return;
+  }
+  addUser(postObj).then(res => {
+    if (res.status === 200) {
+      ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+      localtion.reload();
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+    }
+  });
+};
+
+const userRoleOptions = [{
+  value: '用户',
+  label: '用户',
+},
+{
+  value: '管理员',
+  label: '管理员',
+}]
 </script>
 
 <template>
@@ -221,7 +258,7 @@ const deleteUserById = (id) => {
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     密码：
-                    <el-input style="width: 186px;" v-model.trim="newUserInfo.passCode" placeholder="请输入用户密码" />
+                    <el-input style="width: 186px;" v-model.trim="newUserInfo.passcode" placeholder="请输入用户密码" />
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     姓名：
@@ -231,7 +268,9 @@ const deleteUserById = (id) => {
                 <div style="display: flex; flex-direction: row;">
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     用户<br>权限：
-                    <el-input style="width: 186px;" v-model.trim="newUserInfo.userRole" placeholder="请输入用户权限" />
+                    <el-select style="width: 186px;" v-model="newUserInfo.userRole">
+                      <el-option v-for="item in userRoleOptions" :key="item.value" :label="item.label" :value="item.value"/>
+                    </el-select>
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     用户<br>电话：
@@ -243,8 +282,12 @@ const deleteUserById = (id) => {
                   </div>
                 </div>
                 <div style="display: flex; justify-content: flex-end;">
-                  <el-button style="margin-right: 12px;" class="button">确认</el-button>
-                  <el-button style="margin-right: 12px;" class="button" @click="data.createUserCardVisiable = false">取消</el-button>
+                  <el-button
+                    style="margin-right: 12px;" class="button" @click="addNewUser"
+                  >确认</el-button>
+                  <el-button
+                    style="margin-right: 12px;" class="button" @click="data.createUserCardVisiable = false"
+                  >取消</el-button>
                 </div>
               </el-dialog>
             </div>
@@ -253,9 +296,8 @@ const deleteUserById = (id) => {
                 ref="multipleTableRef"
                 :data="data.userDatasets"
                 :border="true"
-                style="width: 1072px"
+                style="width: 1030px"
               >
-                <el-table-column type="selection" width="42" />
                 <el-table-column property="id" label="用户 ID" width="190" />
                 <el-table-column property="accountInfo" label="用户名" width="120" />
                 <el-table-column property="fullName" label="姓名" width="110" />
@@ -285,7 +327,9 @@ const deleteUserById = (id) => {
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     用户<br>权限：
-                    <el-input style="width: 186px;" v-model="editUserInfo.userRole" placeholder="请输入用户权限" />
+                    <el-select style="width: 186px;" v-model="editUserInfo.userRole">
+                      <el-option v-for="item in userRoleOptions" :key="item.value" :label="item.label" :value="item.value"/>
+                    </el-select>
                   </div>
                 </div>
                 <div style="display: flex; flex-direction: row;">
@@ -304,7 +348,7 @@ const deleteUserById = (id) => {
                 </div>
               </el-dialog>
               <el-pagination
-                style="position: absolute; bottom: 5%; left: 43%;"
+                style="position: absolute; bottom: 5%; left: 41%;"
                 layout="total, prev, pager, next, jumper" :total="data.total"
                 v-model:current-page="pageInfo.currentPage"
                 @current-change="changeData"

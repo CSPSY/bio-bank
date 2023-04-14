@@ -10,8 +10,11 @@ const errorMap = new Map([
   ['accountInfo', '请填写用户名 ~'], ['fullName', '请填写真实姓名 ~'], ['passcode', '请填写密码 ~'],
   ['phoneNumber', '请填写电话号码 ~'], ['email', '请填写邮箱 ~'], ['captcha', '请填写邮箱验证码 ~'],
   ['token', '请返回邮箱重新打开链接 ~'], ['roomNum', '请填写房间号 ~'], ['fridgeNum', '请填写冰箱号 ~'],
-  ['layerNum', '请填写层号 ~'], ['areaNum', '请填写区号 ~'], ['boxNum', '请填写盒号 ~'],
-  ['sampleRow', '请填写盒内行 ID ~'], ['sampleColumn', '请填写盒内列 ID ~']
+  ['levelNum', '请填写层号 ~'], ['areaNum', '请填写区号 ~'], ['boxNum', '请填写盒号 ~'],
+  ['sampleRow', '请填写盒内行 ID ~'], ['sampleColumn', '请填写盒内列 ID ~'], ['occupy', '请填写样本所占区域大小 ~'],
+  ['acquisitionTime', '请填写样本采集时间 ~'], ['depositNum', '请填写样本存入数量 ~'], ['securityLevel', '请填写安全级别 ~'],
+  ['storeTime', '请填写样本存入时间 ~'], ['treatInfo', '请填写治疗信息 ~'], ['concentration', '请填写样本溶度'],
+  ['userRole', '请填写用户权限 ~']
 ]);
 
 // 样本信息

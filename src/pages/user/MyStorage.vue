@@ -34,8 +34,12 @@ const getAllSamplesByUserId = () => {
   const userNum = JSON.parse(localStorage.getItem('userInfo')).id;
   const getObj = { userNum };
   getSampleByUserId(getObj).then(res => {
-    const resData = res.data;
-    data.sampleDatasets = resData.data;
+    if (res.status === 200) {
+      const resData = res.data;
+      data.sampleDatasets = resData.data;
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+    }
   });
 };
 getAllSamplesByUserId();
@@ -52,10 +56,14 @@ const searchSample = () => {
     return;
   }
   getSampleBySampleId(searchInfo).then(res => {
-    const resData = res.data;
-    ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
-    if (resData.code === 1) {
-      data.sampleDatasets = resData.data;
+    if (res.status === 200) {
+      const resData = res.data;
+      ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+      if (resData.code === 1) {
+        data.sampleDatasets = resData.data;
+    }
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
   });
 };

@@ -36,13 +36,17 @@ const data = reactive({
 const getAllSamples = () => {
   const getObj = pageInfo;
   getSample(getObj).then(res => {
-    const resData = res.data;
-    if (resData.code === 0) {
-      ElMessage({ showClose: true, message: resData.msg, type: 'warning' });
-      return;
+    if (res.status === 200) {
+      const resData = res.data;
+      if (resData.code === 0) {
+        ElMessage({ showClose: true, message: resData.msg, type: 'warning' });
+        return;
+      }
+      data.sampleDatasets = resData.list;
+      data.total = resData.total;
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
-    data.sampleDatasets = resData.list;
-    data.total = resData.total;
   });
 };
 getAllSamples();
@@ -50,16 +54,20 @@ getAllSamples();
 // 获取样本类型统计
 const getAllSamplesTypeCnt = () => {
   getSampleTypeCnt().then(res => {
-    const resData = res.data;
-    if (resData.code === 0) {
-      ElMessage({ showClose: true, message: resData.msg, type: 'warning' });
-      return;
+    if (res.status === 200) {
+      const resData = res.data;
+      if (resData.code === 0) {
+        ElMessage({ showClose: true, message: resData.msg, type: 'warning' });
+        return;
+      }
+      for (let key in resData.data) {
+        data.sampleTypeXData.push(resData.data[key].type);
+        data.sampleTypeYData.push(resData.data[key].total);
+      }
+      setSampleTypeTable();
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
-    for (let key in resData.data) {
-      data.sampleTypeXData.push(resData.data[key].type);
-      data.sampleTypeYData.push(resData.data[key].total);
-    }
-    setSampleTypeTable();
   });
 }
 getAllSamplesTypeCnt();
@@ -112,10 +120,14 @@ const searchSample = () => {
     return;
   }
   getSampleBySampleId(searchInfo).then(res => {
-    const resData = res.data;
-    ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
-    if (resData.code === 1) {
-      data.sampleDatasets = resData.data;
+    if (res.status === 200) {
+      const resData = res.data;
+      ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+      if (resData.code === 1) {
+        data.sampleDatasets = resData.data;
+      }
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
   });
 };

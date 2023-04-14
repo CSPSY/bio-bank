@@ -34,7 +34,7 @@ const data = reactive({
     num: '',
     roomNum: '',
     fridgeNum: '',
-    layerNum: '',
+    levelNum: '',
     areaNum: '',
     boxNum: '',
     sampleRow: '',
@@ -52,13 +52,17 @@ const data = reactive({
 const getAllSamples = () => {
   const getObj = pageInfo;
   getSample(getObj).then(res => {
-    const resData = res.data;
-    if (resData.code === 0) {
-      ElMessage({ showClose: true, message: resData.msg, type: 'warning' });
-      return;
+    if (res.status === 200) {
+      const resData = res.data;
+      if (resData.code === 0) {
+        ElMessage({ showClose: true, message: resData.msg, type: 'warning' });
+        return;
+      }
+      data.sampleDatasets = resData.list;
+      data.total = resData.total;
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
-    data.sampleDatasets = resData.list;
-    data.total = resData.total;
   });
 };
 getAllSamples();
@@ -66,16 +70,20 @@ getAllSamples();
 // 获取样本类型统计
 const getAllSamplesTypeCnt = () => {
   getSampleTypeCnt().then(res => {
-    const resData = res.data;
-    if (resData.code === 0) {
-      ElMessage({ showClose: true, message: resData.msg, type: 'warning' });
-      return;
+    if (res.status === 200) {
+      const resData = res.data;
+      if (resData.code === 0) {
+        ElMessage({ showClose: true, message: resData.msg, type: 'warning' });
+        return;
+      }
+      for (let key in resData.data) {
+        data.sampleTypeXData.push(resData.data[key].type);
+        data.sampleTypeYData.push(resData.data[key].total);
+      }
+      setSampleTypeTable();
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
-    for (let key in resData.data) {
-      data.sampleTypeXData.push(resData.data[key].type);
-      data.sampleTypeYData.push(resData.data[key].total);
-    }
-    setSampleTypeTable();
   });
 }
 getAllSamplesTypeCnt();
@@ -128,10 +136,14 @@ const searchSample = () => {
     return;
   }
   getSampleBySampleId(searchInfo).then(res => {
-    const resData = res.data;
-    ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
-    if (resData.code === 1) {
-      data.sampleDatasets = resData.data;
+    if (res.status === 200) {
+      const resData = res.data;
+      ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+      if (resData.code === 1) {
+        data.sampleDatasets = resData.data;
+      }
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
   });
 };
@@ -146,8 +158,12 @@ const editSampleInfoCard = (rowData) => {
 const sendEditInfo = () => {
   const putObj = data.sampleInfo;
   editSampleInfo(putObj).then(res => {
-    const resData = res.data;
-    ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+    if (res.status === 200) {
+      const resData = res.data;
+      ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+    }
   });
   data.sampleInfoVisible = false;
   getAllSamples();
@@ -164,9 +180,13 @@ const sendMoveSampleArea = () => {
     return;
   }
   moveSampleArea(putObj).then(res => {
-    const resData = res.data;
-    ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
-    data.moveSampleCardVisible = false;
+    if (res.status === 200) {
+      const resData = res.data;
+      ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+      data.moveSampleCardVisible = false;
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+    }
   });
 };
 
@@ -187,9 +207,13 @@ const sendDeleteSampleData = () => {
     return;
   }
   deleteSampleData(deleteData).then(res => {
-    const resData = res.data;
-    ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
-    getAllSamples();
+    if (res.status === 200) {
+      const resData = res.data;
+      ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+      getAllSamples();
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+    }
   });
 };
 </script>
@@ -316,7 +340,7 @@ const sendDeleteSampleData = () => {
                       </div>
                       <div style="margin-right: 42px;">
                         层号：
-                        <el-input style="width: 98px;" v-model.trim="data.sampleInfoMove.layerNum" placeholder="请输入" />
+                        <el-input style="width: 98px;" v-model.trim="data.sampleInfoMove.levelNum" placeholder="请输入" />
                       </div>
                       <div>
                         区号：

@@ -2,7 +2,10 @@
 import { reactive, ref } from 'vue';
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting, Search } from '@element-plus/icons-vue';
 import printJS from 'print-js';
-import { logout } from '../../utils/index.js';
+import { logout, sampleInfo } from '../../utils/index.js';
+import { getAllFridges, getSpecialFridge, addNewSample } from '../../apis/admin/index.js';
+import { ElMessage } from 'element-plus';
+import { judgeInputNull } from '../../utils/index.js';
 
 // 获取用户名，信息展示
 const userName = ref('');
@@ -11,45 +14,136 @@ if (adminInfo) {
   userName.value = JSON.parse(adminInfo).accountInfo;
 }
 
+// 页码信息
+const pageInfo = reactive({
+  currentPage: 1,
+  size: 9
+});
+
+// 根据页码，获取数据
+const changeData = () => {
+  getAllFridgesInfo();
+};
+
 const data = reactive({
   searchId: '',
   containerInfoVisible: false,
   sampleInfoVisible: false,
   sampleInnerVisible: false,
   container: {
-    id: '',
+    num: '',
     roomId: '',
-    volume: '',
+    capacity: '',
     size: '',
-    temperature: '',
-    date: '',
-    version: '',
+    storageTemp: '',
+    buildTime: '',
+    model: '',
     type: '',
     brand: ''
   },
-  sampleInfo: {
-    num: '001',
-    concentration: '3',
-    type: '污水',
-    acquisitionTime: '2023/03/15',
-    depositNum: '23',
-    storeTime: '2023/03/16',
-    volume: '5',
-    sampleSourceId: '03',
-    areaNum: '12',
-    securityLevel: '安全',
-    userId: '01',
-    roomNum: '201',
-    fridgeNum: '002',
-    levelNum: '2',
-    occupy: '3',
-    boxNum: '2',
-    sampleRow: '1',
-    sampleColumn: '4',
-    treatInfo: '病菌来源体的污水。',
-    specialInfo: '这是一个来自于加工厂的污水，里面拥有许多待研究与发现的病菌。'
+  fridgeDatasets: [],
+  sampleInfo: sampleInfo,
+  total: 0
+});
+
+// 获取所有冰箱数据
+const getAllFridgesInfo = () => {
+  const getObj = pageInfo;
+  getAllFridges(getObj).then(res => {
+    if (res.status === 200) {
+      const resData = res.data;
+      if (resData.code === 0) {
+        ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+      } else {
+        data.fridgeDatasets = resData.list;
+        data.total = resData.total;
+      }
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+    }
+  });
+  // 刷新存入样本信息输入值
+  for (let key in data.sampleInfo) {
+    data.sampleInfo[key] = '';
   }
-})
+};
+getAllFridgesInfo();
+
+// 搜索冰箱
+const sendSearchInfo = () => {
+  if (data.searchId === '') {
+    ElMessage({ showClose: true, message: '请输入冰箱 ID ~', type: 'warning' });
+    return;
+  }
+  const getObj = { num: data.searchId };
+  getSpecialFridge(getObj).then(res => {
+    if (res.status === 200) {
+      const resData = res.data;
+      ElMessage({ showClose: false, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+      if (resData.code === 1) {
+        data.fridgeDatasets = resData.list;
+        data.total = 1;
+      }
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+    }
+  });
+};
+
+// 存入样本
+const sendNewSampleInfo = () => {
+  if (data.sampleInfo.num === '') {
+    ElMessage({ showClose: true, message: '请填写样本 ID ~', type: 'warning' });
+    return;
+  } else if (data.sampleInfo.volume === '') {
+    ElMessage({ showClose: true, message: '请填写溶液体积 ~', type: 'warning' });
+    return;
+  } else if (data.sampleInfo.type === '') {
+    ElMessage({ showClose: true, message: '请填写样本类型 ~', type: 'warning' });
+    return;
+  }
+  const postObj = {
+    num: data.sampleInfo.num,
+    concentration: data.sampleInfo.concentration,
+    type: data.sampleInfo.type,
+    acquisitionTime: data.sampleInfo.acquisitionTime,
+    depositNum: data.sampleInfo.depositNum,
+    storeTime: data.sampleInfo.storeTime,
+    volume: data.sampleInfo.volume,
+    areaNum: data.sampleInfo.areaNum,
+    securityLevel: data.sampleInfo.securityLevel,
+    roomNum: data.sampleInfo.roomNum,
+    fridgeNum: data.sampleInfo.fridgeNum,
+    levelNum: data.sampleInfo.levelNum,
+    occupy: data.sampleInfo.occupy,
+    boxNum: data.sampleInfo.boxNum,
+    sampleRow: data.sampleInfo.sampleRow,
+    sampleColumn: data.sampleInfo.sampleColumn,
+    treatInfo: data.sampleInfo.treatInfo
+  };
+  if (data.sampleInfo.specialInfo !== '') {
+    postObj.specialInfo = data.sampleInfo.specialInfo;
+  }
+  if (data.sampleInfo.userId !== '') {
+    postObj.userId = data.sampleInfo.userId;
+  }
+  if (judgeInputNull(postObj)) {
+    return;
+  }
+  data.sampleInnerVisible = true;
+
+  addNewSample(postObj).then(res => {
+    if (res.status === 200) {
+      const resData = res.data;
+      ElMessage({ showClose: false, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+      if (resData.code === 1) {
+        data.sampleInnerVisible = true;
+      }
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+    }
+  });
+};
 
 // 打印存入样本信息
 const printSampleInfo = () => {
@@ -148,7 +242,7 @@ const printSampleInfo = () => {
                   placeholder="请输入冰箱 id"
                   :suffix-icon="Search"
                 />
-                <el-button class="button">搜索冰箱</el-button>            
+                <el-button class="button" @click="sendSearchInfo">搜索冰箱</el-button>            
               </div>
               <div>
                 <el-button class="button" @click="data.sampleInfoVisible=true">存入样本</el-button>
@@ -157,7 +251,7 @@ const printSampleInfo = () => {
             <div style="padding: 16px 0;">
               <el-row>
                 <el-col
-                  v-for="(o, index) in 9"
+                  v-for="(o, index) in data.fridgeDatasets.length"
                   :key="o"
                   :span="6"
                   :offset="index % 3 ? 3 : 0"
@@ -172,17 +266,24 @@ const printSampleInfo = () => {
                       style="width: 120px; padding: 0 6px;"
                     />
                     <div style="padding: 14px;">
-                      <div style="margin-bottom: 5px; ">冰箱 ID：<span>{{ o.toString().padStart(2, '0') }}</span></div>
-                      <div style="margin-bottom: 5px; ">样本类型：<span>血液库</span></div>
-                      <div style="margin-bottom: 5px; ">冰箱型号：<span>{{ 'A'+o.toString().padStart(4, '0') }}</span></div>
-                      <div style="margin-bottom: 5px; ">所在冰箱温度：<span>-65℃</span></div>
-                      <div style="margin-bottom: 5px; ">所在冰箱容量：<span>520/3000</span></div>
-                      <div style="margin-bottom: 5px; ">位置：<span>201号房3层2架</span></div>
+                      <div style="margin-bottom: 5px; ">冰箱 ID：<span>{{ data.fridgeDatasets[index].num }}</span></div>
+                      <div style="margin-bottom: 5px; ">设备类型：<span>{{ data.fridgeDatasets[index].type }}</span></div>
+                      <div style="margin-bottom: 5px; ">冰箱型号：<span>{{ data.fridgeDatasets[index].model }}</span></div>
+                      <div style="margin-bottom: 5px; ">
+                        所在冰箱温度：<span>{{ data.fridgeDatasets[index].storageTemp }}℃</span>
+                      </div>
+                      <div style="margin-bottom: 5px; ">所在冰箱容量：<span>{{ data.fridgeDatasets[index].capacity }}</span></div>
+                      <div style="margin-bottom: 5px; ">位置：<span>{{ data.fridgeDatasets[index].roomNum }}</span></div>
                     </div>
                   </el-card>
                 </el-col>
               </el-row>
-              <el-pagination style="position: absolute; bottom: 5%; left: 43%;" layout="prev, pager, next, jumper" :total="100" />
+              <el-pagination
+                style="position: absolute; bottom: 3%; left: 41%;"
+                layout="total, prev, pager, next, jumper" :total="data.total"
+                v-model:current-page="pageInfo.currentPage"
+                @current-change="changeData"
+              />
               <!-- 点击冰箱，冰箱信息弹框 -->
               <el-dialog v-model.trim="data.containerInfoVisible" :close-on-click-modal="false">
                 <template #header>
@@ -191,15 +292,15 @@ const printSampleInfo = () => {
                 <div style="display: flex; flex-direction: row;">
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     设备 ID：
-                    <el-input style="width: 166px;" v-model.trim="data.container.id" placeholder="请输入设备 id" />
+                    <el-input style="width: 166px;" v-model.trim="data.container.num" placeholder="请输入设备 id" />
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     房间号 ID：
-                    <el-input style="width: 166px;" v-model.trim="data.container.roomId" placeholder="请输入房间号 id" />
+                    <el-input style="width: 166px;" v-model.trim="data.container.roomNum" placeholder="请输入房间号 id" />
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     容量：
-                    <el-input style="width: 166px;" v-model.trim="data.container.volume" placeholder="请输入容量" />
+                    <el-input style="width: 166px;" v-model.trim="data.container.capacity" placeholder="请输入容量" />
                   </div>
                 </div>
                 <div style="display: flex; flex-direction: row;">
@@ -209,17 +310,17 @@ const printSampleInfo = () => {
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     存储温度：
-                    <el-input style="width: 166px;" v-model.trim="data.container.temperature" placeholder="请输入存储温度" />
+                    <el-input style="width: 166px;" v-model.trim="data.container.storageTemp" placeholder="请输入存储温度" />
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     建立时间：
-                    <el-input style="width: 166px;" v-model.trim="data.container.date" placeholder="请输入建立时间" />
+                    <el-input style="width: 166px;" v-model.trim="data.container.buildTime" placeholder="请输入建立时间" />
                   </div>
                 </div>
                 <div style="display: flex; flex-direction: row;">
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     设备型号：
-                    <el-input style="width: 166px;" v-model.trim="data.container.version" placeholder="请输入设备型号" />
+                    <el-input style="width: 166px;" v-model.trim="data.container.model" placeholder="请输入设备型号" />
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     设备类型：
@@ -344,7 +445,7 @@ const printSampleInfo = () => {
                 </div>
                 <div style="display: flex; justify-content: flex-end;">
                   <el-button style="margin-right: 12px;" class="button"
-                  @click="() => { data.sampleInnerVisible = true; }"
+                  @click="sendNewSampleInfo"
                   >确认</el-button>
                   <el-button style="margin-right: 12px;" class="button" @click="data.sampleInfoVisible=false">取消</el-button>
                 </div>

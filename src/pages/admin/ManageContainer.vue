@@ -5,9 +5,9 @@ import { logout } from '../../utils/index.js';
 
 // 获取用户名，信息展示
 const userName = ref('');
-const userInfo = localStorage.getItem('userInfo');
-if (userInfo) {
-  userName.value = JSON.parse(userInfo).accountInfo;
+const adminInfo = localStorage.getItem('adminInfo');
+if (adminInfo) {
+  userName.value = JSON.parse(adminInfo).accountInfo;
 }
 
 const inputId = ref('');
@@ -167,8 +167,8 @@ const data = reactive({
             </RouterLink>
           </el-menu-item>
           <el-menu-item class="menu-items items" index="2">
-              <el-icon><MessageBox /></el-icon>
-              <span>容器管理</span>
+            <el-icon><MessageBox /></el-icon>
+            <span>容器管理</span>
           </el-menu-item>
           <el-menu-item class="menu-items items" index="3">
             <RouterLink :to="{ path: '/admin/manage-sample' }">
@@ -328,11 +328,11 @@ const data = reactive({
 															*设备品牌：
 															<el-select v-model="valueForBrand" placeholder="请选择">
 																<el-option
-																		   v-for="item in optionsForBrand"
-																		   :key="item.value"
-																		   :label="item.label"
-																		   :value="item.value"
-																		   :disabled="item.disabled" />
+                                  v-for="item in optionsForBrand"
+                                  :key="item.value"
+                                  :label="item.label"
+                                  :value="item.value"
+                                  :disabled="item.disabled" />
 															</el-select>
 														</div>
 														<div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">

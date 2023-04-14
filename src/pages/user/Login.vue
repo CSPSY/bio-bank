@@ -30,7 +30,7 @@ getLoginInfo();
 const sendLoginInfo = () => {
   const postObj = {
     accountInfo: data.loginInfo.accountInfo,
-    passcode: md5(data.loginInfo.passcode)
+    passcode: data.loginInfo.passcode
   };
   if (judgeInputNull(postObj)) {
     return;

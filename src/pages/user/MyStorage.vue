@@ -1,7 +1,8 @@
 <script setup>
 import { ref, reactive } from 'vue';
 import { Document, House, SwitchButton } from '@element-plus/icons-vue';
-import { logout } from '../../utils/index.js';
+import { logout, sampleInfo } from '../../utils/index.js';
+import { getSampleByUserId, getSampleBySampleId } from '../../apis/user';
 
 // 获取用户名，信息展示
 const userName = ref('');
@@ -10,114 +11,60 @@ if (userInfo) {
   userName.value = JSON.parse(userInfo).accountInfo;
 }
 
-const tableData = ref(
-  [
-    {
-      sampleId: '001',
-      sampleType: '血液',
-      sampleDensity: '3',
-      tubeVolume: '5',
-      date: '2023/03/15'
-    },
-    {
-      sampleId: '002',
-      sampleType: 'DNA',
-      sampleDensity: '3',
-      tubeVolume: '5',
-      date: '2023/03/15'
-    },
-    {
-      sampleId: '003',
-      sampleType: '污水',
-      sampleDensity: '3',
-      tubeVolume: '5',
-      date: '2023/03/15'
-    },
-    {
-      sampleId: '004',
-      sampleType: '血液',
-      sampleDensity: '3',
-      tubeVolume: '5',
-      date: '2023/03/15'
-    },
-    {
-      sampleId: '005',
-      sampleType: '血液',
-      sampleDensity: '3',
-      tubeVolume: '5',
-      date: '2023/03/15'
-    },
-    {
-      sampleId: '006',
-      sampleType: '血液',
-      sampleDensity: '3',
-      tubeVolume: '5',
-      date: '2023/03/15'
-    },
-    {
-      sampleId: '007',
-      sampleType: 'DNA',
-      sampleDensity: '3',
-      tubeVolume: '5',
-      date: '2023/03/15'
-    },
-    {
-      sampleId: '008',
-      sampleType: '血液',
-      sampleDensity: '3',
-      tubeVolume: '5',
-      date: '2023/03/15'
-    },
-    {
-      sampleId: '009',
-      sampleType: '血液',
-      sampleDensity: '3',
-      tubeVolume: '5',
-      date: '2023/03/15'
-    },
-    {
-      sampleId: '010',
-      sampleType: '血液',
-      sampleDensity: '3',
-      tubeVolume: '5',
-      date: '2023/03/15'
-    },
-  ]
-);
+// 页码信息
+const pageInfo = reactive({
+  currentPage: 1,
+  size: 10
+});
+
+// 根据页码，获取数据
+const changeData = () => {
+  getAllSamples();
+};
 
 const data = reactive({
   sampleInfoVisible: false,
-  sampleInfo: {
-    num: '001',
-    concentration: '3',
-    type: '污水',
-    acquisitionTime: '2023/03/15',
-    depositNum: '23',
-    storeTime: '2023/03/16',
-    volume: '5',
-    sampleSourceId: '03',
-    areaNum: '12',
-    securityLevel: '安全',
-    userId: '01',
-    roomNum: '201',
-    fridgeNum: '002',
-    levelNum: '2',
-    occupy: '3',
-    boxNum: '2',
-    sampleRow: '1',
-    sampleColumn: '4',
-    treatInfo: '病菌来源体的污水。',
-    specialInfo: '这是一个来自于加工厂的污水，里面拥有许多待研究与发现的病菌。'
-  }
+  sampleInfo: sampleInfo,
+  sampleDatasets: [],
+  total: 0
 });
 
-
-
-const inputId = ref('')
-
-const changeSampleDialog = () => {
-  data.sampleInfoVisible = true;
+// 根据用户 ID 获取用户存储样本信息
+const getAllSamplesByUserId = () => {
+  const userNum = JSON.parse(localStorage.getItem('userInfo')).id;
+  const getObj = { userNum };
+  getSampleByUserId(getObj).then(res => {
+    const resData = res.data;
+    data.sampleDatasets = resData.data;
+  });
 };
+getAllSamplesByUserId();
+
+// 搜索样本
+const searchInfo = reactive({
+  sampleNum: '',
+  sampleType: ''
+});
+
+const searchSample = () => {
+  if (searchInfo.sampleNum === '' && searchInfo.sampleType === '') {
+    ElMessage({ showClose: true, message: '请在搜索框填写样本 ID 或样本类型 ~', type: 'warning' });
+    return;
+  }
+  getSampleBySampleId(searchInfo).then(res => {
+    const resData = res.data;
+    ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+    if (resData.code === 1) {
+      data.sampleDatasets = resData.data;
+    }
+  });
+};
+
+// 查看样本信息
+const readSampleInfoCard = (rowData) => {
+  data.sampleInfoVisible = true;
+  data.sampleInfo = rowData;
+}
 </script>
 
 <template>
@@ -171,41 +118,48 @@ const changeSampleDialog = () => {
                   <el-input
                     id="specimens-id"
                     style="height: 32px; width: 212px; padding: 0 22px 0 0;"
-                    v-model="inputId"  
+                    v-model.trim="searchInfo.sampleNum"  
                     placeholder="请输入样本 id"
                   />
                   <label for="specimens-type">样本类型：</label>
                   <el-input
                     id="specimens-type"
                     style="height: 32px; width: 212px; padding: 0 22px 0 0;"
-                    v-model="inputId"
+                    v-model.trim="searchInfo.sampleType"
                     placeholder="请输入样本类型"
-                    />
-                    <el-button class="button">搜索</el-button>        
+                  />
+                  <el-button class="button" @click="searchSample">搜索</el-button>        
                 </div>
               </div>
               <div>
                 <el-table
                   ref="multipleTableRef"
-                  :data="tableData"
+                  :data="data.sampleDatasets"
                   :border="true"
                   style="width: 100%"
                 >
-                  <el-table-column type="selection" width="55" />
-                  <el-table-column property="sampleId" label="样本 ID" />
-                  <el-table-column property="sampleType" label="样本类型" />
-                  <el-table-column property="sampleDensity" label="样本浓度(g/ml)" />
-                  <el-table-column property="tubeVolume" label="溶液体积(ml)" />
-                  <el-table-column property="date" label="存入时间" />
+                  <el-table-column property="num" label="样本 ID" />
+                  <el-table-column property="type" label="样本类型" />
+                  <el-table-column property="concentration" label="样本浓度(g/ml)" />
+                  <el-table-column property="volume" label="溶液体积(ml)" />
+                  <el-table-column property="storeTime" label="存入时间" />
                   <el-table-column fixed="right" label="操作" width="120">
-                    <template #default>
-                      <el-button link type="primary" size="small" @click="changeSampleDialog">查看</el-button>
+                    <template v-slot="scope" #default>
+                      <el-button link type="primary" size="small" @click="readSampleInfoCard(scope.row)">查看</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
-                <el-pagination style="position: absolute; bottom: 5%; left: 43%;" layout="prev, pager, next, jumper" :total="100" />
+                <el-pagination
+                  style="position: absolute; bottom: 3%; left: 41%;"
+                  layout="total, prev, pager, next, jumper" :total="data.total"
+                  v-model:current-page="pageInfo.currentPage"
+                  @current-change="changeData"
+                />
                 <!-- 点击查看后，样本信息的弹窗 -->
-                <el-dialog v-model="data.sampleInfoVisible" :close-on-click-modal="false">
+                <el-dialog
+                  style="position: absolute; left: 50%; top: -8%; transform: translateX(-50%);"
+                  v-model="data.sampleInfoVisible" :close-on-click-modal="false"
+                >
                   <template #header>
                     <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">样本信息</h3>
                   </template>
@@ -242,8 +196,8 @@ const changeSampleDialog = () => {
                       <el-descriptions-item label="样本区域大小(㎡)" label-align="left" align="center" width="120px"
                       >{{ data.sampleInfo.occupy }}
                       </el-descriptions-item>
-                    <el-descriptions-item label="安全级别" label-align="left" align="center" width="120px"
-                    >
+                      <el-descriptions-item label="安全级别" label-align="left" align="center" width="120px"
+                      >
                       <el-tag size="small">{{ data.sampleInfo.securityLevel }}</el-tag>
                     </el-descriptions-item>
                   </el-descriptions>

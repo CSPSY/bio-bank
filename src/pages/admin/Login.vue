@@ -30,7 +30,7 @@ getLoginInfo();
 const sendLoginInfo = () => {
   const postObj = {
     accountInfo: data.loginInfo.accountInfo,
-    passcode: md5(data.loginInfo.passcode)
+    passcode: data.loginInfo.passcode
   };
   if (judgeInputNull(postObj)) {
     return;
@@ -52,7 +52,7 @@ const sendLoginInfo = () => {
             })
           );
         }
-        localStorage.setItem('userInfo', JSON.stringify(resData));
+        localStorage.setItem('adminInfo', JSON.stringify(resData));
         router.push('/admin');
       }
       ElMessage({ showClose: true, message: res.data.msg, type: res.data.code ? 'success' : 'error' });

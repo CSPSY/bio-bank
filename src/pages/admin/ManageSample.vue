@@ -1,134 +1,197 @@
 <script setup>
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
 import * as echarts from 'echarts';
-import { ref, reactive, onMounted } from 'vue';
-import { logout } from '../../utils/index.js';
+import { ref, reactive } from 'vue';
+import { logout, judgeInputNull, sampleInfo } from '../../utils/index.js';
+import {
+  getSample, getSampleTypeCnt, getSampleBySampleId,
+  editSampleInfo, moveSampleArea, deleteSampleData
+} from '../../apis/admin/index.js';
+import { ElMessage } from 'element-plus';
 
 // 获取用户名，信息展示
 const userName = ref('');
-const userInfo = localStorage.getItem('userInfo');
-if (userInfo) {
-  userName.value = JSON.parse(userInfo).accountInfo;
+const adminInfo = localStorage.getItem('adminInfo');
+if (adminInfo) {
+  userName.value = JSON.parse(adminInfo).accountInfo;
 }
 
-const inputId = ref('');
+// 页码信息
+const pageInfo = reactive({
+  currentPage: 1,
+  size: 5
+});
+
+// 根据页码，获取数据
+const changeData = () => {
+  getAllSamples();
+};
+
+const data = reactive({
+  moveSampleCardVisible: false,
+  sampleInfoVisible: false,
+  sampleInfoMove: {
+    num: '',
+    roomNum: '',
+    fridgeNum: '',
+    layerNum: '',
+    areaNum: '',
+    boxNum: '',
+    sampleRow: '',
+    sampleColumn: ''
+  },
+  sampleInfo: sampleInfo,
+  sampleTypeXData: [],
+  sampleTypeYData: [],
+  sampleDatasets: [],
+  selectionSampleDataId: [],
+  total: 0
+});
+
+// 获取样本数据
+const getAllSamples = () => {
+  const getObj = pageInfo;
+  getSample(getObj).then(res => {
+    const resData = res.data;
+    if (resData.code === 0) {
+      ElMessage({ showClose: true, message: resData.msg, type: 'warning' });
+      return;
+    }
+    data.sampleDatasets = resData.list;
+    data.total = resData.total;
+  });
+};
+getAllSamples();
+
+// 获取样本类型统计
+const getAllSamplesTypeCnt = () => {
+  getSampleTypeCnt().then(res => {
+    const resData = res.data;
+    if (resData.code === 0) {
+      ElMessage({ showClose: true, message: resData.msg, type: 'warning' });
+      return;
+    }
+    for (let key in resData.data) {
+      data.sampleTypeXData.push(resData.data[key].type);
+      data.sampleTypeYData.push(resData.data[key].total);
+    }
+    setSampleTypeTable();
+  });
+}
+getAllSamplesTypeCnt();
+
 const chartRef = ref();
 const chart = ref();
-const data = reactive({
-  dialogTransferVisable: false,
-  sampleInfoVisible: false,
-  sampleInfoRemove: {
-    id: '',
-    roomId: '',
-    containerId: '',
-    layerId: '',
-    areaId: '',
-    boxId: '',
-    boxRowId: '',
-    boxColId: ''
-  },
-  sampleInfo: {
-    num: '001',
-    concentration: '3',
-    type: '污水',
-    acquisitionTime: '2023/03/15',
-    depositNum: '23',
-    storeTime: '2023/03/16',
-    volume: '5',
-    sampleSourceId: '03',
-    areaNum: '12',
-    securityLevel: '安全',
-    userId: '01',
-    roomNum: '201',
-    fridgeNum: '002',
-    levelNum: '2',
-    occupy: '3',
-    boxNum: '2',
-    sampleRow: '1',
-    sampleColumn: '4',
-    treatInfo: '病菌来源体的污水。',
-    specialInfo: '这是一个来自于加工厂的污水，里面拥有许多待研究与发现的病菌。'
-  }
-});
-const searchInfo = reactive({
-  searchId: '',
-  type: ''
-})
-
-const tableData = ref(
-  [
-    {
-      sampleId: '001',
-      sampleType: '血液',
-      sampleDensity: '3',
-      tubeVolume: '5',
-      date: '2023/03/15'
-    },
-    {
-      sampleId: '002',
-      sampleType: 'DNA',
-      sampleDensity: '3',
-      tubeVolume: '5',
-      date: '2023/03/15'
-    },
-    {
-      sampleId: '003',
-      sampleType: '血液',
-      sampleDensity: '3',
-      tubeVolume: '5',
-      date: '2023/03/15'
-    },
-    {
-      sampleId: '004',
-      sampleType: '污水',
-      sampleDensity: '3',
-      tubeVolume: '5',
-      date: '2023/03/15'
-    },
-    {
-      sampleId: '005',
-      sampleType: '血液',
-      sampleDensity: '3',
-      tubeVolume: '5',
-      date: '2023/03/15'
-    },
-  ]
-);
 
 // 数据可视化
-onMounted(
-  () => {
-    if (chartRef.value) {
-      chart.value = echarts.init(chartRef.value);
-      const xData = ['DNA', '血液', '尿液', '唾液', '汗液', '肝脏', '肺组织', '心脏', '血浆', '血清', '污水'];
-      const yData = [188, 387, 260, 150, 230, 0, 0, 0, 0, 0, 0];
-      const option = {
-        title: {
-          text: '样本类型总览：'
-        },
-        color: '#409eff',
-        xAxis: {
-          type: 'category',
-          data: xData
-        },
-        yAxis: {
-          type: 'value'
-        },
-        series: [
-          {
-            data: yData,
-            type: 'bar',
-            label: {
-              show: true,
-              position: 'top'
-            }
+const setSampleTypeTable = () => {
+  if (chartRef.value) {
+    chart.value = echarts.init(chartRef.value);
+    const xData = data.sampleTypeXData;
+    const yData = data.sampleTypeYData;
+    const option = {
+      title: {
+        text: '样本类型总览：'
+      },
+      color: '#409eff',
+      xAxis: {
+        type: 'category',
+        data: xData
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [
+        {
+          data: yData,
+          type: 'bar',
+          label: {
+            show: true,
+            position: 'top'
           }
-        ]
-      };
-      chart.value.setOption(option);
-    }
+        }
+      ]
+    };
+    chart.value.setOption(option);
   }
-)
+}
+
+// 搜索样本
+const searchInfo = reactive({
+  sampleNum: '',
+  sampleType: ''
+});
+
+const searchSample = () => {
+  if (searchInfo.sampleNum === '' && searchInfo.sampleType === '') {
+    ElMessage({ showClose: true, message: '请在搜索框填写样本 ID 或样本类型 ~', type: 'warning' });
+    return;
+  }
+  getSampleBySampleId(searchInfo).then(res => {
+    const resData = res.data;
+    ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+    if (resData.code === 1) {
+      data.sampleDatasets = resData.data;
+    }
+  });
+};
+
+// 编辑样本信息
+const editSampleInfoCard = (rowData) => {
+  data.sampleInfoVisible = true;
+  data.sampleInfo = rowData;
+};
+
+// 发送样本编辑信息
+const sendEditInfo = () => {
+  const putObj = data.sampleInfo;
+  editSampleInfo(putObj).then(res => {
+    const resData = res.data;
+    ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+  });
+  data.sampleInfoVisible = false;
+  getAllSamples();
+};
+
+// 移动样本存储的库位置信息
+const sendMoveSampleArea = () => {
+  const putObj = data.sampleInfoMove;
+  if (putObj.num === '') {
+    ElMessage({ showClose: true, message: '请填写样本 ID ~', type: 'warning' });
+    return;
+  }
+  if (judgeInputNull(putObj)) {
+    return;
+  }
+  moveSampleArea(putObj).then(res => {
+    const resData = res.data;
+    ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+    data.moveSampleCardVisible = false;
+  });
+};
+
+// 监听样本数据选中情况
+const selectionChange = (selection) => {
+  data.selectionSampleDataId = [];
+  for (let key in selection) {
+    data.selectionSampleDataId.push(selection[key].num);
+  }
+};
+
+// 批量删除样本数据
+const sendDeleteSampleData = () => {
+  const deleteData = { numList: data.selectionSampleDataId };
+  console.log(deleteData.numList);
+  if (deleteData.numList.length === 0) {
+    ElMessage({ showClose: true, message: '请勾选要删除的样本 ~', type: 'warning' });
+    return;
+  }
+  deleteSampleData(deleteData).then(res => {
+    const resData = res.data;
+    ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+    getAllSamples();
+  });
+};
 </script>
 
 <template>
@@ -213,70 +276,76 @@ onMounted(
                   <el-input
                     id="specimens-id"
                     style="height: 32px; width: 212px; padding: 0 22px 0 0;"
-                    v-model="searchInfo.sampleId"  
+                    v-model.trim="searchInfo.sampleNum"  
                     placeholder="请输入样本 id"
                   />
                   <label for="specimens-type">样本类型：</label>
                   <el-input
                     id="specimens-type"
                     style="height: 32px; width: 212px; padding: 0 22px 0 0;"
-                    v-model="searchInfo.type"
+                    v-model.trim="searchInfo.sampleType"
                     placeholder="请输入样本类型"
                   />
-                  <el-button class="button">搜索</el-button>        
+                  <el-button class="button" @click="searchSample">搜索</el-button>        
                 </div>
                 <div>
-                  <el-popconfirm title="确认要移出这些样本吗 ？" @confirm="">
+                  <el-popconfirm title="确认要移出这些样本吗 ？" @confirm="sendDeleteSampleData">
                     <template #reference>
                       <el-button class="button">出库</el-button>
                     </template>
                   </el-popconfirm>
-                  <el-button class="button" @click="data.dialogTransferVisable = true;">移库</el-button>
+                  <el-button class="button" @click="data.moveSampleCardVisible = true;">移库</el-button>
                   <!-- 移库后的弹窗 -->
-                  <el-dialog v-model="data.dialogTransferVisable" :close-on-click-modal="false">
+                  <el-dialog v-model="data.moveSampleCardVisible" :close-on-click-modal="false">
                     <template #header>
                       <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">移库</h3>
                     </template>
                     <div style="display: flex; align-items: center; font-size: 1.06rem; margin-bottom: 22px;">
                       样本 ID：
-                      <el-input style="width: 152px;" v-model.trim="data.sampleInfoRemove.id" placeholder="请输入样本 ID" />
+                      <el-input style="width: 152px;" v-model.trim="data.sampleInfoMove.num" placeholder="请输入样本 ID" />
                     </div>
                     <div style="display: flex; align-items: center; font-size: 1.06rem; margin-bottom: 12px;">移入位置</div>
                     <div style="display: flex; font-size: 1.06rem; margin-bottom: 12px;">
                       <div style="margin-right: 42px;">
                         房号：
-                        <el-input style="width: 98px;" v-model.trim="data.sampleInfoRemove.roomId" placeholder="请输入" />
+                        <el-input style="width: 98px;" v-model.trim="data.sampleInfoMove.roomNum" placeholder="请输入" />
                       </div>
                       <div style="margin-right: 42px;">
                         冰箱号：
-                        <el-input style="width: 98px;" v-model.trim="data.sampleInfoRemove.containerId" placeholder="请输入" />
+                        <el-input style="width: 98px;" v-model.trim="data.sampleInfoMove.fridgeNum" placeholder="请输入" />
                       </div>
                       <div style="margin-right: 42px;">
                         层号：
-                        <el-input style="width: 98px;" v-model.trim="data.sampleInfoRemove.layerId" placeholder="请输入" />
+                        <el-input style="width: 98px;" v-model.trim="data.sampleInfoMove.layerNum" placeholder="请输入" />
                       </div>
                       <div>
                         区号：
-                        <el-input style="width: 98px;" v-model.trim="data.sampleInfoRemove.areaId" placeholder="请输入" />
+                        <el-input style="width: 98px;" v-model.trim="data.sampleInfoMove.areaNum" placeholder="请输入" />
                       </div>
                     </div>
                     <div style="display: flex; font-size: 1.06rem; margin-bottom: 32px;">
                       <div style="margin-right: 42px;">
                         盒号：
-                        <el-input style="width: 98px;" v-model.trim="data.sampleInfoRemove.boxId" placeholder="请输入" />
+                        <el-input style="width: 98px;" v-model.trim="data.sampleInfoMove.boxNum" placeholder="请输入" />
                       </div>
                       <div style="margin-right: 42px;">
                         盒内行 ID：
-                        <el-input style="width: 98px;" v-model.trim="data.sampleInfoRemove.boxRowId" placeholder="请输入" />
+                        <el-input style="width: 98px;" v-model.trim="data.sampleInfoMove.sampleRow" placeholder="请输入" />
                       </div>
                       <div>
                         盒内列 ID：
-                        <el-input style="width: 98px;" v-model.trim="data.sampleInfoRemove.boxColId" placeholder="请输入" />
+                        <el-input style="width: 98px;" v-model.trim="data.sampleInfoMove.sampleColumn" placeholder="请输入" />
                       </div>
                     </div>
                     <div style="display: flex; justify-content: flex-end;">
-                      <el-button style="margin-right: 12px;" class="button" @click="data.dialogTransferVisable = false">取消</el-button>
-                      <el-button style="margin-right: 12px;" class="button">移入</el-button>
+                      <el-button
+                        style="margin-right: 12px;" class="button"
+                        @click="data.moveSampleCardVisible = false"
+                      >取消</el-button>
+                      <el-button
+                        style="margin-right: 12px;" class="button"
+                        @click="sendMoveSampleArea"
+                      >移入</el-button>
                     </div>
                   </el-dialog>
                 </div>
@@ -284,23 +353,32 @@ onMounted(
               <div>
                 <el-table
                   ref="multipleTableRef"
-                  :data="tableData"
+                  :data="data.sampleDatasets"
+                  @selection-change="selectionChange"
                   :border="true"
                   style="width: 100%"
                 >
                   <el-table-column type="selection" width="55" />
-                  <el-table-column property="sampleId" label="样本 ID" />
-                  <el-table-column property="sampleType" label="样本类型" />
-                  <el-table-column property="sampleDensity" label="样本浓度(g/ml)" />
-                  <el-table-column property="tubeVolume" label="溶液体积(ml)" />
-                  <el-table-column property="date" label="存入时间" />
+                  <el-table-column property="num" label="样本 ID" />
+                  <el-table-column property="type" label="样本类型" />
+                  <el-table-column property="concentration" label="样本浓度(g/ml)" />
+                  <el-table-column property="volume" label="溶液体积(ml)" />
+                  <el-table-column property="storeTime" label="存入时间" />
                   <el-table-column fixed="right" label="操作" width="120">
-                    <template #default>
-                      <el-button link type="primary" size="small" @click="data.sampleInfoVisible=true">编辑</el-button>
+                    <template v-slot="scope" #default>
+                      <el-button
+                        link type="primary" size="small"
+                        @click="editSampleInfoCard(scope.row)"
+                      >编辑</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
-                <el-pagination style="position: absolute; bottom: 5%; left: 43%;" layout="prev, pager, next, jumper" :total="100" />
+                <el-pagination
+                  style="position: absolute; bottom: 3%; left: 41%;"
+                  layout="total, prev, pager, next, jumper" :total="data.total"
+                  v-model:current-page="pageInfo.currentPage"
+                  @current-change="changeData"
+                />
                 <!-- 样本信息弹框 -->
                 <el-dialog class="sampleInfoCard"
                   style="position: absolute; left: 50%; top: -8%; transform: translateX(-50%);"
@@ -349,7 +427,7 @@ onMounted(
                       </div>
                       <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                         样本区域<br/>大小(㎡)：
-                        <el-input style="width: 166px;" v-model.trim="data.sampleInfo.area" placeholder="请输入样本区域大小" />
+                        <el-input style="width: 166px;" v-model.trim="data.sampleInfo.occupy" placeholder="请输入样本区域大小" />
                       </div>
                     </div>
                     <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 22px;">
@@ -409,7 +487,7 @@ onMounted(
                   </div>
                   <div style="display: flex; justify-content: flex-end;">
                     <el-button style="margin-right: 12px;" class="button"
-                    @click="() => { data.sampleInnerVisible = true; }"
+                    @click="sendEditInfo"
                     >确认</el-button>
                     <el-button style="margin-right: 12px;" class="button" @click="data.sampleInfoVisible=false">取消</el-button>
                   </div>

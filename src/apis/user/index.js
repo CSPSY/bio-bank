@@ -31,14 +31,27 @@ API.interceptors.response.use((res) => {
 /**
  * @description 首页部分
  */
-// 获取样本数据
+// 获取样本
 const getSample = (getObj) => {
-  return API.get('biobank/sample/' + Qs.stringify(getObj));
+  return API.get('/biobank/sample/?' + Qs.stringify(getObj));
 };
 
 // 获取样本类型统计
-const getSampleTypeCnt = (getObj) => {
-  return API.get('biobank/sample/' + Qs.stringify(getObj));
+const getSampleTypeCnt = () => {
+  return API.get('/biobank/sample/countByType');
 };
 
-export { getSample, getSampleTypeCnt };
+// 根据样本 ID，样本类型获取数据
+const getSampleBySampleId = (getObj) => {
+  return API.get('/biobank/sample/getSampleBySampleId?' + Qs.stringify(getObj));
+};
+
+/**
+ * @description 我的存储部分
+ */
+const getSampleByUserId = (getObj) => {
+  return API.get('/biobank/sample/getSampleByUerId?' + Qs.stringify(getObj));
+};
+
+export { getSample, getSampleTypeCnt, getSampleBySampleId };
+export { getSampleByUserId };

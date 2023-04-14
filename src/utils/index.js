@@ -9,8 +9,34 @@ import md5 from 'js-md5';
 const errorMap = new Map([
   ['accountInfo', '请填写用户名 ~'], ['fullName', '请填写真实姓名 ~'], ['passcode', '请填写密码 ~'],
   ['phoneNumber', '请填写电话号码 ~'], ['email', '请填写邮箱 ~'], ['captcha', '请填写邮箱验证码 ~'],
-  ['token', '请返回邮箱重新打开链接 ~']
-])
+  ['token', '请返回邮箱重新打开链接 ~'], ['roomNum', '请填写房间号 ~'], ['fridgeNum', '请填写冰箱号 ~'],
+  ['layerNum', '请填写层号 ~'], ['areaNum', '请填写区号 ~'], ['boxNum', '请填写盒号 ~'],
+  ['sampleRow', '请填写盒内行 ID ~'], ['sampleColumn', '请填写盒内列 ID ~']
+]);
+
+// 样本信息
+const sampleInfo = {
+  num: '',
+  concentration: '',
+  type: '',
+  acquisitionTime: '',
+  depositNum: '',
+  storeTime: '',
+  volume: '',
+  sampleSourceId: '',
+  areaNum: '',
+  securityLevel: '',
+  userId: '',
+  roomNum: '',
+  fridgeNum: '',
+  levelNum: '',
+  occupy: '',
+  boxNum: '',
+  sampleRow: '',
+  sampleColumn: '',
+  treatInfo: '',
+  specialInfo: ''
+};
 
 /**
  * @description 检查是否输入了必要信息
@@ -67,7 +93,7 @@ const getCaptcha = (email) => {
 // 注册
 const sendRegisterInfo = (captcha, registerInfo) => {
   const code = { code: captcha };
-  registerInfo.passcode = md5(registerInfo.passcode);
+  registerInfo.passcode = registerInfo.passcode;
   const postObj = registerInfo;
   if (judgeInputNull(postObj)) {
     return;
@@ -101,6 +127,7 @@ const logout = () => {
   router.push('/user/login');
 };
 
+export { sampleInfo };
 export { errorMap, judgeInputNull };
 export { getCaptcha, sendRegisterInfo };
 export { logout };

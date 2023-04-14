@@ -6,9 +6,9 @@ import { logout } from '../../utils/index.js';
 
 // 获取用户名，信息展示
 const userName = ref('');
-const userInfo = localStorage.getItem('userInfo');
-if (userInfo) {
-  userName.value = JSON.parse(userInfo).accountInfo;
+const adminInfo = localStorage.getItem('adminInfo');
+if (adminInfo) {
+  userName.value = JSON.parse(adminInfo).accountInfo;
 }
 
 const data = reactive({
@@ -78,8 +78,8 @@ const printSampleInfo = () => {
             <el-tag :disable-transitions="true" class="title">生物样本库</el-tag>
           </div>
           <el-menu-item class="menu-items items" index="1">
-              <el-icon><House /></el-icon>
-              <span>首页</span>
+            <el-icon><House /></el-icon>
+            <span>首页</span>
           </el-menu-item>
           <el-menu-item class="menu-items items" index="2">
             <RouterLink :to="{ path: '/admin/manage-container' }">
@@ -93,19 +93,19 @@ const printSampleInfo = () => {
               <span>样本管理</span>
             </RouterLink>
           </el-menu-item>
-          <el-sub-menu class="menu-items items" index = "4">
+          <el-sub-menu class="menu-items items" index="4">
             <template #title>
               <el-icon><Setting /></el-icon>
               <span class="items">系统管理</span>
             </template>
             <el-menu-item class="menu-items items" index="4-1">
-              <RouterLink style="color: rgb(83, 168, 255);" :to="{ path: '/admin/manage-auth' }">
+              <RouterLink :to="{ path: '/admin/manage-auth' }">
                 <el-icon><Tickets /></el-icon>
                 <span>权限管理</span>
               </RouterLink>
             </el-menu-item>
             <el-menu-item class="menu-items items" index="4-2">
-              <RouterLink :to="{ path: '/admin/manage-backup' }">
+              <RouterLink :to="{ path: '/admin/manage-backup'}">
                 <el-icon><Tickets /></el-icon>
                 <span>备份管理</span>
               </RouterLink>
@@ -284,7 +284,7 @@ const printSampleInfo = () => {
                     </div>
                     <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       样本区域<br/>大小(㎡)：
-                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.area" placeholder="请输入样本区域大小" />
+                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.occupy" placeholder="请输入样本区域大小" />
                     </div>
                   </div>
                   <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 22px;">

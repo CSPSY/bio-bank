@@ -7,9 +7,9 @@ import { ElMessage } from 'element-plus';
 
 // 获取用户名，信息展示
 const userName = ref('');
-const userInfo = localStorage.getItem('userInfo');
-if (userInfo) {
-  userName.value = JSON.parse(userInfo).accountInfo;
+const adminInfo = localStorage.getItem('adminInfo');
+if (adminInfo) {
+  userName.value = JSON.parse(adminInfo).accountInfo;
 }
 
 const data = reactive({

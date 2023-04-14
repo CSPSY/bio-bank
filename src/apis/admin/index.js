@@ -12,7 +12,7 @@ const API = axios.create({
 
 // 检查登录状态
 API.interceptors.request.use((req) => {
-  if (localStorage.getItem('userInfo') === null) {
+  if (localStorage.getItem('adminInfo') === null) {
     router.push('/admin/login');
   }
   return req;
@@ -20,7 +20,7 @@ API.interceptors.request.use((req) => {
 
 API.interceptors.response.use((res) => {
   if (res.data.code === 0 && res.data.msg === 'NOTLOGIN') {
-    localStorage.removeItem('userInfo');
+    localStorage.removeItem('adminInfo');
     router.push('/admin/login');
   }
   return res;
@@ -62,5 +62,42 @@ const searchSampleConVal = (getObj) => {
   return API.get('/system/?' + Qs.stringify(getObj));
 };
 
+/**
+ * @description 样本管理部分
+ */
+// 获取样本
+const getSample = (getObj) => {
+  return API.get('/biobank/sample/?' + Qs.stringify(getObj));
+};
+
+// 获取样本类型统计
+const getSampleTypeCnt = () => {
+  return API.get('/biobank/sample/countByType');
+};
+
+// 根据样本 ID，样本类型获取数据
+const getSampleBySampleId = (getObj) => {
+  return API.get('/biobank/sample/getSampleBySampleId?' + Qs.stringify(getObj));
+};
+
+// 编辑样本信息
+const editSampleInfo = (putObj) => {
+  return API.put('/biobank/sample/', putObj);
+};
+
+// 移动样本存储的库位置信息
+const moveSampleArea = (putObj) => {
+  return API.put('/biobank/sample/updateSample', putObj);
+};
+
+// 批量删除样本数据
+const deleteSampleData = (deleteData) => {
+  return API.delete('/biobank/sample/batchDelete', deleteData);
+};
+
+export {
+  getSample, getSampleTypeCnt, getSampleBySampleId,
+  editSampleInfo, moveSampleArea, deleteSampleData
+};
 export { getAllUser, getSpecialUser, deleteUser, editUser };
 export { setAlertNum, searchSampleConVal };

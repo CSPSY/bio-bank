@@ -7,27 +7,33 @@ import { ElMessage } from 'element-plus';
 
 // 获取用户名，信息展示
 const userName = ref('');
-const userInfo = localStorage.getItem('userInfo');
-if (userInfo) {
-  userName.value = JSON.parse(userInfo).accountInfo;
+const adminInfo = localStorage.getItem('adminInfo');
+if (adminInfo) {
+  userName.value = JSON.parse(adminInfo).accountInfo;
 }
 
+// 页码信息
+const pageInfo = reactive({
+  currentPage: 1,
+  size: 5
+});
+
+// 根据页码，获取数据
+const changeData = () => {
+  getUsers();
+};
 
 const data = reactive({
   searchUserId: '',
   createUserCardVisiable: false,
   editUserCardVisiable: false,
   userDatasets: [],
-  totals: 0,
-  pageInfo: {
-    currentPage: 1,
-    size: 10,
-  }
+  total: 0,
 });
 
 // 获取用户信息列表
 const getUsers = () => {
-  const getObj = data.pageInfo;
+  const getObj = pageInfo;
   getAllUser(getObj).then(res => {
     if (res.status === 200) {
       const resData = res.data;
@@ -35,6 +41,7 @@ const getUsers = () => {
         ElMessage({ showClose: false, message: resData.msg, type: 'error' });
       } else {
         data.userDatasets = resData.list;
+        data.total = resData.total;
       }
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
@@ -74,6 +81,7 @@ const searchSpecialUser = () => {
     const resData = res.data;
     if (resData.code === 1) {
       data.userDatasets = [resData.data];
+      data.total = 1;
       if (data.userDatasets[0] === null) {
         ElMessage({ showClose: true, message: '无此用户 ~', type: 'warning' });
         data.userDatasets = [];
@@ -108,9 +116,11 @@ const sendEditInfo = () => {
 // 根据用户 ID，删除用户
 const deleteUserById = (id) => {
   deleteUser(id).then(res => {
-    console.log(res);
     const resData = res.data;
     ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+    if (resData.code === 1) {
+      location.reload();
+    }
   });
 };
 </script>
@@ -153,10 +163,8 @@ const deleteUserById = (id) => {
               <span class="items">系统管理</span>
             </template>
             <el-menu-item class="menu-items items" index="4-1">
-              <RouterLink style="color: rgb(83, 168, 255);" :to="{ path: '/admin/manage-auth' }">
-                <el-icon><Tickets /></el-icon>
-                <span>权限管理</span>
-              </RouterLink>
+              <el-icon><Tickets /></el-icon>
+              <span>权限管理</span>
             </el-menu-item>
             <el-menu-item class="menu-items items" index="4-2">
               <RouterLink :to="{ path: '/admin/manage-backup' }">
@@ -297,8 +305,9 @@ const deleteUserById = (id) => {
               </el-dialog>
               <el-pagination
                 style="position: absolute; bottom: 5%; left: 43%;"
-                layout="prev, pager, next, jumper" :total="data.totals"
-                v-model:current-page="data.pageInfo.currentPage"
+                layout="total, prev, pager, next, jumper" :total="data.total"
+                v-model:current-page="pageInfo.currentPage"
+                @current-change="changeData"
               />
             </div>
           </div>

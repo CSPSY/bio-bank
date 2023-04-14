@@ -6,9 +6,9 @@ import { UploadFilled } from '@element-plus/icons-vue';
 
 // 获取用户名，信息展示
 const userName = ref('');
-const userInfo = localStorage.getItem('userInfo');
-if (userInfo) {
-  userName.value = JSON.parse(userInfo).accountInfo;
+const adminInfo = localStorage.getItem('adminInfo');
+if (adminInfo) {
+  userName.value = JSON.parse(adminInfo).accountInfo;
 }
 
 const data = reactive({
@@ -71,10 +71,8 @@ const showRecover = () => {
               </RouterLink>
             </el-menu-item>
             <el-menu-item class="menu-items items" index="4-2">
-              <RouterLink style="color: rgb(83, 168, 255);" :to="{ path: '/admin/manage-backup' }">
-                <el-icon><Tickets /></el-icon>
-                <span>备份管理</span>
-              </RouterLink>
+              <el-icon><Tickets /></el-icon>
+              <span>备份管理</span>
             </el-menu-item>
           </el-sub-menu>
           <el-menu-item class="menu-items items" index="5">

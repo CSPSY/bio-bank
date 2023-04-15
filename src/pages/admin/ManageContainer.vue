@@ -10,7 +10,6 @@ if (adminInfo) {
   userName.value = JSON.parse(adminInfo).accountInfo;
 }
 
-const inputId = ref('');
 const input1 = ref('');
 const input2 = ref('');
 const input3 = ref('');
@@ -143,8 +142,96 @@ const data = reactive({
     boxRowId: '1',
     boxColId: '4',
     remedyInfo: 'O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液, O 型血液'
-  }
+  },
+  menuInfo: [
+    {
+      roomNum: 201,
+      roomValue: [
+        {
+          num: 111,
+          numValue: [
+            {
+              levelNum: 1,
+              levelValue: [
+                {
+                  areaNum: 1,
+                  areaValue: [
+                    {
+                      boxNum: 1
+                    },
+                    {
+                      boxNum: 2
+                    }
+                  ]
+                },
+                {
+                  areaNum: 2,
+                  areaValue: [
+                    {
+                      boxNum: 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              levelNum: 2,
+              levelValue: [
+                {
+                  areaNum: 1,
+                  areaValue: [
+                    {
+                      boxNum: 1
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      roomNum: 202,
+      roomValue: [
+        {
+          num: 222,
+          numValue: [
+            {
+              levelNum: 1,
+              levelValue: [
+                {
+                  areaNum: 1,
+                  areaValue: [
+                    {
+                      boxNum: 1
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  sampleDatasets: [],
+  searchContainerId: '',
+  total: 0
 });
+
+// 根据盒号获取样本信息列表数据
+const getSampleInfoDatasets = (boxNum) => {
+  console.log(boxNum);
+};
+
+// 监听样本数据选中情况
+const selectionChange = (selection) => {
+  data.selectionSampleDataId = [];
+  for (let key in selection) {
+    data.selectionSampleDataId.push(selection[key].num);
+  }
+};
 </script>
 
 <template>
@@ -224,226 +311,100 @@ const data = reactive({
 						<el-container class="layout-container-demo" style="height: 500px">
 							<el-aside width="200px" style="background-color: rgb(255, 255, 255);">
 								<el-scrollbar>
-									<el-menu :default-openeds="['1', '3']">
-										<el-sub-menu index="1">
-											<template #title>
-												房间号 1
-											</template>
-											<el-sub-menu index="1-1">
-												<template #title>
-													设备号 1
-												</template>
-												<el-menu-item-group>
-													<el-menu-item index="1-1-1">层号 1</el-menu-item>
-												</el-menu-item-group>
-												<el-menu-item-group>
-													<el-menu-item index="1-1-2">层号 2</el-menu-item>
-												</el-menu-item-group>
-												<el-menu-item-group>
-													<el-menu-item index="1-1-3">层号 3</el-menu-item>
-												</el-menu-item-group>
-												<el-sub-menu index="1-1-4">
-													<template #title>层 4</template>
-													<el-menu-item index="1-1-4-1">区号 1</el-menu-item>
-													<el-menu-item index="1-1-4-2">区号 2</el-menu-item>
-													<el-menu-item index="1-1-4-3">区号 3</el-menu-item>
-													<el-sub-menu index="1-1-4-4">
+									<el-menu :default-openeds="['']">
+                    <el-sub-menu 
+                      v-for="(o, index) in data.menuInfo.length"
+                      :key="o" :index="o.toString()"
+                    >
+                      <template #title>
+                        房间号 {{ data.menuInfo[index].roomNum }}
+                      </template>
+                      <el-sub-menu
+                        v-for="(o1, index1) in data.menuInfo[index].roomValue.length"
+                        :key="o1" :index="o.toString() + '-' + o1.toString()"
+                      >
+                        <template #title>
+                          设备号 {{ data.menuInfo[index].roomValue[index1].num }}
+                        </template>
+                        <el-sub-menu
+                          v-for="(o2, index2) in data.menuInfo[index].roomValue[index1].numValue.length"
+                          :key="o2" :index="o.toString()+'-'+o1.toString()+'-'+o2.toString()"
+                        >
+                          <template #title>
+                            层号 {{ data.menuInfo[index].roomValue[index1].numValue[index2].levelNum }}
+                          </template>
+                          <el-sub-menu
+                            v-for="(o3, index3) in data.menuInfo[index].roomValue[index1].numValue[index2].levelValue.length"
+                            :key="o3" :index="o.toString()+'-'+o1.toString()+'-'+o2.toString()+'-'+o3.toString()"
+                          >
                             <template #title>
-                              区号 4
+                              区号 {{ data.menuInfo[index].roomValue[index1].numValue[index2].levelValue[index3].areaNum }}
                             </template>
-                            <el-menu-item index="1-1-4-4-1">盒号 1</el-menu-item>
-                            <el-menu-item index="1-1-4-4-2">盒号 2</el-menu-item>
-                            <el-menu-item index="1-1-4-4-3">盒号 3</el-menu-item>
+                            <el-menu-item
+                              v-for="(o4, index4) in data.menuInfo[index].roomValue[index1].numValue[index2].levelValue[index3].areaValue.length"
+                              :key="o4" :index="o.toString()+'-'+o1.toString()+'-'+o2.toString()+'-'+o3.toString()+'-'+o4.toString()"
+                              @click="getSampleInfoDatasets(data.menuInfo[index].roomValue[index1].numValue[index2].levelValue[index3].areaValue[index4].boxNum)"
+                            >
+                              盒号 {{ data.menuInfo[index].roomValue[index1].numValue[index2].levelValue[index3].areaValue[index4].boxNum }}
+                            </el-menu-item>
                           </el-sub-menu>
-												</el-sub-menu>
-											</el-sub-menu>
-										</el-sub-menu>
-										<el-sub-menu index="2">
-											<template #title>
-												房间号 2
-											</template>
-											<el-sub-menu index="2-1">
-												<template #title>
-													设备号 1
-												</template>
-												<el-menu-item-group>
-													<el-menu-item index="2-1-1">层号 1</el-menu-item>
-												</el-menu-item-group>
-												<el-menu-item-group>
-													<el-menu-item index="2-1-2">层号 2</el-menu-item>
-												</el-menu-item-group>
-												<el-menu-item-group>
-													<el-menu-item index="2-1-3">层号 3</el-menu-item>
-												</el-menu-item-group>
-												<el-sub-menu index="2-1-4">
-													<template #title>层号 4</template>
-													<el-menu-item index="2-1-4-1">区号 1</el-menu-item>
-													<el-menu-item index="2-1-4-2">区号 2</el-menu-item>
-													<el-menu-item index="2-1-4-3">区号 3</el-menu-item>
-													<el-sub-menu index="2-1-4-4">
-                            <template #title>
-                              区号 4
-                            </template>
-                            <el-menu-item index="2-1-4-4-1">盒号 1</el-menu-item>
-                            <el-menu-item index="2-1-4-4-2">盒号 2</el-menu-item>
-                            <el-menu-item index="2-1-4-4-3">盒号 3</el-menu-item>
-                          </el-sub-menu>
-												</el-sub-menu>
-											</el-sub-menu>
-										</el-sub-menu>
+                        </el-sub-menu>
+                      </el-sub-menu>
+                    </el-sub-menu>
 									</el-menu>
 								</el-scrollbar>
 							</el-aside>
 							<el-container>
-								<el-main>
-									<div style="padding:10px 30px">
-										<div class="con-header">
-											<div>
-												<label for="specimens-id">容器 ID：</label>
-												<el-input
-                          id="specimens-id"
-                          style="height: 32px; width: 212px; padding: 0 22px 0 0;"
-                          v-model="inputId"
-                          placeholder="请输入容器 id" />
-												<el-button class="button">搜索</el-button>
-												<el-button class="button" @click="data.containInfoVisible=true">创建容器</el-button>
-												<!-- 样本信息弹框 -->
-												<el-dialog v-model.trim="data.containInfoVisible" :close-on-click-modal="false">
-													<template #header>
-														<h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">创建容器</h3>
-													</template>
-													<div style="display: flex; flex-direction: row;">
-														<div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-															*设备类型：
-															<el-select v-model="valueForType" placeholder="请选择">
-																<el-option
-                                  v-for="item in optionsForType"
-                                  :key="item.value"
-                                  :label="item.label"
-                                  :value="item.value"
-                                  :disabled="item.disabled" />
-															</el-select>
-														</div>
-														<div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-															*设备品牌：
-															<el-select v-model="valueForBrand" placeholder="请选择">
-																<el-option
-                                  v-for="item in optionsForBrand"
-                                  :key="item.value"
-                                  :label="item.label"
-                                  :value="item.value"
-                                  :disabled="item.disabled" />
-															</el-select>
-														</div>
-														<div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-															*设备型号：
-															<el-select v-model="valueForModel" placeholder="请选择">
-																<el-option
-																		   v-for="item in optionsForModel"
-																		   :key="item.value"
-																		   :label="item.label"
-																		   :value="item.value"
-																		   :disabled="item.disabled" />
-															</el-select>
-														</div>
-													</div>
-													<div style="display: flex; flex-direction: row;">
-														<div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-															设备容量：
-															<el-input style="width: 215px;" v-model="input1" placeholder="请输入设备容量" />
-														</div>
-														<div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-															内部尺寸：
-															<el-input style="width: 215px;" v-model="input2" placeholder="请输入内部尺寸" />
-														</div>
-														<div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-															*编号：
-															<el-input style="width: 215px;" v-model="input3" placeholder="请输入编号" />
-														</div>
-													</div>
-													<div style="display: flex; flex-direction: row;">
-														<div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-															存储温度：
-															<el-input style="width: 215px;" v-model="input4" placeholder="请输入存储温度" />
-														</div>
-														<div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-															创建时间：
-															<el-input style="width: 215px;" v-model="input5" placeholder="请输入创建时间" />
-														</div>
-														<div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-															所在房间号：
-															<el-input style="width: 215px;" v-model="input6" placeholder="请输入所在房间号" />
-														</div>
-													</div>
-													<h3 style="border-bottom: 1px solid;  letter-spacing: .12rem; padding-bottom: 16px;">设备内部结构</h3>
-													<div style="display: flex; flex-direction: row;">
-														<div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-															层数：
-															<el-input style="width: 215px;" v-model="input7" placeholder="请输入层数" />
-														</div>
-														<div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-															盒数：
-															<el-input style="width: 215px;" v-model="input8" placeholder="请输入盒数" />
-														</div>
-													</div>
-													<div style="display: flex; flex-direction: row;">
-                            <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                              架数：
-                              <el-input style="width: 215px;" v-model="input9" placeholder="请输入架数" />
-                            </div>
-                            <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                              容量：
-                              <el-input style="width: 215px;" v-model="input10" placeholder="请输入容量" />
-                            </div>
-                        </div>
-                      <div style="display: flex; justify-content: flex-end;">
-                        <el-button style="margin-right: 12px;" class="button">确认</el-button>
-                        <el-button style="margin-right: 12px;" class="button" @click="data.containInfoVisible = false">取消</el-button>
-                      </div>
-                      </el-dialog>
-                      </div>
-                      <div>
-                        &nbsp
-                      </div>
-                      <div>
-                        <label for="specimens-id" style="font-size: 20px;">
-                          <strong>内置样品</strong>
-                        </label>
-                      </div>
+              <el-main>
+                <div style="padding:10px 30px">
+                  <section class="con-header">
+                    <div style="margin-bottom: 26px;">
+                      <label for="specimens-id">容器 ID：</label>
+                      <el-input
+                        id="specimens-id"
+                        style="height: 32px; width: 212px; padding: 0 22px 0 0;"
+                        v-model="data.searchContainerId"
+                        placeholder="请输入容器 id" />
+                      <el-button class="button">搜索</el-button>
+                      <el-button class="button" @click="data.containInfoVisible=true">创建容器</el-button>
                     </div>
-                    <div>
-                      &nbsp
+                    <div style="margin-bottom: 8px; font-size: 1.4rem;">
+                      <strong>内置样品</strong>
                     </div>
-                    <div>
-                      <label for="specimens-id" style="font-size: 13px;color: rgb(192,192,192)">0001冰箱 > 层号02 > 架号04 > 盒号01</label>
-                      <el-row type="flex" justify="end">
-                        <label for="specimens-id" style="font-size: 20px;">
-                          <strong>冰箱容量：4/500</strong>
-                        </label>
-                      </el-row>
-                    </div>
-                    <div>
-                      &nbsp
-                    </div>
-                    <el-scrollbar>
-                      <el-table
-                        ref="multipleTableRef"
-                        :data="tableData"
-                        :border="true"
-                        style="width: 100%">
+                  </section>
+                  <section style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span style="font-size: 13px; color: rgb(199, 199, 199);">房间号 1 > 冰箱 1 > 层号 1 > 区号 1 > 盒号 1</span>
+                    <strong style="font-size: 1.3rem;">冰箱容量：4/500</strong>
+                  </section>
+                  <section>
+                    <el-table
+                      ref="multipleTableRef"
+                      :data="data.sampleDatasets"
+                      @selection-change="selectionChange"
+                      :border="true"
+                      style="width: 100%; margin-bottom: 12px;"
+                    >
                       <el-table-column type="selection" width="55" />
-                      <el-table-column property="sampleId" label="样品ID" />
-                      <el-table-column property="sampleType" label="样品类型" />
-                      <el-table-column property="tubeVolume" label="溶液体积" />
-                      <el-table-column property="date" label="存入时间" />
+                      <el-table-column property="num" label="样本 ID" />
+                      <el-table-column property="type" label="样本类型" />
+                      <el-table-column property="concentration" label="样本浓度(g/ml)" />
+                      <el-table-column property="volume" label="溶液体积(ml)" />
+                      <el-table-column property="storeTime" label="存入时间" />
                       <el-table-column fixed="right" label="操作" width="120">
-                        <template #default>
-                          <el-button link type="primary" size="small" @click="data.containInfoVisible=true">编辑</el-button>
+                        <template v-slot="scope" #default>
+                          <el-button
+                            link type="primary" size="small"
+                            @click="editSampleInfoCard(scope.row)"
+                          >编辑</el-button>
                         </template>
                       </el-table-column>
                     </el-table>
-                    <el-button class="button" style="">批量删除</el-button>
-                  </el-scrollbar>
+                    <el-popconfirm title="确认要删除这些样品吗 ？" @confirm="">
+                      <template #reference>
+                        <el-button class="button" type="danger" plain>批量删除</el-button>
+                      </template>
+                    </el-popconfirm>
+                  </section>
                 </div>
               </el-main>
             </el-container>
@@ -516,4 +477,9 @@ a {
   padding: 16px;
   height: 100%;
 }
+.button:focus:not(.button:hover) {
+  background-color: var(--el-button-bg-color);
+  border-color: var(--el-button-border-color);
+  color: var(--el-button-text-color);
+};
 </style>

@@ -268,9 +268,10 @@ const userRoleOptions = [{
                 <div style="display: flex; flex-direction: row;">
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     用户<br>权限：
-                    <el-select style="width: 186px;" v-model="newUserInfo.userRole">
+                    <el-input style="width: 186px;" v-model.trim="newUserInfo.userRole" placeholder="请输入用户权限" />                    
+                    <!-- <el-select style="width: 186px;" v-model="newUserInfo.userRole">
                       <el-option v-for="item in userRoleOptions" :key="item.value" :label="item.label" :value="item.value"/>
-                    </el-select>
+                    </el-select> -->
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     用户<br>电话：
@@ -307,7 +308,11 @@ const userRoleOptions = [{
                 <el-table-column label="操作" width="120">
                   <template v-slot="scope" #default>
                     <el-button link type="primary" size="small" @click="editUserCard(scope.row)">编辑</el-button>
-                    <el-button link type="primary" size="small" @click="deleteUserById(scope.row.id)">删除</el-button>
+                    <el-popconfirm title="确认要删除该用户吗 ？" @confirm="deleteUserById(scope.row.id)">
+                      <template #reference>
+                          <el-button link type="primary" size="small" @click="">删除</el-button>
+                      </template>
+                    </el-popconfirm>
                   </template>
                 </el-table-column>
               </el-table>
@@ -327,9 +332,10 @@ const userRoleOptions = [{
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     用户<br>权限：
-                    <el-select style="width: 186px;" v-model="editUserInfo.userRole">
+                    <el-input style="width: 186px;" v-model.trim="editUserInfo.userRole" placeholder="请输入用户权限" />
+                    <!-- <el-select style="width: 186px;" v-model="editUserInfo.userRole">
                       <el-option v-for="item in userRoleOptions" :key="item.value" :label="item.label" :value="item.value"/>
-                    </el-select>
+                    </el-select> -->
                   </div>
                 </div>
                 <div style="display: flex; flex-direction: row;">

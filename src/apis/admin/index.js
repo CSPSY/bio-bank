@@ -4,6 +4,7 @@
 import axios from 'axios';
 import Qs from 'qs';
 import { router } from '../../router/index.js';
+import { ElMessage } from 'element-plus';
 
 const API = axios.create({
   // 和 vite.config 里跨域配置保持一致。
@@ -12,7 +13,9 @@ const API = axios.create({
 
 // 检查登录状态
 API.interceptors.request.use((req) => {
-  if (localStorage.getItem('adminInfo') === null) {
+  const userInfo = localStorage.getItem('userInfo');
+  if (userInfo && JSON.parse(userInfo).userRole !== '管理员') {
+    ElMessage({ showClose: true, message: '没有权限访问该页面 ~', type: 'error' });
     router.push('/admin/login');
   }
   return req;
@@ -20,7 +23,7 @@ API.interceptors.request.use((req) => {
 
 API.interceptors.response.use((res) => {
   if (res.data.code === 0 && res.data.msg === 'NOTLOGIN') {
-    localStorage.removeItem('adminInfo');
+    localStorage.removeItem('userInfo');
     router.push('/admin/login');
   }
   return res;
@@ -31,12 +34,64 @@ API.interceptors.response.use((res) => {
  */
 // 查询所有冰箱数据
 const getAllFridges = (getObj) => {
-  return API.get('/biobank/fridge/' + Qs.stringify(getObj));
+  return API.get('/biobank/fridge/?' + Qs.stringify(getObj));
 };
 
-// 搜索冰箱的编号，返回冰箱信息
-const getSpecialFridge = (getObj) => {
-  return API.get('/biobank/fridge/getByNum' + Qs.stringify(getObj));
+// 修改冰箱数据，通过 putObj 中 isVisible 实现删除
+const editFridge = (putObj) => {
+  return API.put('/biobank/fridge/', putObj);
+};
+
+
+/**
+ * @description 容器管理部分
+ */
+// 获取侧边栏信息---，容器存储信息，房间号-设备号-等
+const getContainerStorageInfo = (getObj) => {
+  return API.get('/biobank/fridge/getSidebar?' + Qs.stringify(getObj));
+};
+
+// 创建容器
+const addNewContainer = (postObj) => {
+  return API.post('/biobank/fridge/', postObj);
+};
+
+// 根据冰箱编号获取编写信息
+const getFridgeInfoByNum = (getObj) => {
+  return API.get('/biobank/fridge/getByNum?' + Qs.stringify(getObj));
+};
+
+/**
+ * @description 样本管理部分
+ */
+// 获取样本，根据 getObj 传参实现搜索样本功能
+const getSample = (getObj) => {
+  return API.get('/biobank/sample/?' + Qs.stringify(getObj));
+};
+
+// 获取样本类型统计
+const getSampleTypeCnt = () => {
+  return API.get('/biobank/sample/countByType');
+};
+
+// 编辑样本信息
+const editSampleInfo = (putObj) => {
+  return API.put('/biobank/sample/', putObj);
+};
+
+// 移动样本存储的库位置信息
+const moveSampleArea = (putObj) => {
+  return API.put('/biobank/sample/updateSample', putObj);
+};
+
+// 批量删除样本数据
+const deleteSampleData = (deleteData) => {
+  return API.delete('/biobank/sample/batchDelete', deleteData);
+};
+
+// 新增样本数据
+const addNewSample = (postObj) => {
+  return API.post('/biobank/sample/', postObj);
 };
 
 /**
@@ -68,44 +123,6 @@ const addUser = (postObj) => {
 };
 
 /**
- * @description 样本管理部分
- */
-// 获取样本
-const getSample = (getObj) => {
-  return API.get('/biobank/sample/?' + Qs.stringify(getObj));
-};
-
-// 获取样本类型统计
-const getSampleTypeCnt = () => {
-  return API.get('/biobank/sample/countByType');
-};
-
-// 根据样本 ID，样本类型获取数据
-const getSampleBySampleId = (getObj) => {
-  return API.get('/biobank/sample/getSampleBySampleId?' + Qs.stringify(getObj));
-};
-
-// 编辑样本信息
-const editSampleInfo = (putObj) => {
-  return API.put('/biobank/sample/', putObj);
-};
-
-// 移动样本存储的库位置信息
-const moveSampleArea = (putObj) => {
-  return API.put('/biobank/sample/updateSample', putObj);
-};
-
-// 批量删除样本数据
-const deleteSampleData = (deleteData) => {
-  return API.delete('/biobank/sample/batchDelete', deleteData);
-};
-
-// 新增样本数据
-const addNewSample = (postObj) => {
-  return API.post('/biobank/sample/', postObj);
-};
-
-/**
  * @description 系统监控部分
  */
 // 查询样本库容量
@@ -120,9 +137,10 @@ const setAlertNum = (postObj) => {
 
 
 export {
-  getSample, getSampleTypeCnt, getSampleBySampleId,
+  getSample, getSampleTypeCnt,
   editSampleInfo, moveSampleArea, deleteSampleData
 };
-export { getAllFridges, getSpecialFridge, addNewSample };
+export { getAllFridges, addNewSample, editFridge };
+export { getContainerStorageInfo, addNewContainer, getFridgeInfoByNum };
 export { getAllUser, getSpecialUser, deleteUser, editUser, addUser };
 export { setAlertNum, searchSampleConVal };

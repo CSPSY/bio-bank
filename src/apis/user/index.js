@@ -14,7 +14,9 @@ const API = axios.create({
 
 // 检查登录状态
 API.interceptors.request.use((req) => {
-  if (localStorage.getItem('userInfo') === null) {
+  const userInfo = localStorage.getItem('userInfo');
+  if (userInfo && JSON.parse(userInfo).userRole !== '用户') {
+    ElMessage({ showClose: true, message: '没有权限访问该页面 ~', type: 'error' });
     router.push('/user/login');
   }
   return req;
@@ -29,9 +31,9 @@ API.interceptors.response.use((res) => {
 });
 
 /**
- * @description 首页部分
+ * @description 首页，我的存储部分
  */
-// 获取样本
+// 获取样本，根据 getObj 传参实现不同页面获取数据的不同及搜索功能
 const getSample = (getObj) => {
   return API.get('/biobank/sample/?' + Qs.stringify(getObj));
 };
@@ -41,17 +43,4 @@ const getSampleTypeCnt = () => {
   return API.get('/biobank/sample/countByType');
 };
 
-// 根据样本 ID，样本类型获取数据
-const getSampleBySampleId = (getObj) => {
-  return API.get('/biobank/sample/getSampleBySampleId?' + Qs.stringify(getObj));
-};
-
-/**
- * @description 我的存储部分
- */
-const getSampleByUserId = (getObj) => {
-  return API.get('/biobank/sample/getSampleByUerId?' + Qs.stringify(getObj));
-};
-
-export { getSample, getSampleTypeCnt, getSampleBySampleId };
-export { getSampleByUserId };
+export { getSample, getSampleTypeCnt };

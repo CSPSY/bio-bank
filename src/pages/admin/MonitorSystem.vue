@@ -7,9 +7,9 @@ import { ElMessage } from 'element-plus';
 
 // 获取用户名，信息展示
 const userName = ref('');
-const adminInfo = localStorage.getItem('adminInfo');
-if (adminInfo) {
-  userName.value = JSON.parse(adminInfo).accountInfo;
+const userInfo = localStorage.getItem('userInfo');
+if (userInfo) {
+  userName.value = JSON.parse(userInfo).accountInfo;
 }
 
 const data = reactive({
@@ -26,50 +26,50 @@ const searchInfo = reactive({
   givenValue: '',
 });
 
-const containerDatasets = ref(
-  [
-    {
-      id: '01',
-      type: '冰箱',
-      roomId: '201',
-      temprature: '22℃',
-      createTime: '2023/3/16',
-      volume: '520/3000'
-    },
-    {
-      id: '02',
-      type: '冰箱',
-      roomId: '201',
-      temprature: '22℃',
-      createTime: '2023/3/16',
-      volume: '520/3000'
-    },
-    {
-      id: '03',
-      type: '冰箱',
-      roomId: '201',
-      temprature: '22℃',
-      createTime: '2023/3/16',
-      volume: '520/3000'
-    },
-    {
-      id: '04',
-      type: '冰箱',
-      roomId: '201',
-      temprature: '22℃',
-      createTime: '2023/3/16',
-      volume: '520/3000'
-    },
-    {
-      id: '05',
-      type: '冰箱',
-      roomId: '201',
-      temprature: '22℃',
-      createTime: '2023/3/16',
-      volume: '520/3000'
-    }
-  ]
-);
+// const containerDatasets = ref(
+//   [
+//     {
+//       id: '01',
+//       type: '冰箱',
+//       roomId: '201',
+//       temprature: '22℃',
+//       createTime: '2023/3/16',
+//       volume: '520/3000'
+//     },
+//     {
+//       id: '02',
+//       type: '冰箱',
+//       roomId: '201',
+//       temprature: '22℃',
+//       createTime: '2023/3/16',
+//       volume: '520/3000'
+//     },
+//     {
+//       id: '03',
+//       type: '冰箱',
+//       roomId: '201',
+//       temprature: '22℃',
+//       createTime: '2023/3/16',
+//       volume: '520/3000'
+//     },
+//     {
+//       id: '04',
+//       type: '冰箱',
+//       roomId: '201',
+//       temprature: '22℃',
+//       createTime: '2023/3/16',
+//       volume: '520/3000'
+//     },
+//     {
+//       id: '05',
+//       type: '冰箱',
+//       roomId: '201',
+//       temprature: '22℃',
+//       createTime: '2023/3/16',
+//       volume: '520/3000'
+//     }
+//   ]
+// );
 
 // 设置预警阈值
 const sendAlertNum = () => {
@@ -79,8 +79,8 @@ const sendAlertNum = () => {
   }
   const postObj = { alertThreshold: data.alertNum };
   setAlertNum(postObj).then(res => {
+    const resData = res.data;
     if (res.status === 200) {
-      const resData = res.data;
       if (resData.code === 1) {
         ElMessage({ showClose: true, message: resData.msg, type: 'success' });
       } else {
@@ -101,8 +101,12 @@ const searchSampleContainer = () => {
   }
   const getObj = searchInfo;
   searchSampleConVal(getObj).then(res => {
+    const resData = res.data;
     if (res.status === 200) {
-      data.tableVisible = true;
+      if (res.data.code !== 0) {
+        data.containerDatasets = res.data.records;
+        data.tableVisible = true;
+      }
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
@@ -197,7 +201,7 @@ const searchSampleContainer = () => {
             <div v-show="data.tableVisible">
               <el-table
                 ref="multipleTableRef"
-                :data="containerDatasets"
+                :data="data.containerDatasets"
                 :border="true"
                 style="width: 100%; margin-top: 16px;"
               >
@@ -211,6 +215,7 @@ const searchSampleContainer = () => {
               <el-pagination
                 style="position: absolute; bottom: 5%; left: 43%;"
                 layout="prev, pager, next, jumper" :total="data.total"
+                :page-size="searchInfo.pageSize"
                 v-model:current-page="searchInfo.pageNum"
               />
             </div>

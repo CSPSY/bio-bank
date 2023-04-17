@@ -2,7 +2,7 @@
 import { Document, House, SwitchButton } from '@element-plus/icons-vue'
 import * as echarts from 'echarts';
 import { ref, reactive } from 'vue';
-import { getSample, getSampleTypeCnt, getSampleBySampleId } from '../../apis/user/index.js';
+import { getSample, getSampleTypeCnt } from '../../apis/user/index.js';
 import { logout, sampleInfo } from '../../utils/index.js';
 
 // 获取用户名，信息展示
@@ -36,8 +36,8 @@ const data = reactive({
 const getAllSamples = () => {
   const getObj = pageInfo;
   getSample(getObj).then(res => {
+    const resData = res.data;
     if (res.status === 200) {
-      const resData = res.data;
       if (resData.code === 0) {
         ElMessage({ showClose: true, message: resData.msg, type: 'warning' });
         return;
@@ -119,17 +119,13 @@ const searchSample = () => {
     ElMessage({ showClose: true, message: '请在搜索框填写样本 ID 或样本类型 ~', type: 'warning' });
     return;
   }
-  getSampleBySampleId(searchInfo).then(res => {
-    if (res.status === 200) {
-      const resData = res.data;
-      ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
-      if (resData.code === 1) {
-        data.sampleDatasets = resData.data;
-      }
-    } else {
-      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
-    }
-  });
+  if (searchInfo.sampleNum !== '') {
+    pageInfo.num = searchInfo.sampleNum;
+  }
+  if (searchInfo.sampleType !== '') {
+    pageInfo.type = searchInfo.sampleType;
+  }
+  getAllSamples();
 };
 
 // 查看样本信息
@@ -225,6 +221,7 @@ const readSampleInfoCard = (rowData) => {
                 <el-pagination
                   style="position: absolute; bottom: 3%; left: 41%;"
                   layout="total, prev, pager, next, jumper" :total="data.total"
+                  :page-size="pageInfo.size"
                   v-model:current-page="pageInfo.currentPage"
                   @current-change="changeData"
                 />

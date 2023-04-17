@@ -52,7 +52,7 @@ const sendLoginInfo = () => {
             })
           );
         }
-        localStorage.setItem('adminInfo', JSON.stringify(resData));
+        localStorage.setItem('userInfo', JSON.stringify(resData));
         router.push('/admin');
       }
       ElMessage({ showClose: true, message: res.data.msg, type: res.data.code ? 'success' : 'error' });

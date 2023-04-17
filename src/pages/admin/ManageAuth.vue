@@ -7,15 +7,16 @@ import { ElMessage } from 'element-plus';
 
 // 获取用户名，信息展示
 const userName = ref('');
-const adminInfo = localStorage.getItem('adminInfo');
-if (adminInfo) {
-  userName.value = JSON.parse(adminInfo).accountInfo;
+const userInfo = localStorage.getItem('userInfo');
+if (userInfo) {
+  userName.value = JSON.parse(userInfo).accountInfo;
 }
 
 // 页码信息
 const pageInfo = reactive({
   currentPage: 1,
-  size: 5
+  size: 8,
+  accountInfo: '',
 });
 
 // 根据页码，获取数据
@@ -24,7 +25,7 @@ const changeData = () => {
 };
 
 const data = reactive({
-  searchUserId: '',
+  searchAccountInfo: '',
   createUserCardVisiable: false,
   editUserCardVisiable: false,
   userDatasets: [],
@@ -35,8 +36,8 @@ const data = reactive({
 const getUsers = () => {
   const getObj = pageInfo;
   getAllUser(getObj).then(res => {
+    const resData = res.data;
     if (res.status === 200) {
-      const resData = res.data;
       if (resData.code === 0) {
         ElMessage({ showClose: false, message: resData.msg, type: 'error' });
       } else {
@@ -48,7 +49,7 @@ const getUsers = () => {
     }
   });
 };
-getUsers();
+getUsers(pageInfo);
 
 const newUserInfo = reactive({
   accountInfo: '',
@@ -62,37 +63,20 @@ const newUserInfo = reactive({
 const editUserInfo = reactive({
   id: '',
   accountInfo: '',
-  passcode: '',
   fullName: '',
   userRole: '',
   phoneNumber: '',
   email: ''
 });
 
-// 根据用户 ID 搜索指定用户
+// 根据用户名，搜索指定用户
 const searchSpecialUser = () => {
-  if (data.searchUserId === '') {
-    ElMessage({ showClose: true, message: '请输入用户 ID', type: 'warning' });
+  if (data.searchAccountInfo === '') {
+    ElMessage({ showClose: true, message: '请输入用户名', type: 'warning' });
     return;
   }
-  const id = data.searchUserId;
-  getSpecialUser(id).then(res => {
-    if (res.status === 200) {
-      const resData = res.data;
-      if (resData.code === 1) {
-        data.userDatasets = [resData.data];
-        data.total = 1;
-        if (data.userDatasets[0] === null) {
-          ElMessage({ showClose: true, message: '无此用户 ~', type: 'warning' });
-          data.userDatasets = [];
-        }
-      } else {
-        ElMessage({ showClose: true, message: resData.msg, type: 'error' });
-      }
-    } else {
-      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
-    }
-  });
+  pageInfo.accountInfo = data.searchAccountInfo;
+  getUsers();
 };
 
 // 编辑用户信息
@@ -109,11 +93,11 @@ const editUserCard = (rowData) => {
 const sendEditInfo = () => {
   const putObj = editUserInfo;
   editUser(putObj).then(res => {
+    const resData = res.data;
     if (res.status === 200) {
-      const resData = res.data;
       ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
       data.editUserCardVisiable = false;
-      location.reload();
+      getUsers();
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
@@ -123,8 +107,8 @@ const sendEditInfo = () => {
 // 根据用户 ID，删除用户
 const deleteUserById = (id) => {
   deleteUser(id).then(res => {
+    const resData = res.data;
     if (res.status === 200) {
-      const resData = res.data;
       ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
       if (resData.code === 1) {
         location.reload();
@@ -143,9 +127,13 @@ const addNewUser = () => {
     return;
   }
   addUser(postObj).then(res => {
+    const resData = res.data;
     if (res.status === 200) {
       ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
-      localtion.reload();
+      if (resData.code === 1) {
+        data.createUserCardVisiable = false;
+        getUsers();
+      }
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
@@ -238,11 +226,11 @@ const userRoleOptions = [{
         <el-main style="background-color: rgb(245, 247, 253);">
           <div class="main-container">
             <div class="main-top">
-              <label for="specimens-id">用户 ID：</label>
+              <label for="account-info">用户名：</label>
               <el-input
-                id="specimens-id" v-model.trim="data.searchUserId"
+                id="account-info" v-model.trim="data.searchAccountInfo"
                 style="height: 32px; width: 212px; padding: 0 22px 0 0;"
-                placeholder="请输入用户ID"
+                placeholder="请输入用户名"
               />
               <el-button class="button" @click="searchSpecialUser">搜索</el-button>
               <el-button class="button" @click="data.createUserCardVisiable = true;">添加用户</el-button>
@@ -297,14 +285,14 @@ const userRoleOptions = [{
                 ref="multipleTableRef"
                 :data="data.userDatasets"
                 :border="true"
-                style="width: 1030px"
+                style="width: 1080px"
               >
                 <el-table-column property="id" label="用户 ID" width="190" />
                 <el-table-column property="accountInfo" label="用户名" width="120" />
                 <el-table-column property="fullName" label="姓名" width="110" />
                 <el-table-column property="userRole" label="用户角色" width="120" />
                 <el-table-column property="phoneNumber" label="电话号码" width="140" />
-                <el-table-column property="email" label="邮箱" width="230" />
+                <el-table-column property="email" label="邮箱" width="280" />
                 <el-table-column label="操作" width="120">
                   <template v-slot="scope" #default>
                     <el-button link type="primary" size="small" @click="editUserCard(scope.row)">编辑</el-button>
@@ -356,8 +344,9 @@ const userRoleOptions = [{
               <el-pagination
                 style="position: absolute; bottom: 5%; left: 41%;"
                 layout="total, prev, pager, next, jumper" :total="data.total"
+                :page-size="pageInfo.size"
                 v-model:current-page="pageInfo.currentPage"
-                @current-change="changeData"
+                @current-change="changeData()"
               />
             </div>
           </div>

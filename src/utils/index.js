@@ -14,7 +14,8 @@ const errorMap = new Map([
   ['sampleRow', '请填写盒内行 ID ~'], ['sampleColumn', '请填写盒内列 ID ~'], ['occupy', '请填写样本所占区域大小 ~'],
   ['acquisitionTime', '请填写样本采集时间 ~'], ['depositNum', '请填写样本存入数量 ~'], ['securityLevel', '请填写安全级别 ~'],
   ['storeTime', '请填写样本存入时间 ~'], ['treatInfo', '请填写治疗信息 ~'], ['concentration', '请填写样本溶度'],
-  ['userRole', '请填写用户权限 ~']
+  ['userRole', '请填写用户权限 ~'] , ['model', '请填写设备型号 ~'], ['brand', '请填写设备品牌 ~'],
+  ['storageTemp', '请填写存储温度 ~'], ['deviceName', '请填写设备名称 ~']
 ]);
 
 // 样本信息

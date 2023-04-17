@@ -6,9 +6,9 @@ import { UploadFilled } from '@element-plus/icons-vue';
 
 // 获取用户名，信息展示
 const userName = ref('');
-const adminInfo = localStorage.getItem('adminInfo');
-if (adminInfo) {
-  userName.value = JSON.parse(adminInfo).accountInfo;
+const userInfo = localStorage.getItem('userInfo');
+if (userInfo) {
+  userName.value = JSON.parse(userInfo).accountInfo;
 }
 
 const data = reactive({

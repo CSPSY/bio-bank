@@ -2,7 +2,7 @@
 import { ref, reactive } from 'vue';
 import { Document, House, SwitchButton } from '@element-plus/icons-vue';
 import { logout, sampleInfo } from '../../utils/index.js';
-import { getSampleByUserId, getSampleBySampleId } from '../../apis/user';
+import { getSample } from '../../apis/user';
 
 // 获取用户名，信息展示
 const userName = ref('');
@@ -29,20 +29,25 @@ const data = reactive({
   total: 0
 });
 
-// 根据用户 ID 获取用户存储样本信息
-const getAllSamplesByUserId = () => {
-  const userNum = JSON.parse(localStorage.getItem('userInfo')).id;
-  const getObj = { userNum };
-  getSampleByUserId(getObj).then(res => {
+// 获取样本数据
+const getAllSamples = () => {
+  const getObj = pageInfo;
+  getObj.userId = JSON.parse(userInfo).id;
+  getSample(getObj).then(res => {
+    const resData = res.data;
     if (res.status === 200) {
-      const resData = res.data;
-      data.sampleDatasets = resData.data;
+      if (resData.code === 0) {
+        ElMessage({ showClose: true, message: resData.msg, type: 'warning' });
+        return;
+      }
+      data.sampleDatasets = resData.list;
+      data.total = resData.total;
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
   });
 };
-getAllSamplesByUserId();
+getAllSamples();
 
 // 搜索样本
 const searchInfo = reactive({
@@ -55,17 +60,14 @@ const searchSample = () => {
     ElMessage({ showClose: true, message: '请在搜索框填写样本 ID 或样本类型 ~', type: 'warning' });
     return;
   }
-  getSampleBySampleId(searchInfo).then(res => {
-    if (res.status === 200) {
-      const resData = res.data;
-      ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
-      if (resData.code === 1) {
-        data.sampleDatasets = resData.data;
-    }
-    } else {
-      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
-    }
-  });
+  if (searchInfo.sampleNum !== '') {
+    pageInfo.num = searchInfo.sampleNum;
+  }
+  if (searchInfo.sampleType !== '') {
+    pageInfo.type = searchInfo.sampleType;
+  }
+  pageInfo.userId = JSON.parse(localStorage.getItem('userInfo')).id;
+  getAllSamples();
 };
 
 // 查看样本信息
@@ -160,6 +162,7 @@ const readSampleInfoCard = (rowData) => {
                 <el-pagination
                   style="position: absolute; bottom: 3%; left: 41%;"
                   layout="total, prev, pager, next, jumper" :total="data.total"
+                  :page-size="pageInfo.size"
                   v-model:current-page="pageInfo.currentPage"
                   @current-change="changeData"
                 />

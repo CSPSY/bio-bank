@@ -3,7 +3,7 @@ import { reactive, ref } from 'vue';
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting, Search } from '@element-plus/icons-vue';
 import printJS from 'print-js';
 import { logout, sampleInfo } from '../../utils/index.js';
-import { getAllFridges, addNewSample, editFridge } from '../../apis/admin/index.js';
+import { getAllFridges, addNewSample, editFridge, deleteFridge } from '../../apis/admin/index.js';
 import { ElMessage } from 'element-plus';
 import { judgeInputNull } from '../../utils/index.js';
 
@@ -98,7 +98,7 @@ const sendNewSampleInfo = () => {
     concentration: data.sampleInfo.concentration,
     type: data.sampleInfo.type,
     acquisitionTime: data.sampleInfo.acquisitionTime,
-    depositNum: data.sampleInfo.depositNum,
+    // depositNum: data.sampleInfo.depositNum,
     volume: data.sampleInfo.volume,
     areaNum: data.sampleInfo.areaNum,
     securityLevel: data.sampleInfo.securityLevel,
@@ -196,8 +196,18 @@ const sendEditFridgeInfo = () => {
 };
 
 // 删除冰箱
-const deleteFridge = () => {
-
+const sendDleteFridgeInfo = (id) => {
+  deleteFridge(id).then(res => {
+    const resData = res.data;
+    if (res.status === 200) {
+      ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+      if (resData.code === 1) {
+        getAllFridgesInfo();
+      }
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+    }
+  });
 };
 </script>
 
@@ -384,7 +394,7 @@ const deleteFridge = () => {
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     已用容量：
-                    <el-input style="width: 166px;" v-model.trim="data.container.size" placeholder="请输入已用容量" disabled />
+                    <el-input style="width: 166px;" v-model.trim="data.container.usageNumber" placeholder="请输入已用容量" disabled />
                   </div>
                 </div>
                 <div style="display: flex; justify-content: flex-end; margin: 22px 16px 0 0;">
@@ -392,7 +402,7 @@ const deleteFridge = () => {
                     style="margin-right: 12px;" class="button" type="primary" plain
                     @click="sendEditFridgeInfo"
                   >确认修改</el-button>
-                  <el-popconfirm title="确认要删除这些样品吗 ？" @confirm="deleteFridge">
+                  <el-popconfirm title="确认要删除这个设备吗 ？" @confirm="sendDleteFridgeInfo(data.container.id)">
                     <template #reference>
                       <el-button style="margin-right: 12px;" class="button" type="danger" plain>删除</el-button>
                     </template>
@@ -421,16 +431,16 @@ const deleteFridge = () => {
                       样本浓度：
                       <el-input style="width: 166px;" v-model.trim="data.sampleInfo.concentration" placeholder="请输入样本浓度(g/ml)" />
                     </div>
-                    <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                    <!-- <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       样本数量：
                       <el-input style="width: 166px;" v-model.trim="data.sampleInfo.depositNum" placeholder="请输入样本数量" />
-                    </div>
-                  </div>
-                  <div style="display: flex; flex-direction: row;">
+                    </div> -->
                     <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       样本类型：
                       <el-input style="width: 166px;" v-model.trim="data.sampleInfo.type" placeholder="请输入样本类型" />
                     </div>
+                  </div>
+                  <div style="display: flex; flex-direction: row;">
                     <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       样本源 ID：
                       <el-input style="width: 166px;" v-model.trim="data.sampleInfo.sampleSourceId" placeholder="请输入样本源 ID" />
@@ -439,12 +449,16 @@ const deleteFridge = () => {
                       溶液体积：
                       <el-input style="width: 166px;" v-model.trim="data.sampleInfo.volume" placeholder="请输入溶液体积(ml)" />
                     </div>
-                  </div>
-                  <div style="display: flex; flex-direction: row;">
                     <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       采集时间：
-                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.acquisitionTime" placeholder="请输入采集时间" />
+                      <el-date-picker
+                        style="width: 166px" format="YYYY-MM-DD" value-format="YYYY-MM-DD"
+                        v-model.trim="data.sampleInfo.acquisitionTime" type="date" placeholder="请选择采集时间"
+                      />
+                      <!-- <el-input style="width: 166px;" v-model.trim="data.sampleInfo.acquisitionTime" placeholder="请输入采集时间" /> -->
                     </div>
+                  </div>
+                  <div style="display: flex; flex-direction: row;">
                     <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       样本区域<br/>大小：
                       <el-input style="width: 166px;" v-model.trim="data.sampleInfo.occupy" placeholder="请输入样本区域大小" />

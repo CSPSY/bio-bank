@@ -32,16 +32,25 @@ API.interceptors.response.use((res) => {
 /**
  * @description 首页部分
  */
-// 查询所有冰箱数据
+// 查询所有冰箱数据，也可以实现搜索
 const getAllFridges = (getObj) => {
   return API.get('/biobank/fridge/?' + Qs.stringify(getObj));
 };
 
-// 修改冰箱数据，通过 putObj 中 isVisible 实现删除
+// 修改冰箱数据
 const editFridge = (putObj) => {
   return API.put('/biobank/fridge/', putObj);
 };
 
+// 新增样本数据
+const addNewSample = (postObj) => {
+  return API.post('/biobank/sample/', postObj);
+};
+
+// 删除冰箱
+const deleteFridge = (id) => {
+  return API.delete(`/biobank/fridge/${id}`);
+};
 
 /**
  * @description 容器管理部分
@@ -81,17 +90,12 @@ const editSampleInfo = (putObj) => {
 
 // 移动样本存储的库位置信息
 const moveSampleArea = (putObj) => {
-  return API.put('/biobank/sample/updateSample', putObj);
+  return API.put('/biobank/sample/moveSample', putObj);
 };
 
 // 批量删除样本数据
 const deleteSampleData = (deleteData) => {
-  return API.delete('/biobank/sample/batchDelete', deleteData);
-};
-
-// 新增样本数据
-const addNewSample = (postObj) => {
-  return API.post('/biobank/sample/', postObj);
+  return API.delete('/biobank/sample/batchDelete?' + Qs.stringify(deleteData));
 };
 
 /**
@@ -136,11 +140,11 @@ const setAlertNum = (postObj) => {
 };
 
 
+export { getAllFridges, addNewSample, editFridge, deleteFridge };
 export {
   getSample, getSampleTypeCnt,
   editSampleInfo, moveSampleArea, deleteSampleData
 };
-export { getAllFridges, addNewSample, editFridge };
 export { getContainerStorageInfo, addNewContainer, getFridgeInfoByNum };
 export { getAllUser, getSpecialUser, deleteUser, editUser, addUser };
 export { setAlertNum, searchSampleConVal };

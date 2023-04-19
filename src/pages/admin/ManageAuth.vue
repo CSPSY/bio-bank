@@ -256,10 +256,10 @@ const userRoleOptions = [{
                 <div style="display: flex; flex-direction: row;">
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     用户<br>权限：
-                    <el-input style="width: 186px;" v-model.trim="newUserInfo.userRole" placeholder="请输入用户权限" />                    
-                    <!-- <el-select style="width: 186px;" v-model="newUserInfo.userRole">
+                    <!-- <el-input style="width: 186px;" v-model.trim="newUserInfo.userRole" placeholder="请输入用户权限" />                     -->
+                    <el-select style="width: 186px;" v-model="newUserInfo.userRole">
                       <el-option v-for="item in userRoleOptions" :key="item.value" :label="item.label" :value="item.value"/>
-                    </el-select> -->
+                    </el-select>
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     用户<br>电话：
@@ -320,10 +320,10 @@ const userRoleOptions = [{
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     用户<br>权限：
-                    <el-input style="width: 186px;" v-model.trim="editUserInfo.userRole" placeholder="请输入用户权限" />
-                    <!-- <el-select style="width: 186px;" v-model="editUserInfo.userRole">
+                    <!-- <el-input style="width: 186px;" v-model.trim="editUserInfo.userRole" placeholder="请输入用户权限" /> -->
+                    <el-select style="width: 186px;" v-model="editUserInfo.userRole">
                       <el-option v-for="item in userRoleOptions" :key="item.value" :label="item.label" :value="item.value"/>
-                    </el-select> -->
+                    </el-select>
                   </div>
                 </div>
                 <div style="display: flex; flex-direction: row;">

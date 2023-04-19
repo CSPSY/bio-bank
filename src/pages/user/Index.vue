@@ -245,9 +245,9 @@ const readSampleInfoCard = (rowData) => {
                       <el-descriptions-item label="样本浓度(g/ml)" label-align="left" align="center" width="120px"
                       >{{ data.sampleInfo.concentration }}
                       </el-descriptions-item>
-                      <el-descriptions-item label="样本数量" label-align="left" align="center" width="120px"
+                      <!-- <el-descriptions-item label="样本数量" label-align="left" align="center" width="120px"
                       >{{ data.sampleInfo.depositNum }}
-                      </el-descriptions-item>
+                      </el-descriptions-item> -->
                       <el-descriptions-item label="样本类型" label-align="left" align="center" width="120px"
                       >{{ data.sampleInfo.type }}
                       </el-descriptions-item>
@@ -266,8 +266,8 @@ const readSampleInfoCard = (rowData) => {
                       <el-descriptions-item label="样本区域大小(㎡)" label-align="left" align="center" width="120px"
                       >{{ data.sampleInfo.occupy }}
                       </el-descriptions-item>
-                    <el-descriptions-item label="安全级别" label-align="left" align="center" width="120px"
-                    >
+                      <el-descriptions-item label="安全级别" label-align="left" align="center" width="120px"
+                      >
                       <el-tag size="small">{{ data.sampleInfo.securityLevel }}</el-tag>
                     </el-descriptions-item>
                   </el-descriptions>

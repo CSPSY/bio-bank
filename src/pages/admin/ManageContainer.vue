@@ -60,7 +60,6 @@ const data = reactive({
   menuInfo: [],
   sampleDatasets: [],
   searchContainerId: '',
-  openedMenu: '',
   total: 0
 });
 
@@ -80,6 +79,35 @@ const getSiderBarInfo = () => {
     const resData = res.data;
     if (res.status === 200) {
       if (resData.code === 1) {
+        let lastIdx = 0;
+        for (let i = 0; i < resData.data.length; i ++) {
+          let endIdx = resData.data[i].num.indexOf('房');
+          resData.data[i].value = resData.data[i].num.slice(lastIdx, endIdx);
+          const fridgeList = resData.data[i].fridgeList;
+          for (let j = 0, lastIdx = endIdx + 1; j < fridgeList.length; j ++) {
+            endIdx = fridgeList[j].num.indexOf('冰箱');
+            fridgeList[j].value = fridgeList[j].num.slice(lastIdx, endIdx);
+            const levelList = fridgeList[j].levelVoList;
+            for (let k = 0, lastIdx = endIdx + 2; k < levelList.length; k ++) {
+              endIdx = levelList[k].num.indexOf('层');
+              levelList[k].value = levelList[k].num.slice(lastIdx, endIdx);
+              const areaList = levelList[k].areaVoList;
+              for (let l = 0, lastIdx = endIdx + 1; l < areaList.length; l ++) {
+                endIdx = areaList[l].num.indexOf('区');
+                areaList[l].value = areaList[l].num.slice(lastIdx, endIdx);
+                const boxList = areaList[l].boxVoList;
+                for (let m = 0, lastIdx = endIdx + 2; m < boxList.length; m ++) {
+                  endIdx = boxList[m].indexOf('盒');
+                  let boxNum = boxList[m].slice(lastIdx, endIdx);
+                  boxList[m] = {
+                    num: boxList[m],
+                    value: boxNum 
+                  }
+                }  
+              }
+            }
+          }
+        }
         data.menuInfo = resData.data;
       }
     } else {
@@ -108,28 +136,30 @@ const getAllSamples = () => {
 };
 
 // 根据盒号获取盒内样本数据
-const getSampleInfoDatasets = (roomNum, fridgeNum, levelNum, areaNum, boxNum) => {
-  containerShowInfo.roomNum = roomNum;
-  containerShowInfo.fridgeNum = fridgeNum;
-  containerShowInfo.levelNum = levelNum;
-  containerShowInfo.areaNum = areaNum;
-  containerShowInfo.boxNum = boxNum;
+const getSampleInfoDatasets = (room, fridge, level, area, box) => {
+  containerShowInfo.roomNum = room.value;
+  containerShowInfo.fridgeNum = fridge.value;
+  containerShowInfo.levelNum = level.value;
+  containerShowInfo.areaNum = area.value;
+  containerShowInfo.boxNum = box.value;
 
-  fridgeNum = '01房01冰箱';
-  const getObj = {num: fridgeNum};
+  const getObj = {num: fridge.num};
   getFridgeInfoByNum(getObj).then(res => {
     const resData = res.data;
     if (res.status === 200) {
       if (resData.code === 1) {
         containerShowInfo.usageNumber = resData.data.usageNumber;
         containerShowInfo.capacity = resData.data.capacity;
+      } else {
+        containerShowInfo.usageNumber = 0;
+        containerShowInfo.capacity = 0;
       }
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
   });
 
-  pageInfo.boxNum = boxNum;
+  pageInfo.boxNum = box.num;
   getAllSamples();
 };
 
@@ -137,7 +167,7 @@ const getSampleInfoDatasets = (roomNum, fridgeNum, levelNum, areaNum, boxNum) =>
 const selectionChange = (selection) => {
   data.selectionSampleDataId = [];
   for (let key in selection) {
-    data.selectionSampleDataId.push(selection[key].num);
+    data.selectionSampleDataId.push(selection[key].id);
   }
 };
 
@@ -184,7 +214,6 @@ const searchSampleByContainer = () => {
       if (fridgeList[j].num === data.searchContainerId) {
         sideBar.value.open(idx)
         flag = true;
-        data.openedMenu = idx;
       }
     }
   }
@@ -205,6 +234,24 @@ const sendNewContainerInfo = () => {
       if (resData.code === 1) {
         data.containerInfoVisible = false;
       }
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+    }
+  });
+};
+
+// 批量删除样本数据
+const sendDeleteSampleData = () => {
+  const deleteData = { ids: data.selectionSampleDataId };
+  if (deleteData.ids.length === 0) {
+    ElMessage({ showClose: true, message: '请勾选要删除的样本 ~', type: 'warning' });
+    return;
+  }
+  deleteSampleData(deleteData).then(res => {
+    const resData = res.data;
+    if (res.status === 200) {
+      ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
+      getAllSamples();
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
@@ -289,27 +336,27 @@ const sendNewContainerInfo = () => {
 						<el-container class="layout-container-demo" style="height: 620px">
 							<el-aside width="232px" style="background-color: rgb(255, 255, 255);">
 								<el-scrollbar>
-									<el-menu ref="sideBar" :unique-opened="true" :default-openeds="data.openedMenu">
-                    <el-sub-menu 
+									<el-menu ref="sideBar" :unique-opened="true" :default-openeds="['']">
+                    <el-sub-menu
                       v-for="(room, key) in data.menuInfo"
                       :key="key+1" :index="(key+1).toString()"
                     >
                       <template #title>
-                        房间号 {{ room.num }}
+                        房间号 {{ room.value }}
                       </template>
                       <el-sub-menu
                         v-for="(fridge, key1) in room.fridgeList"
                         :key="key1" :index="(key+1).toString()+'-'+(key1+1).toString()"
                       >
                         <template #title>
-                          设备号 {{ fridge.num }}
+                          设备号 {{ fridge.value }}
                         </template>
                         <el-sub-menu
                           v-for="(level, key2) in fridge.levelVoList"
                           :key="key2" :index="(key+1).toString()+'-'+(key1+1).toString()+'-'+(key2+1).toString()"
                         >
                           <template #title>
-                            层号 {{ level.num }}
+                            层号 {{ level.value }}
                           </template>
                           <el-sub-menu
                             v-for="(area, key3) in level.areaVoList"
@@ -318,16 +365,16 @@ const sendNewContainerInfo = () => {
                                     +(key3+1).toString()"
                           >
                             <template #title>
-                              区号 {{ area.num }}
+                              区号 {{ area.value }}
                             </template>
                             <el-menu-item
-                              v-for="(boxNum, key4) in area.boxVoList"
+                              v-for="(box, key4) in area.boxVoList"
                               :key="key4"
                               :index="(key+1).toString()+'-'+(key1+1).toString()+'-'+(key2+1).toString()+'-'
                                       +(key3+1).toString()+'-'+(key4+1).toString()"
-                              @click="getSampleInfoDatasets(room.num, fridge.num, level.num, area.num, boxNum)"
+                              @click="getSampleInfoDatasets(room, fridge, level, area, box)"
                             >
-                              盒号 {{ boxNum }}
+                              盒号 {{ box.value }}
                             </el-menu-item>
                           </el-sub-menu>
                         </el-sub-menu>
@@ -344,9 +391,9 @@ const sendNewContainerInfo = () => {
                         <label for="specimens-id">设备号：</label>
                         <el-input
                           id="specimens-id"
-                          style="height: 32px; width: 212px; padding: 0 22px 0 0;"
+                          style="height: 32px; width: 252px; padding: 0 22px 0 0;"
                           v-model.trim="data.searchContainerId"
-                          placeholder="请输入设备号" />
+                          placeholder="请输入设备号（xx房xx冰箱）" />
                         <el-button class="button"
                           @click="searchSampleByContainer"
                         >搜索</el-button>
@@ -390,11 +437,18 @@ const sendNewContainerInfo = () => {
                           </template>
                         </el-table-column>
                       </el-table>
-                      <el-popconfirm title="确认要删除这些样品吗 ？" @confirm="">
+                      <el-popconfirm title="确认要删除这些样品吗 ？" @confirm="sendDeleteSampleData">
                         <template #reference>
-                          <el-button class="button" type="danger" plain>批量删除</el-button>
+                          <el-button style="margin-bottom: 16px;" class="button" type="danger" plain>批量删除</el-button>
                         </template>
                       </el-popconfirm>
+                      <el-pagination
+                        style="position: absolute; left: 50%;"
+                        layout="total, prev, pager, next, jumper" :total="data.total"
+                        :page-size="pageInfo.size"
+                        v-model:current-page="pageInfo.currentPage"
+                        @current-change="changeData"
+                      />
                       <!-- 样本信息弹框 -->
                       <el-dialog class="sampleInfoCard"
                         style="position: absolute; left: 50%; top: -8%; transform: translateX(-50%);"
@@ -413,16 +467,16 @@ const sendNewContainerInfo = () => {
                               样本浓度：
                               <el-input style="width: 166px;" v-model.trim="data.sampleInfo.concentration" placeholder="请输入样本浓度(g/ml)" />
                             </div>
-                            <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                            <!-- <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                               样本数量：
                               <el-input style="width: 166px;" v-model.trim="data.sampleInfo.depositNum" placeholder="请输入样本数量" />
-                            </div>
-                          </div>
-                          <div style="display: flex; flex-direction: row;">
+                            </div> -->
                             <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                               样本类型：
                               <el-input style="width: 166px;" v-model.trim="data.sampleInfo.type" placeholder="请输入样本类型" />
                             </div>
+                          </div>
+                          <div style="display: flex; flex-direction: row;">
                             <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                               样本源 ID：
                               <el-input style="width: 166px;" v-model.trim="data.sampleInfo.sampleSourceId" placeholder="请输入样本源 ID" />
@@ -431,31 +485,40 @@ const sendNewContainerInfo = () => {
                               溶液体积：
                               <el-input style="width: 166px;" v-model.trim="data.sampleInfo.volume" placeholder="请输入溶液体积(ml)" />
                             </div>
-                          </div>
-                          <div style="display: flex; flex-direction: row;">
-                            <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                              入库时间：
-                              <el-input style="width: 166px;" v-model.trim="data.sampleInfo.storeTime" placeholder="请输入入库时间"  disabled/>
-                            </div>
-                            <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                              采集时间：
-                              <el-input style="width: 166px;" v-model.trim="data.sampleInfo.acquisitionTime" placeholder="请输入采集时间" />
-                            </div>
                             <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                               样本区域<br/>大小：
                               <el-input style="width: 166px;" v-model.trim="data.sampleInfo.occupy" placeholder="请输入样本区域大小" />
                             </div>
                           </div>
-                          <div style="display: flex; flex-direction: row; align-items: center;">
+                          <div style="display: flex; flex-direction: row;">
                             <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                              安全<br/>级别：
-                              <el-input style="width: 166px;" v-model.trim="data.sampleInfo.securityLevel" placeholder="请输入安全级别" />
+                              入库时间：
+                              <el-input style="width: 166px;" v-model.trim="data.sampleInfo.storeTime" placeholder="请输入入库时间" disabled />
+                            </div>
+                            <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                              采集时间：
+                              <el-date-picker
+                                style="width: 166px" format="YYYY-MM-DD" value-format="YYYY-MM-DD"
+                                v-model.trim="data.sampleInfo.acquisitionTime" type="date" placeholder="请选择采集时间"
+                              />
+                              <!-- <el-input style="width: 166px;" v-model.trim="data.sampleInfo.acquisitionTime" placeholder="请输入采集时间" /> -->
+                            </div>
+                          </div>
+                          <div style="display: flex; flex-direction: row; align-items: center;">
+                            <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
+                              安全级别：
+                              <el-input style="width: 236px;" v-model.trim="data.sampleInfo.securityLevel" placeholder="请输入安全级别" />
+                            </div>
+                            <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
+                              所属<br/>用户 ID：
+                              <el-input style="width: 236px;" v-model.trim="data.sampleInfo.userId" placeholder="请输入用户 ID" />
                             </div>
                           </div>
                           <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 22px;">
                             治疗信息：
                             <el-input style="width: 75%;" autosize type="textarea"
                               v-model.trim="data.sampleInfo.treatInfo" placeholder="请输入治疗信息"
+                                disabled
                             />
                           </div>
                           <div style="display: flex; flex-direction: row;">
@@ -506,9 +569,11 @@ const sendNewContainerInfo = () => {
                           </div>
                         </div>
                         <div style="display: flex; justify-content: flex-end;">
-                          <el-button style="margin-right: 12px;" class="button"
-                          @click="sendEditInfo"
-                          >确认</el-button>
+                          <el-popconfirm title="确认要修改这个样本信息吗 ？" @confirm="sendEditInfo">
+                            <template #reference>
+                              <el-button style="margin-right: 12px;" class="button">确认</el-button>
+                            </template>
+                          </el-popconfirm>
                           <el-button
                             style="margin-right: 12px;" class="button"
                             @click="data.sampleInfoVisible=false"

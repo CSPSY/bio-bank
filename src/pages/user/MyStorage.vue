@@ -186,9 +186,9 @@ const readSampleInfoCard = (rowData) => {
                       <el-descriptions-item label="样本浓度(g/ml)" label-align="left" align="center" width="120px"
                       >{{ data.sampleInfo.concentration }}
                       </el-descriptions-item>
-                      <el-descriptions-item label="样本数量" label-align="left" align="center" width="120px"
+                      <!-- <el-descriptions-item label="样本数量" label-align="left" align="center" width="120px"
                       >{{ data.sampleInfo.depositNum }}
-                      </el-descriptions-item>
+                      </el-descriptions-item> -->
                       <el-descriptions-item label="样本类型" label-align="left" align="center" width="120px"
                       >{{ data.sampleInfo.type }}
                       </el-descriptions-item>

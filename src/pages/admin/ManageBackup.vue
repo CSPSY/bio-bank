@@ -2,7 +2,8 @@
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
 import { logout } from '../../utils/index.js';
 import { reactive, ref } from 'vue';
-import { UploadFilled } from '@element-plus/icons-vue';
+import { backupBiobankDB, restoreBiobankDB } from '../../apis/admin/index.js';
+import { ElMessage } from 'element-plus';
 
 // 获取用户名，信息展示
 const userName = ref('');
@@ -13,17 +14,71 @@ if (userInfo) {
 
 const data = reactive({
   backupVisible: true,
-  recoverVisible: false
+  restoreVisible: false,
+  backupInfo: {
+    path: '/home/beifen',
+    dbName: 'bio-bank'
+  },
+  restoreInfo: {
+    path: '/home/beifen/backup.sql',
+    dbName: 'bio-bank'
+  }
 });
 
 const showBackup = () => {
-  data.recoverVisible = false;
+  data.restoreVisible = false;
   data.backupVisible = true;
 };
 
 const showRecover = () => {
   data.backupVisible = false;
-  data.recoverVisible = true;
+  data.restoreVisible = true;
+};
+
+// 样本库备份，数据库备份
+const backupBiobank = () => {
+  const paramsObj = data.backupInfo;
+  if (paramsObj.path === '') {
+    ElMessage({ showClose: true, message: '请填写服务器的存储目录 ~', type: 'warning' });
+    return;
+  } else if (paramsObj.dbName) {
+    ElMessage({ showClose: true, message: '请填写数据库名称 ~', type: 'warning' });
+    return;
+  }
+  backupBiobankDB(paramsObj).then(res => {
+    const resData = res.data;
+    if (res.status === 200) {
+      if (resData.code === 1) {
+        ElMessage({ showClose: true, message: resData.msg, type: 'success' });
+        return;
+      }
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+    }
+  });
+};
+
+// 数据库恢复，根据文件恢复数据库信息
+const restoreBiobank = () => {
+  const paramsObj = data.restoreInfo;
+  if (paramsObj.path === '') {
+    ElMessage({ showClose: true, message: '请填写服务器上恢复文件所在的位置 ~', type: 'warning' });
+    return;
+  } else if (paramsObj.dbName) {
+    ElMessage({ showClose: true, message: '请填写数据库名称 ~', type: 'warning' });
+    return;
+  }
+  restoreBiobankDB(paramsObj).then(res => {
+    const resData = res.data;
+    if (res.status === 200) {
+      if (resData.code === 1) {
+        ElMessage({ showClose: true, message: resData.msg, type: 'success' });
+        return;
+      }
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+    }
+  });
 };
 </script>
 
@@ -107,28 +162,66 @@ const showRecover = () => {
                 <el-button class="button" @click="showBackup">样本库备份</el-button>
                 <el-button class="button" @click="showRecover">样本库恢复</el-button>
               </div>
-              <!-- 样本库恢复 -->
-              <div class="con-header-right" v-show="data.recoverVisible">
-                  <el-card class="box-card">
-                    <template #header>
-                      <div class="card-header">
-                        <span>样本库恢复</span>
-                      </div>
-                    </template>
-                    <el-upload
-                    action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-                    drag multiple
-                    >
-                    <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-                    <div class="el-upload__text">
-                      拖拽文件到该区域或 <em>点击此处进行上传</em>
+              <!-- 样本库备份 -->
+              <div class="con-header-right" v-show="data.backupVisible">
+                <el-card class="box-card">
+                  <template #header>
+                    <div class="card-header">
+                      <span>样本库备份</span>
+                      <el-popconfirm
+                        width="220" title="确认要将数据库备份到服务器上的这个位置吗 ？"
+                        @confirm="backupBiobank"
+                      >
+                        <template #reference>
+                          <el-button
+                            style="margin-top: 0;"
+                            class="button" type="primary" text plain
+                          >进行备份</el-button>
+                        </template>
+                      </el-popconfirm>
                     </div>
-                    <!-- <template #tip>
-                      <div class="el-upload__tip">
-                        上传文件格式：
-                      </div>
-                    </template> -->
-                  </el-upload>
+                  </template>
+                  <section>
+                    <div style="font-size: 14px; display: flex; align-items: center; margin-bottom: 16px;">
+                      <span style="width: 30%;">存储目录：</span>
+                      <el-input style="width: 66%;" v-model.trim="data.backupInfo.path" />
+                    </div>
+                    <div style="font-size: 14px; display: flex; align-items: center;">
+                      <span style="width: 30%;">数据库名称：</span>
+                      <el-input style="width: 66%;" v-model.trim="data.backupInfo.dbName" />
+                    </div>
+                  </section>
+                </el-card>
+              </div> 
+              <!-- 样本库恢复 -->
+              <div class="con-header-right" v-show="data.restoreVisible">
+                <el-card class="box-card">
+                  <template #header>
+                    <div class="card-header">
+                      <span>样本库恢复</span>
+                      <el-popconfirm
+                        width="220" title="确认要用这个文件来恢复数据库吗 ？"
+                        @confirm="restoreBiobank"
+                      >
+                      <template #reference>
+                        <el-button
+                          style="margin-top: 0;"
+                          class="button" type="primary" text plain
+                        >进行恢复</el-button>
+                      </template>
+                    </el-popconfirm>
+                    </div>
+                  </template>
+                  <section>
+                    <div style="font-size: 14px; display: flex; align-items: center; margin-bottom: 16px;">
+                      <span style="width: 30%;">恢复文件位置：</span>
+                      <el-input style="width: 66%;" v-model.trim="data.restoreInfo.path" />
+                    </div>
+                    <div style="font-size: 14px; display: flex; align-items: center;">
+                      <span style="width: 30%;">数据库名称：</span>
+                      <el-input style="width: 66%;" v-model.trim="data.restoreInfo.dbName" />
+                    </div>
+                  </section>
                 </el-card>
               </div>
             </div>
@@ -212,20 +305,26 @@ a {
 
   align-self: flex-start;
   padding-top: 32px;
+  margin-right: 56px;
 }
 .con-header-right {
   padding: 12px;
 }
 .button {
   margin: 0;
-  margin-right: 52px;
 }
 .button:not(:first-child) {
   margin-top: 12px;
 }
 .box-card {
-  width: 328px;
+  width: 528px;
 }
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .button:focus:not(.button:hover) {
   background-color: var(--el-button-bg-color);
   border-color: var(--el-button-border-color);

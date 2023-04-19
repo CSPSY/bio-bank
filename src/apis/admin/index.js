@@ -127,6 +127,19 @@ const addUser = (postObj) => {
 };
 
 /**
+ * @description 备份管理部分
+ */
+// 样本库备份---备份数据库
+const backupBiobankDB = (paramsObj) => {
+  return API.post('/system/backup?' + Qs.stringify(paramsObj));
+};
+
+// 样本库恢复---用之前备份的，进行数据库恢复
+const restoreBiobankDB = (paramsObj) => {
+  return API.post('/system/restore?' + Qs.stringify(paramsObj));
+};
+
+/**
  * @description 系统监控部分
  */
 // 查询样本库容量
@@ -147,4 +160,5 @@ export {
 };
 export { getContainerStorageInfo, addNewContainer, getFridgeInfoByNum };
 export { getAllUser, getSpecialUser, deleteUser, editUser, addUser };
+export { backupBiobankDB, restoreBiobankDB };
 export { setAlertNum, searchSampleConVal };

@@ -63,6 +63,8 @@ const getAllSamples = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 getAllSamples();
@@ -84,6 +86,8 @@ const getAllSamplesTypeCnt = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 }
 getAllSamplesTypeCnt();
@@ -164,6 +168,8 @@ const sendEditInfo = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
   data.sampleInfoVisible = false;
   getAllSamples();
@@ -189,6 +195,8 @@ const sendMoveSampleArea = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 
@@ -207,7 +215,17 @@ const sendDeleteSampleData = () => {
     ElMessage({ showClose: true, message: '请勾选要删除的样本 ~', type: 'warning' });
     return;
   }
-  deleteSampleData(deleteData).then(res => {
+  let deleteStr = '';
+  for (let i = 0; i < deleteData.ids.length; i ++) {
+    let tmp = '';
+    if (i) {
+      tmp = tmp + '&';
+    }
+    tmp = tmp + 'ids=' + deleteData.ids[i];
+    deleteStr = deleteStr + tmp;
+  }
+  console.log(deleteStr);
+  deleteSampleData(deleteStr).then(res => {
     const resData = res.data;
     if (res.status === 200) {
       ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
@@ -215,6 +233,8 @@ const sendDeleteSampleData = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 </script>
@@ -462,19 +482,19 @@ const sendDeleteSampleData = () => {
                         />
                         <!-- <el-input style="width: 166px;" v-model.trim="data.sampleInfo.acquisitionTime" placeholder="请输入采集时间" /> -->
                       </div>
-                      <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                      <!-- <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                         样本区域<br/>大小：
                         <el-input style="width: 166px;" v-model.trim="data.sampleInfo.occupy" placeholder="请输入样本区域大小" />
-                      </div>
+                      </div> -->
                     </div>
                     <div style="display: flex; flex-direction: row; align-items: center;">
                       <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
-                        安全级别：
-                        <el-input style="width: 236px;" v-model.trim="data.sampleInfo.securityLevel" placeholder="请输入安全级别" />
-                      </div>
-                      <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
                         所属<br/>用户 ID：
                         <el-input style="width: 236px;" v-model.trim="data.sampleInfo.userId" placeholder="请输入用户 ID" />
+                      </div>
+                      <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
+                        安全级别：
+                        <el-input style="width: 236px;" v-model.trim="data.sampleInfo.securityLevel" placeholder="请输入安全级别" />
                       </div>
                     </div>
                     <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 22px;">

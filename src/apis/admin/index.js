@@ -8,17 +8,20 @@ import { ElMessage } from 'element-plus';
 
 const API = axios.create({
   // 和 vite.config 里跨域配置保持一致。
-  baseURL: '/api'
+  baseURL: ''
+  // baseURL: 'http://150.158.18.74:8082'
 });
 
 // 检查登录状态
 API.interceptors.request.use((req) => {
   const userInfo = localStorage.getItem('userInfo');
-  if (userInfo && JSON.parse(userInfo).userRole !== '管理员') {
-    ElMessage({ showClose: true, message: '没有权限访问该页面 ~', type: 'error' });
+  if (userInfo && JSON.parse(userInfo).userRole !== '管理员' || userInfo === null) {
+    // ElMessage({ showClose: true, message: '没有权限访问该页面 ~', type: 'error' });
     router.push('/admin/login');
   }
   return req;
+}, err => {
+  return Promise.reject(err);
 });
 
 API.interceptors.response.use((res) => {
@@ -27,11 +30,18 @@ API.interceptors.response.use((res) => {
     router.push('/admin/login');
   }
   return res;
+}, err => {
+  return Promise.reject(err);
 });
 
 /**
  * @description 首页部分
  */
+// 查找是否有冰箱超过阈值
+const selectByAlert = () => {
+  return API.get('/system/selectByAlert');
+};
+
 // 查询所有冰箱数据，也可以实现搜索
 const getAllFridges = (getObj) => {
   return API.get('/biobank/fridge/?' + Qs.stringify(getObj));
@@ -95,7 +105,7 @@ const moveSampleArea = (putObj) => {
 
 // 批量删除样本数据
 const deleteSampleData = (deleteData) => {
-  return API.delete('/biobank/sample/batchDelete?' + Qs.stringify(deleteData));
+  return API.delete('/biobank/sample/batchDelete?' + deleteData);
 };
 
 /**
@@ -153,7 +163,7 @@ const setAlertNum = (postObj) => {
 };
 
 
-export { getAllFridges, addNewSample, editFridge, deleteFridge };
+export { getAllFridges, addNewSample, editFridge, deleteFridge, selectByAlert };
 export {
   getSample, getSampleTypeCnt,
   editSampleInfo, moveSampleArea, deleteSampleData

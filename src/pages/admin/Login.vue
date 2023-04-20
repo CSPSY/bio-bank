@@ -59,6 +59,8 @@ const sendLoginInfo = () => {
     } else {
       ElMessage({ showClose: true, message: res.data.msg, type: 'error'});
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 

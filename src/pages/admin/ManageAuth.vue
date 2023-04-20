@@ -2,7 +2,7 @@
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
 import { ref, reactive } from 'vue';
 import { judgeInputNull, logout } from '../../utils/index.js';
-import { getAllUser, getSpecialUser, deleteUser, editUser, addUser } from '../../apis/admin/index.js';
+import { getAllUser, deleteUser, editUser, addUser } from '../../apis/admin/index.js';
 import { ElMessage } from 'element-plus';
 
 // 获取用户名，信息展示
@@ -47,6 +47,8 @@ const getUsers = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 getUsers(pageInfo);
@@ -101,6 +103,8 @@ const sendEditInfo = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 
@@ -116,6 +120,8 @@ const deleteUserById = (id) => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 
@@ -137,6 +143,8 @@ const addNewUser = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 

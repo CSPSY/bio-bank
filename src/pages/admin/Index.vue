@@ -3,7 +3,7 @@ import { reactive, ref } from 'vue';
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting, Search } from '@element-plus/icons-vue';
 import printJS from 'print-js';
 import { logout, sampleInfo } from '../../utils/index.js';
-import { getAllFridges, addNewSample, editFridge, deleteFridge } from '../../apis/admin/index.js';
+import { getAllFridges, addNewSample, editFridge, deleteFridge, selectByAlert } from '../../apis/admin/index.js';
 import { ElMessage } from 'element-plus';
 import { judgeInputNull } from '../../utils/index.js';
 
@@ -13,6 +13,20 @@ const userInfo = localStorage.getItem('userInfo');
 if (userInfo) {
   userName.value = JSON.parse(userInfo).accountInfo;
 }
+
+const judgeFridgeAlert = () => {
+  selectByAlert().then(res => {
+    const resData = res.data;
+    if (res.status === 200) {
+      if (resData.data.length !== 0) {
+        ElMessage({ showClose: true, message: '当前有冰箱超过阈值，请去系统监控页面查看！！', type: 'warning' });
+      }
+    }
+  }).catch(err => {
+    console.log(err);
+  });
+};
+judgeFridgeAlert();
 
 // 页码信息
 const pageInfo = reactive({
@@ -63,6 +77,8 @@ const getAllFridgesInfo = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
   // 刷新存入样本信息输入值
   for (let key in data.sampleInfo) {
@@ -105,7 +121,7 @@ const sendNewSampleInfo = () => {
     roomNum: data.sampleInfo.roomNum,
     fridgeNum: data.sampleInfo.fridgeNum,
     levelNum: data.sampleInfo.levelNum,
-    occupy: data.sampleInfo.occupy,
+    // occupy: data.sampleInfo.occupy,
     boxNum: data.sampleInfo.boxNum,
     sampleRow: data.sampleInfo.sampleRow,
     sampleColumn: data.sampleInfo.sampleColumn,
@@ -131,6 +147,8 @@ const sendNewSampleInfo = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 
@@ -192,6 +210,8 @@ const sendEditFridgeInfo = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 
@@ -202,11 +222,14 @@ const sendDleteFridgeInfo = (id) => {
     if (res.status === 200) {
       ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'error' });
       if (resData.code === 1) {
+        data.containerInfoVisible = false;
         getAllFridgesInfo();
       }
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 </script>
@@ -429,7 +452,7 @@ const sendDleteFridgeInfo = (id) => {
                     </div>
                     <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       样本浓度：
-                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.concentration" placeholder="请输入样本浓度(g/ml)" />
+                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.concentration" placeholder="请输入样本浓度" />
                     </div>
                     <!-- <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       样本数量：
@@ -459,10 +482,10 @@ const sendDleteFridgeInfo = (id) => {
                     </div>
                   </div>
                   <div style="display: flex; flex-direction: row;">
-                    <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                    <!-- <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       样本区域<br/>大小：
                       <el-input style="width: 166px;" v-model.trim="data.sampleInfo.occupy" placeholder="请输入样本区域大小" />
-                    </div>
+                    </div> -->
                     <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       安全<br/>级别：
                       <el-input style="width: 166px;" v-model.trim="data.sampleInfo.securityLevel" placeholder="请输入安全级别" />
@@ -496,12 +519,12 @@ const sendDleteFridgeInfo = (id) => {
                   </div>
                   <div style="display: flex; flex-direction: row;">
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
-                      所属<br/>用户 ID：
-                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.userId" placeholder="请输入用户 ID" />
-                    </div>
-                    <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
                       所在<br/>盒子号：
                       <el-input style="width: 236px;" v-model.trim="data.sampleInfo.boxNum" placeholder="请输入盒子号" />
+                    </div>
+                    <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
+                      所属<br/>用户 ID：
+                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.userId" placeholder="请输入用户 ID" />
                     </div>
                   </div>
                   <div style="display: flex; flex-direction: row;">

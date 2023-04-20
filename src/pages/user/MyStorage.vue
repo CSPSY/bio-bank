@@ -32,7 +32,11 @@ const data = reactive({
 // 获取样本数据
 const getAllSamples = () => {
   const getObj = pageInfo;
-  getObj.userId = JSON.parse(userInfo).id;
+  if (localStorage.getItem('userInfo')) {
+    getObj.userId = JSON.parse(userInfo).id;
+  } else {
+    
+  }
   getSample(getObj).then(res => {
     const resData = res.data;
     if (res.status === 200) {
@@ -45,6 +49,8 @@ const getAllSamples = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 getAllSamples();
@@ -198,18 +204,20 @@ const readSampleInfoCard = (rowData) => {
                       <el-descriptions-item label="溶液体积(ml)" label-align="left" align="center" width="120px"
                       >{{ data.sampleInfo.volume }}
                       </el-descriptions-item>
-                      <el-descriptions-item label="样本采集时间" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.acquisitionTime }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="样本入库时间" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.storeTime }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="样本区域大小(㎡)" label-align="left" align="center" width="120px"
+                      <!-- <el-descriptions-item label="样本区域大小(㎡)" label-align="left" align="center" width="120px"
                       >{{ data.sampleInfo.occupy }}
-                      </el-descriptions-item>
+                      </el-descriptions-item> -->
                       <el-descriptions-item label="安全级别" label-align="left" align="center" width="120px"
                       >
                       <el-tag size="small">{{ data.sampleInfo.securityLevel }}</el-tag>
+                    </el-descriptions-item>
+                  </el-descriptions>
+                  <el-descriptions :column="2" border>
+                    <el-descriptions-item label="样本采集时间" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.acquisitionTime }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="样本入库时间" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.storeTime }}
                     </el-descriptions-item>
                   </el-descriptions>
                   <el-descriptions :column="3" border>

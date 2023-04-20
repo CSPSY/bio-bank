@@ -47,6 +47,8 @@ const getAllSamples = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 getAllSamples();
@@ -68,6 +70,8 @@ const getAllSamplesTypeCnt = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 }
 getAllSamplesTypeCnt();
@@ -242,7 +246,7 @@ const readSampleInfoCard = (rowData) => {
                         class-name="my-content"
                         width="120px"
                       >{{ data.sampleInfo.num }}</el-descriptions-item>
-                      <el-descriptions-item label="样本浓度(g/ml)" label-align="left" align="center" width="120px"
+                      <el-descriptions-item label="样本浓度" label-align="left" align="center" width="120px"
                       >{{ data.sampleInfo.concentration }}
                       </el-descriptions-item>
                       <!-- <el-descriptions-item label="样本数量" label-align="left" align="center" width="120px"
@@ -254,23 +258,25 @@ const readSampleInfoCard = (rowData) => {
                       <el-descriptions-item label="样本源 ID" label-align="left" align="center" width="120px"
                       >{{ data.sampleInfo.sampleSourceId }}
                       </el-descriptions-item>
-                      <el-descriptions-item label="溶液体积(ml)" label-align="left" align="center" width="120px"
+                      <el-descriptions-item label="溶液体积" label-align="left" align="center" width="120px"
                       >{{ data.sampleInfo.volume }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="样本采集时间" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.acquisitionTime }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="样本入库时间" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.storeTime }}
-                      </el-descriptions-item>
-                      <el-descriptions-item label="样本区域大小(㎡)" label-align="left" align="center" width="120px"
-                      >{{ data.sampleInfo.occupy }}
                       </el-descriptions-item>
                       <el-descriptions-item label="安全级别" label-align="left" align="center" width="120px"
                       >
                       <el-tag size="small">{{ data.sampleInfo.securityLevel }}</el-tag>
                     </el-descriptions-item>
                   </el-descriptions>
+                  <el-descriptions :column="2" border>
+                    <el-descriptions-item label="样本采集时间" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.acquisitionTime }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="样本入库时间" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.storeTime }}
+                    </el-descriptions-item>
+                  </el-descriptions>
+                    <!-- <el-descriptions-item label="样本区域大小(㎡)" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.occupy }}
+                    </el-descriptions-item> -->
                   <el-descriptions :column="3" border>
                     <el-descriptions-item label="治疗信息" label-align="left" align="center" width="135px"
                     >{{ data.sampleInfo.treatInfo }}

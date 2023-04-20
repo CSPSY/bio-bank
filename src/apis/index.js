@@ -5,7 +5,9 @@ import axios from 'axios';
 import Qs from 'qs';
 
 const API = axios.create({
-  baseURL: '/api'
+  // 和 vite.config 里跨域配置保持一致。
+  baseURL: ''
+  // baseURL: 'http://150.158.18.74:8082'
 });
 
 /**

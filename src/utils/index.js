@@ -34,7 +34,7 @@ const sampleInfo = {
   roomNum: '',
   fridgeNum: '',
   levelNum: '',
-  occupy: '',
+  // occupy: '',
   boxNum: '',
   sampleRow: '',
   sampleColumn: '',
@@ -91,6 +91,8 @@ const getCaptcha = (email) => {
     } else {
       ElMessage({ showClose: true, message: '验证码发送失败', type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 
@@ -121,6 +123,8 @@ const sendRegisterInfo = (captcha, registerInfo) => {
     } else {
       ElMessage({ showClose: true, message: '注册失败', type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 

@@ -26,51 +26,6 @@ const searchInfo = reactive({
   givenValue: '',
 });
 
-// const containerDatasets = ref(
-//   [
-//     {
-//       id: '01',
-//       type: '冰箱',
-//       roomId: '201',
-//       temprature: '22℃',
-//       createTime: '2023/3/16',
-//       volume: '520/3000'
-//     },
-//     {
-//       id: '02',
-//       type: '冰箱',
-//       roomId: '201',
-//       temprature: '22℃',
-//       createTime: '2023/3/16',
-//       volume: '520/3000'
-//     },
-//     {
-//       id: '03',
-//       type: '冰箱',
-//       roomId: '201',
-//       temprature: '22℃',
-//       createTime: '2023/3/16',
-//       volume: '520/3000'
-//     },
-//     {
-//       id: '04',
-//       type: '冰箱',
-//       roomId: '201',
-//       temprature: '22℃',
-//       createTime: '2023/3/16',
-//       volume: '520/3000'
-//     },
-//     {
-//       id: '05',
-//       type: '冰箱',
-//       roomId: '201',
-//       temprature: '22℃',
-//       createTime: '2023/3/16',
-//       volume: '520/3000'
-//     }
-//   ]
-// );
-
 // 设置预警阈值
 const sendAlertNum = () => {
   if (data.alertNum === '') {
@@ -90,6 +45,8 @@ const sendAlertNum = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 
@@ -104,12 +61,14 @@ const searchSampleContainer = () => {
     const resData = res.data;
     if (res.status === 200) {
       if (res.data.code !== 0) {
-        data.containerDatasets = res.data.records;
+        data.containerDatasets = res.data.list;
         data.tableVisible = true;
       }
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 </script>
@@ -191,7 +150,7 @@ const searchSampleContainer = () => {
             <div class="con-header">
               <div style="width: 352px; display: flex; align-items: center; white-space: nowrap; margin-right: 122px;">
                 <span>样本库容量 &lt; ： </span>
-                <el-input v-model.trim="searchInfo.givenValue" placeholder="请输入样本库容量" />
+                <el-input v-model.trim="searchInfo.givenValue" placeholder="请输入样本库容量（[0.0 ~ 1.0]）" />
               </div>
               <div>
                 <el-button class="button" @click="searchSampleContainer">搜索</el-button>
@@ -226,7 +185,7 @@ const searchSampleContainer = () => {
                 <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">设置预警</h3>
               </template>
               <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 22px;">
-                预警值(%)：
+                预警值([0.0 ~ 1.0])：
                 <el-input style="width: 30%;" autosize type="text"
                   v-model.trim="data.alertNum" placeholder="请输入预警值"
                 />

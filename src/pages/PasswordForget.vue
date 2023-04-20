@@ -23,6 +23,8 @@ const getToken = () => {
     } else {
       ElMessage({ showClose: true, message: '验证码发送失败', type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 </script>
@@ -59,7 +61,7 @@ const getToken = () => {
   padding: 0;
   width: 100%;
   height: 100vh;
-  background-image: url('../../../public/login-bg.png');
+  background-image: url('../../public/login-bg.png');
   background-size: 100% 100%;
 }
 /* card */

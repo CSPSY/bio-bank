@@ -38,10 +38,11 @@ const showRecover = () => {
 // 样本库备份，数据库备份
 const backupBiobank = () => {
   const paramsObj = data.backupInfo;
+  console.log(paramsObj)
   if (paramsObj.path === '') {
     ElMessage({ showClose: true, message: '请填写服务器的存储目录 ~', type: 'warning' });
     return;
-  } else if (paramsObj.dbName) {
+  } else if (paramsObj.dbName === '') {
     ElMessage({ showClose: true, message: '请填写数据库名称 ~', type: 'warning' });
     return;
   }
@@ -55,6 +56,8 @@ const backupBiobank = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 
@@ -64,7 +67,7 @@ const restoreBiobank = () => {
   if (paramsObj.path === '') {
     ElMessage({ showClose: true, message: '请填写服务器上恢复文件所在的位置 ~', type: 'warning' });
     return;
-  } else if (paramsObj.dbName) {
+  } else if (paramsObj.dbName === '') {
     ElMessage({ showClose: true, message: '请填写数据库名称 ~', type: 'warning' });
     return;
   }
@@ -78,6 +81,8 @@ const restoreBiobank = () => {
     } else {
       ElMessage({ showClose: false, message: resData.msg, type: 'error' });
     }
+  }).catch(err => {
+    console.log(err);
   });
 };
 </script>

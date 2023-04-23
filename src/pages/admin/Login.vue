@@ -104,13 +104,13 @@ const sendLoginInfo = () => {
             @click="sendLoginInfo"
           >登录</el-button>
         </div>
-        <div class="items">
+        <!-- <div class="items">
           <RouterLink :to="{ path: '/admin/register' }">
             <el-button type="info"
               style="width: 100%; border-radius: 6px; font-size: 1.1rem; letter-spacing: 0.3rem; padding: 18px;"
             >注册账号</el-button>
           </RouterLink>
-        </div>
+        </div> -->
       </form>
     </div>
   </div>

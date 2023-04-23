@@ -52,6 +52,11 @@ const editFridge = (putObj) => {
   return API.put('/biobank/fridge/', putObj);
 };
 
+// 根据冰箱编号和房间号获取冰箱信息
+const getFridgeInfoByNum = (getObj) => {
+  return API.get('/biobank/fridge/getByNum?' + Qs.stringify(getObj));
+};
+
 // 新增样本数据
 const addNewSample = (postObj) => {
   return API.post('/biobank/sample/', postObj);
@@ -75,9 +80,9 @@ const addNewContainer = (postObj) => {
   return API.post('/biobank/fridge/', postObj);
 };
 
-// 根据冰箱编号获取编写信息
-const getFridgeInfoByNum = (getObj) => {
-  return API.get('/biobank/fridge/getByNum?' + Qs.stringify(getObj));
+// 根据盒子编号获取样本信息
+const getBoxInfoByNum = (getObj)=> {
+  return API.get('/biobank/box/?' + Qs.stringify(getObj));
 };
 
 /**
@@ -168,7 +173,9 @@ export {
   getSample, getSampleTypeCnt,
   editSampleInfo, moveSampleArea, deleteSampleData
 };
-export { getContainerStorageInfo, addNewContainer, getFridgeInfoByNum };
+export { getContainerStorageInfo, addNewContainer,
+  getFridgeInfoByNum, getBoxInfoByNum
+};
 export { getAllUser, getSpecialUser, deleteUser, editUser, addUser };
 export { backupBiobankDB, restoreBiobankDB };
 export { setAlertNum, searchSampleConVal };

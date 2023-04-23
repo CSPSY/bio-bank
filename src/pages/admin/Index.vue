@@ -3,7 +3,10 @@ import { reactive, ref } from 'vue';
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting, Search } from '@element-plus/icons-vue';
 import printJS from 'print-js';
 import { logout, sampleInfo } from '../../utils/index.js';
-import { getAllFridges, addNewSample, editFridge, deleteFridge, selectByAlert } from '../../apis/admin/index.js';
+import {
+  getAllFridges, addNewSample, editFridge,
+  deleteFridge, selectByAlert, getFridgeInfoByNum
+} from '../../apis/admin/index.js';
 import { ElMessage } from 'element-plus';
 import { judgeInputNull } from '../../utils/index.js';
 
@@ -31,7 +34,7 @@ judgeFridgeAlert();
 // 页码信息
 const pageInfo = reactive({
   currentPage: 1,
-  size: 9
+  pageSize: 9
 });
 
 // 根据页码，获取数据
@@ -40,7 +43,6 @@ const changeData = () => {
 };
 
 const data = reactive({
-  searchId: '',
   containerInfoVisible: false,
   sampleInfoVisible: false,
   sampleInnerVisible: false,
@@ -60,6 +62,12 @@ const data = reactive({
   fridgeDatasets: [],
   sampleInfo: sampleInfo,
   total: 0
+});
+
+// 搜索信息
+const searchInfo = reactive({
+  num: '',
+  roomNum: ''
 });
 
 // 获取所有冰箱数据
@@ -89,12 +97,25 @@ getAllFridgesInfo();
 
 // 搜索冰箱
 const sendSearchInfo = () => {
-  if (data.searchId === '') {
-    ElMessage({ showClose: true, message: '请输入冰箱 ID ~', type: 'warning' });
+  if (searchInfo.roomNum === '') {
+    ElMessage({ showClose: true, message: '请输入房间号 ~', type: 'warning' });
+    return;
+  } else if (searchInfo.num === '') {
+    ElMessage({ showClose: true, message: '请输入冰箱编号 ~', type: 'warning' });
     return;
   }
-  pageInfo.num = data.searchId;
-  getAllFridgesInfo();
+  
+  getFridgeInfoByNum(searchInfo).then(res => {
+    if (res.status === 200) {
+      const resData = res.data;
+      ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'warning' });
+      if (resData.code === 1) {
+        data.fridgeDatasets = [resData.data];
+      }
+    }
+  }).catch(err => {
+    console.log(err);
+  });
 };
 
 // 存入样本
@@ -125,14 +146,10 @@ const sendNewSampleInfo = () => {
     boxNum: data.sampleInfo.boxNum,
     sampleRow: data.sampleInfo.sampleRow,
     sampleColumn: data.sampleInfo.sampleColumn,
-    treatInfo: data.sampleInfo.treatInfo
+    treatInfo: data.sampleInfo.treatInfo,
+    userAccount: data.sampleInfo.userAccount
   };
-  if (data.sampleInfo.specialInfo !== '') {
-    postObj.specialInfo = data.sampleInfo.specialInfo;
-  }
-  if (data.sampleInfo.userId !== '') {
-    postObj.userId = data.sampleInfo.userId;
-  }
+
   if (judgeInputNull(postObj)) {
     return;
   }
@@ -145,7 +162,7 @@ const sendNewSampleInfo = () => {
         data.sampleInnerVisible = true;
       }
     } else {
-      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+      ElMessage({ showClose: false, message: '存入失败 ~', type: 'error' });
     }
   }).catch(err => {
     console.log(err);
@@ -185,7 +202,7 @@ const sendEditFridgeInfo = () => {
     brand: data.container.brand
   }
   if (putObj.num === '') {
-    ElMessage({ showClose: true, message: '请填写设备 ID ~', type: 'warning' });
+    ElMessage({ showClose: true, message: '请填写冰箱编号 ~', type: 'warning' });
     return;
   } else if (putObj.type === '') {
     ElMessage({ showClose: true, message: '请填写设备类型 ~', type: 'warning' });
@@ -200,6 +217,8 @@ const sendEditFridgeInfo = () => {
   if (judgeInputNull(putObj)) {
     return;
   }
+  putObj.roomNum = putObj.roomNum + '房';
+  putObj.num = putObj.roomNum + putObj.num + '冰箱';
   editFridge(putObj).then(res => {
     const resData = res.data;
     if (res.status === 200) {
@@ -310,15 +329,23 @@ const sendDleteFridgeInfo = (id) => {
           <div class="main-container">
             <div class="con-header">
               <div>
-                <label for="refrigerators-id">冰箱 ID：</label>
+                <label for="room-id">房间号：</label>
                 <el-input
-                  id="refrigerators-id"
+                  id="room-id"
                   style="height: 32px; width: 212px; padding: 0 22px 0 0;"
-                  v-model.trim="data.searchId"  
-                  placeholder="请输入冰箱 id"
+                  v-model.trim="searchInfo.roomNum"  
+                  placeholder="请输入房间号"
+                  :suffix-icon="Search"
+                  />
+                <label for="fridge-id">冰箱编号：</label>
+                <el-input
+                  id="fridge-id"
+                  style="height: 32px; width: 212px; padding: 0 22px 0 0;"
+                  v-model.trim="searchInfo.num"  
+                  placeholder="请输入冰箱编号"
                   :suffix-icon="Search"
                 />
-                <el-button class="button" @click="sendSearchInfo">搜索冰箱</el-button>
+                  <el-button class="button" @click="sendSearchInfo">搜索冰箱</el-button>
               </div>
               <div>
                 <el-button class="button" @click="data.sampleInfoVisible=true">存入样本</el-button>
@@ -342,7 +369,7 @@ const sendDleteFridgeInfo = (id) => {
                       style="width: 120px; padding: 0 6px;"
                     />
                     <div style="padding: 14px;">
-                      <div style="margin-bottom: 5px; ">冰箱 ID：<span>{{ data.fridgeDatasets[index].num }}</span></div>
+                      <div style="margin-bottom: 5px; ">冰箱编号：<span>{{ data.fridgeDatasets[index].num }}</span></div>
                       <div style="margin-bottom: 5px; ">设备类型：<span>{{ data.fridgeDatasets[index].type }}</span></div>
                       <div style="margin-bottom: 5px; ">冰箱型号：<span>{{ data.fridgeDatasets[index].model }}</span></div>
                       <div style="margin-bottom: 5px; ">
@@ -359,7 +386,7 @@ const sendDleteFridgeInfo = (id) => {
               <el-pagination
                 style="position: absolute; bottom: 3%; left: 41%;"
                 layout="total, prev, pager, next, jumper" :total="data.total"
-                :page-size="pageInfo.size"
+                :page-size="pageInfo.pageSize"
                 v-model:current-page="pageInfo.currentPage"
                 @current-change="changeData"
               />
@@ -370,12 +397,12 @@ const sendDleteFridgeInfo = (id) => {
                 </template>
                 <div style="display: flex; flex-direction: row;">
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                    设备 ID：
-                    <el-input style="width: 166px;" v-model.trim="data.container.num" placeholder="请输入设备 id" />
+                    冰箱编号：
+                    <el-input style="width: 166px;" v-model.trim="data.container.num" placeholder="例，01" disabled/>
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     房间号：
-                    <el-input style="width: 166px;" v-model.trim="data.container.roomNum" placeholder="请输入房间号" />
+                    <el-input style="width: 166px;" v-model.trim="data.container.roomNum" placeholder="例，01" disabled/>
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     容量：
@@ -470,7 +497,7 @@ const sendDleteFridgeInfo = (id) => {
                     </div>
                     <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       溶液体积：
-                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.volume" placeholder="请输入溶液体积(ml)" />
+                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.volume" placeholder="请输入溶液体积" />
                     </div>
                     <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       采集时间：
@@ -500,49 +527,49 @@ const sendDleteFridgeInfo = (id) => {
                   <div style="display: flex; flex-direction: row;">
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
                       所在<br/>房间号：
-                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.roomNum" placeholder="请输入房间号" />
+                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.roomNum" placeholder="例，01" />
                     </div>
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
                       所在<br/>冰箱号：
-                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.fridgeNum" placeholder="请输入冰箱号" />
+                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.fridgeNum" placeholder="例，01" />
                     </div>
                   </div>
                   <div style="display: flex; flex-direction: row;">
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
                       所在<br/>的层号 ： 
-                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.levelNum" placeholder="请输入层号" />
+                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.levelNum" placeholder="例，01" />
                     </div>
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
                       所在<br/>区域号：
-                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.areaNum" placeholder="请输入区域号" />
+                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.areaNum" placeholder="请例，01" />
                     </div>
                   </div>
                   <div style="display: flex; flex-direction: row;">
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
                       所在<br/>盒子号：
-                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.boxNum" placeholder="请输入盒子号" />
+                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.boxNum" placeholder="例，01" />
                     </div>
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
-                      所属<br/>用户 ID：
-                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.userId" placeholder="请输入用户 ID" />
+                      所属<br/>用户账号：
+                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.userAccount" placeholder="请输入用户账号" />
                     </div>
                   </div>
                   <div style="display: flex; flex-direction: row;">
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
                       所在盒子里的行号：
-                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.sampleRow" placeholder="请输入盒子里的行号" />
+                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.sampleRow" placeholder="例，1" />
                     </div>
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
                       所在盒子里的列号：
-                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.sampleColumn" placeholder="请输入盒子里的列号" />
+                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.sampleColumn" placeholder="例，1" />
                     </div>
                   </div>
-                  <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 22px;">
+                  <!-- <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 22px;">
                     特例信息：
                     <el-input style="width: 75%;"
                       autosize type="textarea" v-model.trim="data.sampleInfo.specialInfo" placeholder="请输入特例信息"
                     />
-                  </div>
+                  </div> -->
                 </div>
                 <div style="display: flex; justify-content: flex-end;">
                   <el-button style="margin-right: 12px;" class="button"

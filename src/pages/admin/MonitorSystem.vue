@@ -1,8 +1,8 @@
 <script setup>
-import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
+import { House, SwitchButton, MessageBox, Tickets, Warning, Setting, Search } from '@element-plus/icons-vue'
 import { ref, reactive } from 'vue';
 import { logout } from '../../utils/index.js';
-import { setAlertNum, searchSampleConVal } from '../../apis/admin/index.js';
+import { setAlertNum, searchSampleConVal, selectByAlert } from '../../apis/admin/index.js';
 import { ElMessage } from 'element-plus';
 
 // 获取用户名，信息展示
@@ -25,6 +25,9 @@ const searchInfo = reactive({
   pageSize: 10,
   givenValue: '',
 });
+
+// 检测预警
+selectByAlert();
 
 // 设置预警阈值
 const sendAlertNum = () => {
@@ -148,12 +151,17 @@ const searchSampleContainer = () => {
         <el-main style="background-color: rgb(245, 247, 253);">
           <div class="main-container">
             <div class="con-header">
-              <div style="width: 352px; display: flex; align-items: center; white-space: nowrap; margin-right: 122px;">
+              <div style="display: flex; align-items: center; white-space: nowrap; margin-right: 122px;">
                 <span>样本库容量 &lt; ： </span>
-                <el-input v-model.trim="searchInfo.givenValue" placeholder="请输入样本库容量（[0.0 ~ 1.0]）" />
+                <el-input
+                  v-model.trim="searchInfo.givenValue"
+                  style="height: 32px; width: 212px; padding: 0 22px 0 0;"
+                  placeholder="未用 / 容量  [0.0 ~ 1.0]"
+                  :suffix-icon="Search"
+                />
+                <el-button class="button" @click="searchSampleContainer">搜索</el-button>
               </div>
               <div>
-                <el-button class="button" @click="searchSampleContainer">搜索</el-button>
                 <el-button class="button" @click="data.setWarnCard=true">设置预警</el-button>
               </div>
             </div>

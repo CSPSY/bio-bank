@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive } from 'vue';
-import { Document, House, SwitchButton } from '@element-plus/icons-vue';
+import { Document, House, SwitchButton, Search } from '@element-plus/icons-vue';
 import { logout, sampleInfo } from '../../utils/index.js';
 import { getSample } from '../../apis/user';
 
@@ -32,11 +32,7 @@ const data = reactive({
 // 获取样本数据
 const getAllSamples = () => {
   const getObj = pageInfo;
-  if (localStorage.getItem('userInfo')) {
-    getObj.userId = JSON.parse(userInfo).id;
-  } else {
-    
-  }
+  getObj.userAccount = userName.value;
   getSample(getObj).then(res => {
     const resData = res.data;
     if (res.status === 200) {
@@ -72,7 +68,7 @@ const searchSample = () => {
   if (searchInfo.sampleType !== '') {
     pageInfo.type = searchInfo.sampleType;
   }
-  pageInfo.userId = JSON.parse(localStorage.getItem('userInfo')).id;
+  pageInfo.userAccount = userName.value;
   getAllSamples();
 };
 
@@ -136,6 +132,7 @@ const readSampleInfoCard = (rowData) => {
                     style="height: 32px; width: 212px; padding: 0 22px 0 0;"
                     v-model.trim="searchInfo.sampleNum"  
                     placeholder="请输入样本 id"
+                    :suffix-icon="Search"
                   />
                   <label for="specimens-type">样本类型：</label>
                   <el-input
@@ -143,6 +140,7 @@ const readSampleInfoCard = (rowData) => {
                     style="height: 32px; width: 212px; padding: 0 22px 0 0;"
                     v-model.trim="searchInfo.sampleType"
                     placeholder="请输入样本类型"
+                    :suffix-icon="Search"
                   />
                   <el-button class="button" @click="searchSample">搜索</el-button>        
                 </div>
@@ -226,8 +224,8 @@ const readSampleInfoCard = (rowData) => {
                     </el-descriptions-item>
                   </el-descriptions>
                   <el-descriptions :column="3" border>
-                    <el-descriptions-item label="所属用户 ID" label-align="left" align="center" width="120px"
-                    >{{ data.sampleInfo.userId }}
+                    <el-descriptions-item label="所属用户账号" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.userAccount }}
                     </el-descriptions-item>
                     <el-descriptions-item label="所在房间号" label-align="left" align="center" width="120px"
                     >{{ data.sampleInfo.roomNum }}
@@ -244,13 +242,15 @@ const readSampleInfoCard = (rowData) => {
                     <el-descriptions-item label="所在盒子号" label-align="left" align="center" width="120px"
                     >{{ data.sampleInfo.boxNum }}
                     </el-descriptions-item>
+                  </el-descriptions>
+                  <el-descriptions :column="2" border>
                     <el-descriptions-item label="所在盒子里的行号" label-align="left" align="center" width="120px"
                     >{{ data.sampleInfo.sampleRow }}
                     </el-descriptions-item>
                     <el-descriptions-item label="所在盒子里的列号" label-align="left" align="center" width="120px"
                     >{{ data.sampleInfo.sampleColumn }}
                     </el-descriptions-item>
-                  </el-descriptions>
+                  </el-descriptions>            
                   <el-descriptions v-show="data.sampleInfo.specialInfo" :column="3" border>
                     <el-descriptions-item
                       label="特例样本" label-align="left" align="center" width="120px"

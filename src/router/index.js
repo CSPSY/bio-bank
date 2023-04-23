@@ -53,13 +53,6 @@ const routes = [
     }
   },
   {
-    path: '/admin/register',
-    component: () => import('../pages/admin/Register.vue'),
-    meta: {
-      title: '管理员注册'
-    }
-  },
-  {
     path: '/admin/manage-container',
     component: () => import('../pages/admin/ManageContainer.vue'),
     meta: {

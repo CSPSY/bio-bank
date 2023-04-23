@@ -1,5 +1,5 @@
 <script setup>
-import { Document, House, SwitchButton } from '@element-plus/icons-vue'
+import { Document, House, SwitchButton, Search } from '@element-plus/icons-vue'
 import * as echarts from 'echarts';
 import { ref, reactive } from 'vue';
 import { getSample, getSampleTypeCnt } from '../../apis/user/index.js';
@@ -191,8 +191,9 @@ const readSampleInfoCard = (rowData) => {
                   <el-input
                     id="specimens-id"
                     style="height: 32px; width: 212px; padding: 0 22px 0 0;"
-                    v-model.trim="searchInfo.sampleNum"  
+                    v-model.trim="searchInfo.sampleNum"
                     placeholder="请输入样本 id"
+                    :suffix-icon="Search"
                   />
                   <label for="specimens-type">样本类型：</label>
                   <el-input
@@ -200,6 +201,7 @@ const readSampleInfoCard = (rowData) => {
                     style="height: 32px; width: 212px; padding: 0 22px 0 0;"
                     v-model.trim="searchInfo.sampleType"
                     placeholder="请输入样本类型"
+                    :suffix-icon="Search"
                   />
                   <el-button class="button" @click="searchSample">搜索</el-button>        
                 </div>
@@ -283,8 +285,8 @@ const readSampleInfoCard = (rowData) => {
                     </el-descriptions-item>
                   </el-descriptions>
                   <el-descriptions :column="3" border>
-                    <el-descriptions-item label="所属用户 ID" label-align="left" align="center" width="120px"
-                    >{{ data.sampleInfo.userId }}
+                    <el-descriptions-item label="所属用户账号" label-align="left" align="center" width="120px"
+                    >{{ data.sampleInfo.userAccount }}
                     </el-descriptions-item>
                     <el-descriptions-item label="所在房间号" label-align="left" align="center" width="120px"
                     >{{ data.sampleInfo.roomNum }}
@@ -301,13 +303,15 @@ const readSampleInfoCard = (rowData) => {
                     <el-descriptions-item label="所在盒子号" label-align="left" align="center" width="120px"
                     >{{ data.sampleInfo.boxNum }}
                     </el-descriptions-item>
+                  </el-descriptions>
+                  <el-descriptions :column="2" border>
                     <el-descriptions-item label="所在盒子里的行号" label-align="left" align="center" width="120px"
                     >{{ data.sampleInfo.sampleRow }}
                     </el-descriptions-item>
                     <el-descriptions-item label="所在盒子里的列号" label-align="left" align="center" width="120px"
                     >{{ data.sampleInfo.sampleColumn }}
                     </el-descriptions-item>
-                  </el-descriptions>
+                  </el-descriptions>       
                   <el-descriptions v-show="data.sampleInfo.specialInfo" :column="3" border>
                     <el-descriptions-item
                       label="特例样本" label-align="left" align="center" width="120px"

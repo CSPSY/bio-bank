@@ -217,8 +217,7 @@ const sendEditFridgeInfo = () => {
   if (judgeInputNull(putObj)) {
     return;
   }
-  putObj.roomNum = putObj.roomNum + '房';
-  putObj.num = putObj.roomNum + putObj.num + '冰箱';
+  
   editFridge(putObj).then(res => {
     const resData = res.data;
     if (res.status === 200) {

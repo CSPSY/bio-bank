@@ -97,20 +97,29 @@ getAllFridgesInfo();
 
 // 搜索冰箱
 const sendSearchInfo = () => {
-  if (searchInfo.roomNum === '') {
-    ElMessage({ showClose: true, message: '请输入房间号 ~', type: 'warning' });
-    return;
-  } else if (searchInfo.num === '') {
-    ElMessage({ showClose: true, message: '请输入冰箱编号 ~', type: 'warning' });
+  if (searchInfo.roomNum === '' && searchInfo.num === '') {
+    ElMessage({ showClose: true, message: '请输入房间号或冰箱编号 ~', type: 'warning' });
     return;
   }
-  
-  getFridgeInfoByNum(searchInfo).then(res => {
+  const getObj = {
+    currentPage: 1,
+    pageSize: 9
+  };
+  if (searchInfo.roomNum !== '') {
+    getObj.roomNum = searchInfo.roomNum;
+  }
+  if (searchInfo.num !== '') {
+    getObj.num = searchInfo.num;
+  }
+  getAllFridges(getObj).then(res => {
     if (res.status === 200) {
       const resData = res.data;
-      ElMessage({ showClose: true, message: resData.msg, type: resData.code === 1 ? 'success' : 'warning' });
-      if (resData.code === 1) {
-        data.fridgeDatasets = [resData.data];
+      data.total = resData.total;
+      if (resData.total === 0) {
+        ElMessage({ showClose: true, message: '查询失败 ~', type: 'warning' });
+      } else {
+        ElMessage({ showClose: true, message: '查询成功 ~', type: 'success' });
+        data.fridgeDatasets = resData.list;
       }
     }
   }).catch(err => {
@@ -368,15 +377,15 @@ const sendDleteFridgeInfo = (id) => {
                       style="width: 120px; padding: 0 6px;"
                     />
                     <div style="padding: 14px;">
-                      <div style="margin-bottom: 5px; ">冰箱编号：<span>{{ data.fridgeDatasets[index].num }}</span></div>
-                      <div style="margin-bottom: 5px; ">设备类型：<span>{{ data.fridgeDatasets[index].type }}</span></div>
-                      <div style="margin-bottom: 5px; ">冰箱型号：<span>{{ data.fridgeDatasets[index].model }}</span></div>
+                      <div style="margin-bottom: 5px; ">编号：<span>{{ data.fridgeDatasets[index].num }}</span></div>
+                      <div style="margin-bottom: 5px; ">类型：<span>{{ data.fridgeDatasets[index].type }}</span></div>
+                      <div style="margin-bottom: 5px; ">型号：<span>{{ data.fridgeDatasets[index].model }}</span></div>
                       <div style="margin-bottom: 5px; ">
-                        所在冰箱温度：<span>{{ data.fridgeDatasets[index].storageTemp }}
-                          <!-- ℃ -->
+                        容量：
+                        <span>
+                          {{ `${data.fridgeDatasets[index].usageNumber}/${data.fridgeDatasets[index].capacity}` }}
                         </span>
                       </div>
-                      <div style="margin-bottom: 5px; ">所在冰箱容量：<span>{{ data.fridgeDatasets[index].capacity }}</span></div>
                       <div style="margin-bottom: 5px; ">所在房间号：<span>{{ data.fridgeDatasets[index].roomNum }}</span></div>
                     </div>
                   </el-card>
@@ -447,11 +456,12 @@ const sendDleteFridgeInfo = (id) => {
                   </div>
                 </div>
                 <div style="display: flex; justify-content: flex-end; margin: 22px 16px 0 0;">
-                  <el-button
-                    style="margin-right: 12px;" class="button" type="primary" plain
-                    @click="sendEditFridgeInfo"
-                  >确认修改</el-button>
-                  <el-popconfirm title="确认要删除这个设备吗 ？" @confirm="sendDleteFridgeInfo(data.container.id)">
+                  <el-popconfirm title="确认要修改冰箱为当前信息吗 ？" @confirm="sendEditFridgeInfo">
+                    <template #reference>
+                      <el-button style="margin-right: 12px;" class="button" type="primary" plain>确认修改</el-button>
+                    </template>
+                  </el-popconfirm>
+                  <el-popconfirm title="确认要删除这个冰箱吗 ？" @confirm="sendDleteFridgeInfo(data.container.id)">
                     <template #reference>
                       <el-button style="margin-right: 12px;" class="button" type="danger" plain>删除</el-button>
                     </template>

@@ -1,6 +1,6 @@
 <script setup>
 import { House, SwitchButton, MessageBox, Tickets, Warning, Setting, Search } from '@element-plus/icons-vue'
-import { ref ,reactive } from 'vue'
+import { ref ,reactive, watch } from 'vue'
 import { logout, sampleInfo } from '../../utils/index.js';
 import { getContainerStorageInfo, getFridgeInfoByNum,
   addNewContainer, deleteSampleData, editSampleInfo,
@@ -165,7 +165,6 @@ const getSampleInfoDatasets = (room, fridge, level, area, boxNum) => {
   }).catch(err => {
     console.log(err);
   });
-
 };
 
 // 监听样本数据选中情况
@@ -282,6 +281,7 @@ const sendNewContainerInfo = () => {
       if (resData.code === 1) {
         ElMessage({ showClose: false, message: resData.msg, type: 'success' });
         data.containerInfoVisible = false;
+        location.reload();
       } else {
         ElMessage({ showClose: false, message: '创建失败，请检查输入信息', type: 'error' });
       }
@@ -322,6 +322,11 @@ const sendDeleteSampleData = () => {
     console.log(err);
   });
 };
+
+// 创建容器时，监听数据变化，计算容量
+watch(data.containerInfo, (info) => {
+  info.capacity = info.levelNum * info.areaNum * info.boxNum * info.row * info.column;
+});
 </script>
 
 <template>
@@ -669,7 +674,7 @@ const sendDeleteSampleData = () => {
                           </div>
                           <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                             设备<br>类型：
-                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.type" placeholder="请输入设备类型" />
+                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.type" placeholder="例，冰箱" />
                           </div>
                           <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                             设备<br>品牌：
@@ -682,22 +687,18 @@ const sendDeleteSampleData = () => {
                             <el-input style="width: 166px;" v-model.trim="data.containerInfo.model" placeholder="请输入型号" />
                           </div>
                           <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                            设备<br>容量：
-                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.capacity" placeholder="请输入设备容量" />
-                          </div>
-                          <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                             设备<br>尺寸：
-                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.size" placeholder="请输入设备尺寸" />
+                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.size" placeholder="例，6" />
                           </div>
-                        </div>
-                        <div style="display: flex; flex-direction: row;">
                           <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                             设备<br>名称：
                             <el-input style="width: 166px;" v-model.trim="data.containerInfo.deviceName" placeholder="请输入设备名称" />
                           </div>
+                        </div>
+                        <div style="display: flex; flex-direction: row;">
                           <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                             存储<br>温度：
-                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.storageTemp" placeholder="请输入存储温度" />
+                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.storageTemp" placeholder="例，6℃" />
                           </div>
                           <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                             所在<br>房间号：
@@ -705,36 +706,40 @@ const sendDeleteSampleData = () => {
                           </div>
                         </div>
                         <h3
-                          style="border-bottom: 1px solid;  letter-spacing: .12rem; padding-bottom: 10px; margin-bottom: 16px;"
+                        style="border-bottom: 1px solid;  letter-spacing: .12rem; padding-bottom: 10px; margin-bottom: 16px;"
                         >设备内部结构</h3>
                         <div style="display: flex; flex-direction: row;">
                           <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                             层数：
-                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.levelNum" placeholder="请输入层数" />
+                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.levelNum" placeholder="例，1" />
                           </div>
                           <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                             区数：
-                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.areaNum" placeholder="请输入区数" />
+                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.areaNum" placeholder="例，1" />
                           </div>
                           <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                             盒子数：
-                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.boxNum" placeholder="请输入盒子数" />
+                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.boxNum" placeholder="例，1" />
                           </div>
                         </div>
                         <div style="display: flex; flex-direction: row;">
                           <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                             行数：
-                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.row" placeholder="请输入行数" />
+                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.row" placeholder="例，1" />
                           </div>
                           <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                             列数：
-                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.column" placeholder="请输入列数" />
+                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.column" placeholder="例，1" />
+                          </div>
+                          <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
+                            设备<br>容量：
+                            <el-input style="width: 166px;" v-model.trim="data.containerInfo.capacity" placeholder="" disabled/>
                           </div>
                         </div>
                         <div style="display: flex; justify-content: flex-end;">
                           <el-button
-                            style="margin-right: 12px;" class="button"
-                            @click="sendNewContainerInfo"
+                          style="margin-right: 12px;" class="button"
+                          @click="sendNewContainerInfo"
                           >确认</el-button>
                           <el-button
                             style="margin-right: 12px;" class="button"

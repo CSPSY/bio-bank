@@ -205,11 +205,6 @@ const sendMoveSampleArea = () => {
   if (judgeInputNull(putObj)) {
     return;
   }
-  putObj.roomNum = putObj.roomNum + '房';
-  putObj.fridgeNum = putObj.roomNum + putObj.fridgeNum + '冰箱';
-  putObj.levelNum = putObj.fridgeNum + putObj.levelNum + '层';
-  putObj.areaNum = putObj.levelNum + putObj.areaNum + '区';
-  putObj.boxNum = putObj.areaNum + putObj.boxNum + '盒';
 
   moveSampleArea(putObj).then(res => {
     const resData = res.data;

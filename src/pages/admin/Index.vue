@@ -22,7 +22,7 @@ const judgeFridgeAlert = () => {
     const resData = res.data;
     if (res.status === 200) {
       if (resData.data.length !== 0) {
-        ElMessage({ showClose: true, message: '当前有冰箱超过阈值，请去系统监控页面查看！！', type: 'warning' });
+        ElMessage({ showClose: true, message: '当前有设备超过阈值，请去系统监控页面查看！！', type: 'warning' });
       }
     }
   }).catch(err => {
@@ -70,7 +70,7 @@ const searchInfo = reactive({
   roomNum: ''
 });
 
-// 获取所有冰箱数据
+// 获取所有设备数据
 const getAllFridgesInfo = () => {
   const getObj = pageInfo;
   getAllFridges(getObj).then(res => {
@@ -95,10 +95,10 @@ const getAllFridgesInfo = () => {
 };
 getAllFridgesInfo();
 
-// 搜索冰箱
+// 搜索设备
 const sendSearchInfo = () => {
   if (searchInfo.roomNum === '' && searchInfo.num === '') {
-    ElMessage({ showClose: true, message: '请输入房间号或冰箱编号 ~', type: 'warning' });
+    ElMessage({ showClose: true, message: '请输入房间号或设备编号 ~', type: 'warning' });
     return;
   }
   const getObj = {
@@ -159,6 +159,17 @@ const sendNewSampleInfo = () => {
     userAccount: data.sampleInfo.userAccount
   };
 
+  if (data.sampleInfo.specialInfo !== '') {
+    try {
+      postObj.specialInfo = JSON.parse(data.sampleInfo.specialInfo);
+    } catch(err) {
+      ElMessage({ showClose: true, message: '请填写符合 JSON 格式的特例信息  ~', type: 'error' });
+      return;
+    }
+  } else {
+    postObj.specialInfo = {};
+  }
+
   if (judgeInputNull(postObj)) {
     return;
   }
@@ -190,13 +201,13 @@ const printSampleInfo = () => {
   data.sampleInnerVisible = false;
 };
 
-// 查看，编辑冰箱信息
+// 查看，编辑设备信息
 const containerInfoCard = (info) => {
   data.containerInfoVisible = true;
   data.container = info;
 };
 
-// 修改冰箱信息
+// 修改设备信息
 const sendEditFridgeInfo = () => {
   const putObj = {
     id: data.container.id,
@@ -211,7 +222,7 @@ const sendEditFridgeInfo = () => {
     brand: data.container.brand
   }
   if (putObj.num === '') {
-    ElMessage({ showClose: true, message: '请填写冰箱编号 ~', type: 'warning' });
+    ElMessage({ showClose: true, message: '请填写设备编号 ~', type: 'warning' });
     return;
   } else if (putObj.type === '') {
     ElMessage({ showClose: true, message: '请填写设备类型 ~', type: 'warning' });
@@ -242,7 +253,7 @@ const sendEditFridgeInfo = () => {
   });
 };
 
-// 删除冰箱
+// 删除设备
 const sendDleteFridgeInfo = (id) => {
   deleteFridge(id).then(res => {
     const resData = res.data;
@@ -258,6 +269,27 @@ const sendDleteFridgeInfo = (id) => {
   }).catch(err => {
     console.log(err);
   });
+};
+
+// 设备类型选择
+const containerTypeOptions = [{
+  value: '冰箱',
+  label: '冰箱',
+},
+{
+  value: '柜子',
+  label: '柜子',
+}];
+
+// 回车跳到下一输入框
+const refItems = reactive([]);
+
+const setItemRef = (el) => {
+  refItems.push(el);
+};
+
+const focusNextInput = (nextRefIdx) => {
+  refItems[nextRefIdx].focus();
 };
 </script>
 
@@ -345,15 +377,15 @@ const sendDleteFridgeInfo = (id) => {
                   placeholder="请输入房间号"
                   :suffix-icon="Search"
                   />
-                <label for="fridge-id">冰箱编号：</label>
+                <label for="fridge-id">设备编号：</label>
                 <el-input
                   id="fridge-id"
                   style="height: 32px; width: 212px; padding: 0 22px 0 0;"
                   v-model.trim="searchInfo.num"  
-                  placeholder="请输入冰箱编号"
+                  placeholder="请输入设备编号"
                   :suffix-icon="Search"
                 />
-                  <el-button class="button" @click="sendSearchInfo">搜索冰箱</el-button>
+                  <el-button class="button" @click="sendSearchInfo">搜索设备</el-button>
               </div>
               <div>
                 <el-button class="button" @click="data.sampleInfoVisible=true">存入样本</el-button>
@@ -373,12 +405,14 @@ const sendDleteFridgeInfo = (id) => {
                     @click="containerInfoCard(data.fridgeDatasets[index])"
                   >
                     <img
-                      src="../../assets/imgs/冰箱.png"
+                      src="../../assets/imgs/设备.png"
                       style="width: 120px; padding: 0 6px;"
                     />
                     <div style="padding: 14px;">
                       <div style="margin-bottom: 5px; ">编号：<span>{{ data.fridgeDatasets[index].num }}</span></div>
-                      <div style="margin-bottom: 5px; ">类型：<span>{{ data.fridgeDatasets[index].type }}</span></div>
+                      <div style="margin-bottom: 5px; ">
+                        类型：<span>{{ data.fridgeDatasets[index].type }}</span>
+                      </div>
                       <div style="margin-bottom: 5px; ">型号：<span>{{ data.fridgeDatasets[index].model }}</span></div>
                       <div style="margin-bottom: 5px; ">
                         容量：
@@ -398,14 +432,14 @@ const sendDleteFridgeInfo = (id) => {
                 v-model:current-page="pageInfo.currentPage"
                 @current-change="changeData"
               />
-              <!-- 点击冰箱，冰箱信息弹框 -->
+              <!-- 点击设备，设备信息弹框 -->
               <el-dialog v-model.trim="data.containerInfoVisible" :close-on-click-modal="false">
                 <template #header>
-                  <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">冰箱信息</h3>
+                  <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">设备信息</h3>
                 </template>
                 <div style="display: flex; flex-direction: row;">
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                    冰箱编号：
+                    设备编号：
                     <el-input style="width: 166px;" v-model.trim="data.container.num" placeholder="例，01" disabled/>
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
@@ -414,7 +448,7 @@ const sendDleteFridgeInfo = (id) => {
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     容量：
-                    <el-input style="width: 166px;" v-model.trim="data.container.capacity" placeholder="请输入容量" />
+                    <el-input style="width: 166px;" v-model.trim="data.container.capacity" placeholder="请输入容量" disabled/>
                   </div>
                 </div>
                 <div style="display: flex; flex-direction: row;">
@@ -438,7 +472,9 @@ const sendDleteFridgeInfo = (id) => {
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     设备类型：
-                    <el-input style="width: 166px;" v-model.trim="data.container.type" placeholder="请输入设备类型" />
+                    <el-select style="width: 166px;" v-model="data.container.type">
+                      <el-option v-for="item in containerTypeOptions" :key="item.value" :label="item.label" :value="item.value"/>
+                    </el-select>
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     设备品牌：
@@ -456,12 +492,12 @@ const sendDleteFridgeInfo = (id) => {
                   </div>
                 </div>
                 <div style="display: flex; justify-content: flex-end; margin: 22px 16px 0 0;">
-                  <el-popconfirm title="确认要修改冰箱为当前信息吗 ？" @confirm="sendEditFridgeInfo">
+                  <el-popconfirm title="确认要修改设备为当前信息吗 ？" @confirm="sendEditFridgeInfo">
                     <template #reference>
                       <el-button style="margin-right: 12px;" class="button" type="primary" plain>确认修改</el-button>
                     </template>
                   </el-popconfirm>
-                  <el-popconfirm title="确认要删除这个冰箱吗 ？" @confirm="sendDleteFridgeInfo(data.container.id)">
+                  <el-popconfirm title="确认要删除这个设备吗 ？" @confirm="sendDleteFridgeInfo(data.container.id)">
                     <template #reference>
                       <el-button style="margin-right: 12px;" class="button" type="danger" plain>删除</el-button>
                     </template>
@@ -484,101 +520,137 @@ const sendDleteFridgeInfo = (id) => {
                   <div style="display: flex; flex-direction: row;">
                     <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       样本 ID：
-                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.num" placeholder="请输入样本 id" />
+                      <el-input
+                        style="width: 166px;" v-model.trim="data.sampleInfo.num" placeholder="请输入样本 id"                        
+                        :ref="setItemRef" @keyup.native.enter="focusNextInput(1)"
+                      />
                     </div>
                     <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       样本浓度：
-                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.concentration" placeholder="请输入样本浓度" />
+                      <el-input
+                        style="width: 166px;" v-model.trim="data.sampleInfo.concentration" placeholder="请输入样本浓度"
+                        :ref="setItemRef" @keyup.native.enter="focusNextInput(2)"
+                      />
                     </div>
-                    <!-- <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                      样本数量：
-                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.depositNum" placeholder="请输入样本数量" />
-                    </div> -->
                     <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       样本类型：
-                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.type" placeholder="请输入样本类型" />
+                      <el-input
+                        style="width: 166px;" v-model.trim="data.sampleInfo.type" placeholder="请输入样本类型"
+                        :ref="setItemRef" @keyup.native.enter="focusNextInput(3)"
+                      />
                     </div>
                   </div>
                   <div style="display: flex; flex-direction: row;">
                     <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       样本源 ID：
-                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.sampleSourceId" placeholder="请输入样本源 ID" />
+                      <el-input
+                        style="width: 166px;" v-model.trim="data.sampleInfo.sampleSourceId" placeholder="请输入样本源 ID"
+                        :ref="setItemRef" @keyup.native.enter="focusNextInput(4)"
+                      />
                     </div>
                     <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       溶液体积：
-                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.volume" placeholder="请输入溶液体积" />
+                      <el-input
+                        style="width: 166px;" v-model.trim="data.sampleInfo.volume" placeholder="请输入溶液体积"
+                        :ref="setItemRef" @keyup.native.enter="focusNextInput(5)"
+                      />
                     </div>
                     <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       采集时间：
                       <el-date-picker
                         style="width: 166px" format="YYYY-MM-DD" value-format="YYYY-MM-DD"
                         v-model.trim="data.sampleInfo.acquisitionTime" type="date" placeholder="请选择采集时间"
+                        :ref="setItemRef" @keyup.native.enter="focusNextInput(6)"
                       />
-                      <!-- <el-input style="width: 166px;" v-model.trim="data.sampleInfo.acquisitionTime" placeholder="请输入采集时间" /> -->
                     </div>
                   </div>
                   <div style="display: flex; flex-direction: row;">
-                    <!-- <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
-                      样本区域<br/>大小：
-                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.occupy" placeholder="请输入样本区域大小" />
-                    </div> -->
                     <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                       安全<br/>级别：
-                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.securityLevel" placeholder="请输入安全级别" />
+                      <el-input
+                        style="width: 166px;" v-model.trim="data.sampleInfo.securityLevel" placeholder="请输入安全级别"
+                        :ref="setItemRef" @keyup.native.enter="focusNextInput(7)"
+                      />
                     </div>
                   </div>
                   <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 22px;">
                     治疗信息：
                     <el-input style="width: 75%;" autosize type="textarea"
                       v-model.trim="data.sampleInfo.treatInfo" placeholder="请输入治疗信息"
+                      :ref="setItemRef" @keyup.native.enter="focusNextInput(8)"
                     />
                   </div>
                   <div style="display: flex; flex-direction: row;">
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
                       所在<br/>房间号：
-                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.roomNum" placeholder="例，01" />
+                      <el-input
+                        style="width: 236px;" v-model.trim="data.sampleInfo.roomNum" placeholder="例，01"
+                        :ref="setItemRef" @keyup.native.enter="focusNextInput(9)"
+                      />
                     </div>
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
-                      所在<br/>冰箱号：
-                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.fridgeNum" placeholder="例，01" />
+                      所在<br/>设备号：
+                      <el-input
+                        style="width: 236px;" v-model.trim="data.sampleInfo.fridgeNum" placeholder="例，01"
+                        :ref="setItemRef" @keyup.native.enter="focusNextInput(10)"
+                      />
                     </div>
                   </div>
                   <div style="display: flex; flex-direction: row;">
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
                       所在<br/>的层号 ： 
-                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.levelNum" placeholder="例，01" />
+                      <el-input
+                        style="width: 236px;" v-model.trim="data.sampleInfo.levelNum" placeholder="例，01"
+                        :ref="setItemRef" @keyup.native.enter="focusNextInput(11)"
+                        />
                     </div>
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
                       所在<br/>区域号：
-                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.areaNum" placeholder="请例，01" />
+                      <el-input
+                        style="width: 236px;" v-model.trim="data.sampleInfo.areaNum" placeholder="请例，01"
+                        :ref="setItemRef" @keyup.native.enter="focusNextInput(12)"
+                      />
                     </div>
                   </div>
                   <div style="display: flex; flex-direction: row;">
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
                       所在<br/>盒子号：
-                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.boxNum" placeholder="例，01" />
+                      <el-input
+                        style="width: 236px;" v-model.trim="data.sampleInfo.boxNum" placeholder="例，01"
+                        :ref="setItemRef" @keyup.native.enter="focusNextInput(13)"
+                      />
                     </div>
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
                       所属<br/>用户账号：
-                      <el-input style="width: 236px;" v-model.trim="data.sampleInfo.userAccount" placeholder="请输入用户账号" />
+                      <el-input
+                        style="width: 236px;" v-model.trim="data.sampleInfo.userAccount" placeholder="请输入用户账号"
+                        :ref="setItemRef" @keyup.native.enter="focusNextInput(14)"
+                      />
                     </div>
                   </div>
                   <div style="display: flex; flex-direction: row;">
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
                       所在盒子里的行号：
-                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.sampleRow" placeholder="例，1" />
+                      <el-input
+                        style="width: 166px;" v-model.trim="data.sampleInfo.sampleRow" placeholder="例，1"
+                        :ref="setItemRef" @keyup.native.enter="focusNextInput(15)"
+                      />
                     </div>
                     <div style="width: 50%; margin: 0 26px 22px 0; align-items: center; display: flex;">
                       所在盒子里的列号：
-                      <el-input style="width: 166px;" v-model.trim="data.sampleInfo.sampleColumn" placeholder="例，1" />
+                      <el-input
+                        style="width: 166px;" v-model.trim="data.sampleInfo.sampleColumn" placeholder="例，1"
+                        :ref="setItemRef" @keyup.native.enter="focusNextInput(16)"
+                      />
                     </div>
                   </div>
-                  <!-- <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 22px;">
+                  <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 22px;">
                     特例信息：
                     <el-input style="width: 75%;"
                       autosize type="textarea" v-model.trim="data.sampleInfo.specialInfo" placeholder="请输入特例信息"
+                      :ref="setItemRef" @keyup.native.enter="focusNextInput(0)"
                     />
-                  </div> -->
+                  </div>
                 </div>
                 <div style="display: flex; justify-content: flex-end;">
                   <el-button style="margin-right: 12px;" class="button"

@@ -291,7 +291,7 @@ const readSampleInfoCard = (rowData) => {
                     <el-descriptions-item label="所在房间号" label-align="left" align="center" width="120px"
                     >{{ data.sampleInfo.roomNum }}
                     </el-descriptions-item>
-                    <el-descriptions-item label="所在冰箱号" label-align="left" align="center" width="120px"
+                    <el-descriptions-item label="所在设备号" label-align="left" align="center" width="120px"
                     >{{ data.sampleInfo.fridgeNum }}
                     </el-descriptions-item>
                     <el-descriptions-item label="所在层号" label-align="left" align="center" width="120px"

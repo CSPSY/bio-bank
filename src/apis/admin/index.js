@@ -85,6 +85,11 @@ const getBoxInfoByNum = (getObj)=> {
   return API.get('/biobank/box/?' + Qs.stringify(getObj));
 };
 
+// 批量出库
+const removeSample = (removeData) => {
+  return API.post('/biobank/sample/remove?' + removeData);
+};
+
 /**
  * @description 样本管理部分
  */
@@ -174,7 +179,7 @@ export {
   editSampleInfo, moveSampleArea, deleteSampleData
 };
 export { getContainerStorageInfo, addNewContainer,
-  getFridgeInfoByNum, getBoxInfoByNum
+  getFridgeInfoByNum, getBoxInfoByNum, removeSample
 };
 export { getAllUser, getSpecialUser, deleteUser, editUser, addUser };
 export { backupBiobankDB, restoreBiobankDB };

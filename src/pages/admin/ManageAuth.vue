@@ -128,7 +128,7 @@ const deleteUserById = (id) => {
 // 添加用户
 const addNewUser = () => {
   const postObj = newUserInfo;
-  console.log(postObj)
+  
   if (judgeInputNull(postObj)) {
     return;
   }

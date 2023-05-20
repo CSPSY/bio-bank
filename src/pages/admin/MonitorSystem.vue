@@ -1,5 +1,5 @@
 <script setup>
-import { House, SwitchButton, MessageBox, Tickets, Warning, Setting, Search } from '@element-plus/icons-vue'
+import { House, SwitchButton, MessageBox, Tickets, Warning, Setting, Search, User, Folder } from '@element-plus/icons-vue'
 import { ref, reactive } from 'vue';
 import { logout } from '../../utils/index.js';
 import { setAlertNum, searchSampleConVal, selectByAlert } from '../../apis/admin/index.js';
@@ -26,7 +26,6 @@ const searchInfo = reactive({
   givenValue: '',
 });
 
-// 检测预警
 selectByAlert();
 
 // 设置预警阈值
@@ -107,21 +106,27 @@ const searchSampleContainer = () => {
               <span>样本管理</span>
             </RouterLink>
           </el-menu-item>
-          <el-sub-menu class="menu-items items" index = "4">
+          <el-sub-menu class="menu-items items" index="4">
             <template #title>
               <el-icon><Setting /></el-icon>
-              <span class="menu-items items">系统管理</span>
+              <span class="items">系统管理</span>
             </template>
             <el-menu-item class="menu-items items" index="4-1">
               <RouterLink :to="{ path: '/admin/manage-auth' }">
-                <el-icon><Tickets /></el-icon>
+                <el-icon><User /></el-icon>
                 <span>权限管理</span>
               </RouterLink>
             </el-menu-item>
             <el-menu-item class="menu-items items" index="4-2">
-              <RouterLink :to="{ path: '/admin/manage-backup' }">
-                <el-icon><Tickets /></el-icon>
+              <RouterLink :to="{ path: '/admin/manage-backup'}">
+                <el-icon><Folder /></el-icon>
                 <span>备份管理</span>
+              </RouterLink>
+            </el-menu-item>
+            <el-menu-item class="menu-items items" index="4-3">
+              <RouterLink :to="{ path: '/admin/manage-log'}">
+                <el-icon><Tickets /></el-icon>
+                <span>日志管理</span>
               </RouterLink>
             </el-menu-item>
           </el-sub-menu>
@@ -154,7 +159,7 @@ const searchSampleContainer = () => {
               <div style="display: flex; align-items: center; white-space: nowrap; margin-right: 122px;">
                 <span>样本库容量 &lt; ： </span>
                 <el-input
-                  v-model.trim="searchInfo.givenValue"
+                  v-model="searchInfo.givenValue"
                   style="height: 32px; width: 212px; padding: 0 22px 0 0;"
                   placeholder="未用 / 容量  [0.0 ~ 1.0]"
                   :suffix-icon="Search"
@@ -187,7 +192,7 @@ const searchSampleContainer = () => {
               />
             </div>
             <el-dialog class="setWarnCard"
-              v-model.trim="data.setWarnCard" :close-on-click-modal="false"
+              v-model="data.setWarnCard" :close-on-click-modal="false"
             >
               <template #header>
                 <h3 style="border-bottom: 1px solid; font-size: 1.3rem; letter-spacing: .12rem; padding-bottom: 16px;">设置预警</h3>
@@ -195,7 +200,7 @@ const searchSampleContainer = () => {
               <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 22px;">
                 预警值([0.0 ~ 1.0])：
                 <el-input style="width: 30%;" autosize type="text"
-                  v-model.trim="data.alertNum" placeholder="请输入预警值"
+                  v-model="data.alertNum" placeholder="请输入预警值"
                 />
               </div>
               <div style="display: flex; justify-content: flex-end;">

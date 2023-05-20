@@ -4,7 +4,6 @@
 import axios from 'axios';
 import Qs from 'qs';
 import { router } from '../../router/index.js';
-import { ElMessage } from 'element-plus';
 
 const API = axios.create({
   // 和 vite.config 里跨域配置保持一致。
@@ -33,6 +32,7 @@ API.interceptors.response.use((res) => {
 }, err => {
   return Promise.reject(err);
 });
+
 
 /**
  * @description 首页部分
@@ -67,6 +67,7 @@ const deleteFridge = (id) => {
   return API.delete(`/biobank/fridge/${id}`);
 };
 
+
 /**
  * @description 容器管理部分
  */
@@ -80,15 +81,61 @@ const addNewContainer = (postObj) => {
   return API.post('/biobank/fridge/', postObj);
 };
 
-// 根据盒子编号获取样本信息
-const getBoxInfoByNum = (getObj)=> {
-  return API.get('/biobank/box/?' + Qs.stringify(getObj));
-};
-
 // 批量出库
 const removeSample = (removeData) => {
   return API.post('/biobank/sample/remove?' + removeData);
 };
+
+// 新增层
+const addNewLevel = (postObj) => {
+  return API.post('/biobank/level/', postObj);
+};
+
+// 删除层
+const deleteLevel = (id) => {
+  return API.delete(`/biobank/level/${id}`);
+};
+
+// 获取层信息
+const getLevelInfoByNum = (getObj)=> {
+  return API.get('/biobank/level/?' + Qs.stringify(getObj));
+};
+
+// 新增区
+const addNewArea = (postObj) => {
+  return API.post('/biobank/area/', postObj);
+};
+
+// 删除区
+const deleteArea = (id) => {
+  return API.delete(`/biobank/area/${id}`);
+};
+
+// 获取区信息
+const getAreaInfoByNum = (getObj)=> {
+  return API.get('/biobank/area/?' + Qs.stringify(getObj));
+};
+
+// 新增盒
+const addNewBox = (postObj) => {
+  return API.post('/biobank/box/', postObj);
+};
+
+// 删除盒
+const deleteBox = (id) => {
+  return API.delete(`/biobank/box/${id}`);
+};
+
+// 获取盒信息
+const getBoxInfoByNum = (getObj)=> {
+  return API.get('/biobank/box/?' + Qs.stringify(getObj));
+};
+
+// 修改盒信息
+const updateBoxInfo = (putObj) => {
+  return API.put('/biobank/box/', putObj);
+};
+
 
 /**
  * @description 样本管理部分
@@ -118,6 +165,12 @@ const deleteSampleData = (deleteData) => {
   return API.delete('/biobank/sample/batchDelete?' + deleteData);
 };
 
+// 搜索低于样本阈值的样本
+const getAlertSamples = (getObj) => {
+  return API.get('/biobank/sample/getByAlert?' + Qs.stringify(getObj));
+};
+
+
 /**
  * @description 权限管理部分
  */
@@ -146,6 +199,7 @@ const addUser = (postObj) => {
   return API.post('/biobank/user/addUser', postObj);
 };
 
+
 /**
  * @description 备份管理部分
  */
@@ -158,6 +212,21 @@ const backupBiobankDB = (paramsObj) => {
 const restoreBiobankDB = (paramsObj) => {
   return API.post('/system/restore?' + Qs.stringify(paramsObj));
 };
+
+
+/**
+ * @description 日志管理部分
+ */
+// 获取操作信息
+const getAllOperation = (getObj) => {
+  return API.get('/biobank/operation/?' + Qs.stringify(getObj));
+};
+
+// 删除所有操作信息
+const deleteAllOperation = () => {
+  return API.delete('/biobank/operation/');
+};
+
 
 /**
  * @description 系统监控部分
@@ -173,14 +242,56 @@ const setAlertNum = (postObj) => {
 };
 
 
+/**
+ * @description 上传下载
+ */
+// 上传
+const APIUpload = axios.create({
+  baseURL: ''
+});
+
+APIUpload.interceptors.request.use((req) => {
+  req.headers['Content-Type'] = 'multipart/form-data';
+  return req;
+}, err => {
+  return Promise.reject(err);
+});
+
+const uploadAllFiles = (postObj) => {
+  return APIUpload.post('/common/upload', postObj);
+};
+
+// 下载
+const APIDownload = axios.create({
+  baseURL: ''
+})
+
+APIDownload.interceptors.request.use((req) => {
+  req.responseType = 'blob';
+  return req;
+}, err => {
+  return Promise.reject(err);
+});
+
+const downloadAllFiles = (getObj) => {
+  return APIDownload.get('/common/download?' + Qs.stringify(getObj));
+};
+
+
+export { uploadAllFiles, downloadAllFiles };
 export { getAllFridges, addNewSample, editFridge, deleteFridge, selectByAlert };
 export {
-  getSample, getSampleTypeCnt,
+  getSample, getSampleTypeCnt, getAlertSamples,
   editSampleInfo, moveSampleArea, deleteSampleData
 };
-export { getContainerStorageInfo, addNewContainer,
-  getFridgeInfoByNum, getBoxInfoByNum, removeSample
+export {
+  getContainerStorageInfo, addNewContainer,
+  getFridgeInfoByNum, getLevelInfoByNum, getAreaInfoByNum, getBoxInfoByNum,
+  addNewLevel, addNewArea, addNewBox,
+  deleteLevel, deleteArea, deleteBox,
+  removeSample, updateBoxInfo
 };
 export { getAllUser, getSpecialUser, deleteUser, editUser, addUser };
 export { backupBiobankDB, restoreBiobankDB };
+export { getAllOperation, deleteAllOperation };
 export { setAlertNum, searchSampleConVal };

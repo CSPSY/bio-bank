@@ -26,33 +26,33 @@ const data = reactive({
         <div class="mode mode-select">用户注册</div>
         <div class="items" style="display: flex; justify-content: space-between;">
           <div style="width: 48%;">
-            <el-input v-model.trim="data.registerInfo.accountInfo" placeholder="请输入用户名">
+            <el-input v-model="data.registerInfo.accountInfo" placeholder="请输入用户名">
               <template #prefix>
                 <el-icon><User /></el-icon>
               </template>
             </el-input>
           </div>
           <div style="width: 45%;">
-            <el-input v-model.trim="data.registerInfo.fullName" placeholder="请输入真实姓名">
+            <el-input v-model="data.registerInfo.fullName" placeholder="请输入真实姓名">
             </el-input>
           </div>
         </div>
         <div class="items">
-          <el-input v-model.trim="data.registerInfo.passcode" type="password" placeholder="请输入密码" show-password>
+          <el-input v-model="data.registerInfo.passcode" type="password" placeholder="请输入密码" show-password>
             <template #prefix>
               <el-icon><Lock /></el-icon>
             </template>
           </el-input>
         </div>
         <div class="items">
-          <el-input v-model.trim="data.registerInfo.phoneNumber" placeholder="请输入电话号码">
+          <el-input v-model="data.registerInfo.phoneNumber" placeholder="请输入电话号码">
             <template #prefix>
               <el-icon><Iphone /></el-icon>
             </template>
           </el-input>
         </div>
         <div class="items" style="display: flex; justify-content: space-between;">
-          <el-input v-model.trim="data.registerInfo.email" placeholder="请输入邮箱">
+          <el-input v-model="data.registerInfo.email" placeholder="请输入邮箱">
             <template #prefix>
               <el-icon><Message /></el-icon>
             </template>
@@ -60,7 +60,7 @@ const data = reactive({
         </div>
         <div class="items" style="display: flex; justify-content: space-between;">
           <div style="width: 48%;">
-            <el-input v-model.trim="data.captcha" placeholder="请输入邮箱验证码">
+            <el-input v-model="data.captcha" placeholder="请输入邮箱验证码">
             </el-input>
           </div>
           <div style="width: 45%;">

@@ -1,5 +1,5 @@
 <script setup>
-import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
+import { House, SwitchButton, MessageBox, Tickets, Warning, Setting, User, Folder } from '@element-plus/icons-vue'
 import { logout } from '../../utils/index.js';
 import { ref } from 'vue';
 
@@ -43,21 +43,27 @@ if (userInfo) {
               <span>样本管理</span>
             </RouterLink>
           </el-menu-item>
-          <el-sub-menu class="menu-items items" index = "4">
+          <el-sub-menu class="menu-items items" index="4">
             <template #title>
               <el-icon><Setting /></el-icon>
-              <span class="menu-items items">系统管理</span>
+              <span class="items">系统管理</span>
             </template>
             <el-menu-item class="menu-items items" index="4-1">
               <RouterLink :to="{ path: '/admin/manage-auth' }">
-                <el-icon><Tickets /></el-icon>
+                <el-icon><User /></el-icon>
                 <span>权限管理</span>
               </RouterLink>
             </el-menu-item>
             <el-menu-item class="menu-items items" index="4-2">
-              <RouterLink :to="{ path: '/admin/manage-backup' }">
-                <el-icon><Tickets /></el-icon>
+              <RouterLink :to="{ path: '/admin/manage-backup'}">
+                <el-icon><Folder /></el-icon>
                 <span>备份管理</span>
+              </RouterLink>
+            </el-menu-item>
+            <el-menu-item class="menu-items items" index="4-3">
+              <RouterLink :to="{ path: '/admin/manage-log'}">
+                <el-icon><Tickets /></el-icon>
+                <span>日志管理</span>
               </RouterLink>
             </el-menu-item>
           </el-sub-menu>

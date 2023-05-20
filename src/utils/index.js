@@ -3,6 +3,7 @@
  */
 import { userGetCaptcha, userRegister } from '../apis/index.js';
 import { router } from '../router/index.js';
+import { uploadAllFiles, downloadAllFiles } from '../apis/admin/index.js';
 import md5 from 'js-md5';
 
 // 报错信息
@@ -10,12 +11,12 @@ const errorMap = new Map([
   ['accountInfo', '请填写用户名 ~'], ['fullName', '请填写真实姓名 ~'], ['passcode', '请填写密码 ~'],
   ['phoneNumber', '请填写电话号码 ~'], ['email', '请填写邮箱 ~'], ['captcha', '请填写邮箱验证码 ~'],
   ['token', '请返回邮箱重新打开链接 ~'], ['roomNum', '请填写房间号 ~'], ['fridgeNum', '请填写设备号 ~'],
-  ['levelNum', '请填写层号 ~'], ['areaNum', '请填写区域号 ~'], ['boxNum', '请填写盒号 ~'],
-  ['sampleRow', '请填写盒内行号 ~'], ['sampleColumn', '请填写盒内列号 ~'], ['occupy', '请填写样本所占区域大小 ~'],
-  ['acquisitionTime', '请填写样本采集时间 ~'], ['depositNum', '请填写样本存入数量 ~'], ['securityLevel', '请填写安全级别 ~'],
-  ['storeTime', '请填写样本存入时间 ~'], ['treatInfo', '请填写治疗信息 ~'], ['concentration', '请填写样本溶度'],
-  ['userRole', '请填写用户权限 ~'] , ['model', '请填写设备型号 ~'], ['brand', '请填写设备品牌 ~'],
-  ['storageTemp', '请填写存储温度 ~'], ['deviceName', '请填写设备名称 ~'], ['userAccount', '请填写用户账号 ~']
+  ['levelNum', '请填写层号 ~'], ['areaNum', '请填写区域号 ~'], 
+  // ['boxNum', '请填写盒号 ~'],
+  // ['sampleRow', '请填写盒内行号 ~'], ['sampleColumn', '请填写盒内列号 ~'], ['occupy', '请填写样本所占区域大小 ~'],
+  // ['acquisitionTime', '请填写样本采集时间 ~'], ['depositNum', '请填写样本存入数量 ~'], ['securityLevel', '请填写安全级别 ~'],
+  // ['storeTime', '请填写样本存入时间 ~'], ['treatInfo', '请填写治疗信息 ~'], ['concentration', '请填写样本溶度'],
+  ['userRole', '请填写用户权限 ~'], ['userAccount', '请填写用户账号 ~']
 ]);
 
 // 样本信息
@@ -24,8 +25,8 @@ const sampleInfo = {
   concentration: '',
   type: '',
   acquisitionTime: '',
-  // depositNum: '',
-  // storeTime: '',
+  amount: '',
+  alertThreshold: '',
   volume: '',
   sampleSourceId: '',
   areaNum: '',
@@ -34,12 +35,12 @@ const sampleInfo = {
   roomNum: '',
   fridgeNum: '',
   levelNum: '',
-  // occupy: '',
+  image: '',
   boxNum: '',
   sampleRow: '',
   sampleColumn: '',
   treatInfo: '',
-  specialInfo: ''
+  specialInfo: '{}'
 };
 
 /**
@@ -48,7 +49,7 @@ const sampleInfo = {
  */
 const judgeInputNull = (postObj) => {
   for (const key in postObj) {
-    if (postObj[key] === '') {
+    if (postObj[key] === '' && errorMap.get(key)) {
       ElMessage({ showClose: true, message: errorMap.get(key), type: 'warning' });
       return true;
     }
@@ -135,8 +136,70 @@ const logout = () => {
   router.push('/user/login');
 };
 
+/**
+ * @description 上传下载
+ */
+// 生成图片
+const createFile = (file) => {
+  if (file) {
+    const suffix = file.name.split('.')[1];
+    const isLt10M  = file.size / 1024 / 1024 < 10;
+    if (['png','jpeg','jpg'].indexOf(suffix) < 0) {
+      ElMessage({ showClose: true, message: '上传图片只支持 png、jpeg、jpg 格式！', type: 'error' });
+      return false;
+    }
+    if (!isLt10M ) {
+      ElMessage({ showClose: true, message: '上传图片大小不能超过 10MB！', type: 'error' });
+      return false;
+    }
+    return file;
+  }
+};
+
+// 上传图片
+const uploadFile = async (postObj) => {
+  let ret = '';
+  await uploadAllFiles(postObj).then(res => {
+    if (res.status === 200) {
+      const resData = res.data;
+      if (resData.code === 0) {
+        ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+        ret = '';
+      } else {
+        ret = resData.msg;
+      }
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+      ret = '';
+    }
+  }).catch(err => {
+    console.log(err);
+  });
+
+  return ret;
+};
+
+// 下载图片
+const downloadFile = async (getObj) => {
+  let url = '';
+  await downloadAllFiles(getObj).then(res => {
+    if (res.status === 200) {
+      const resData = res.data;
+      if (resData.code !== 0) {
+        url = URL.createObjectURL(resData);
+      }
+    } else {
+      ElMessage({ showClose: false, message: resData.msg, type: 'error' });
+    }
+  }).catch(err => {
+    console.log(err);
+  });
+  return url;
+};
+
 export { sampleInfo };
 export { errorMap, judgeInputNull };
 export { getCaptcha, sendRegisterInfo };
 export { logout };
 export { getCookie, delCookie };
+export { createFile, downloadFile, uploadFile };

@@ -77,14 +77,14 @@ const sendLoginInfo = () => {
           <RouterLink :to="{ path: '/user/login' }" class="mode-select" style="border-bottom: 2px white solid;">用户登录</RouterLink>
         </div>
         <div class="items">
-          <el-input v-model.trim="data.loginInfo.accountInfo" placeholder="请输入用户名">
+          <el-input v-model="data.loginInfo.accountInfo" placeholder="请输入用户名">
             <template #prefix>
               <el-icon><User /></el-icon>
             </template>
           </el-input>
         </div>
         <div class="items">
-          <el-input v-model.trim="data.loginInfo.passcode" type="password" placeholder="请输入密码" show-password>
+          <el-input v-model="data.loginInfo.passcode" type="password" placeholder="请输入密码" show-password>
             <template #prefix>
               <el-icon><Lock /></el-icon>
             </template>

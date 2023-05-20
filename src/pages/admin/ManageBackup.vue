@@ -1,5 +1,5 @@
 <script setup>
-import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
+import { House, SwitchButton, MessageBox, Tickets, Warning, Setting, User, Folder } from '@element-plus/icons-vue'
 import { logout } from '../../utils/index.js';
 import { reactive, ref } from 'vue';
 import { backupBiobankDB, restoreBiobankDB } from '../../apis/admin/index.js';
@@ -126,13 +126,19 @@ const restoreBiobank = () => {
             </template>
             <el-menu-item class="menu-items items" index="4-1">
               <RouterLink :to="{ path: '/admin/manage-auth' }">
-                <el-icon><Tickets /></el-icon>
+                <el-icon><User /></el-icon>
                 <span>权限管理</span>
               </RouterLink>
             </el-menu-item>
             <el-menu-item class="menu-items items" index="4-2">
-              <el-icon><Tickets /></el-icon>
+              <el-icon><Folder /></el-icon>
               <span>备份管理</span>
+            </el-menu-item>
+            <el-menu-item class="menu-items items" index="4-3">
+              <RouterLink :to="{ path: '/admin/manage-log'}">
+                <el-icon><Tickets /></el-icon>
+                <span>日志管理</span>
+              </RouterLink>
             </el-menu-item>
           </el-sub-menu>
           <el-menu-item class="menu-items items" index="5">
@@ -189,11 +195,11 @@ const restoreBiobank = () => {
                   <section>
                     <div style="font-size: 14px; display: flex; align-items: center; margin-bottom: 16px;">
                       <span style="width: 30%;">存储目录：</span>
-                      <el-input style="width: 66%;" v-model.trim="data.backupInfo.path" />
+                      <el-input style="width: 66%;" v-model="data.backupInfo.path" />
                     </div>
                     <div style="font-size: 14px; display: flex; align-items: center;">
                       <span style="width: 30%;">数据库名称：</span>
-                      <el-input style="width: 66%;" v-model.trim="data.backupInfo.dbName" />
+                      <el-input style="width: 66%;" v-model="data.backupInfo.dbName" />
                     </div>
                   </section>
                 </el-card>
@@ -220,11 +226,11 @@ const restoreBiobank = () => {
                   <section>
                     <div style="font-size: 14px; display: flex; align-items: center; margin-bottom: 16px;">
                       <span style="width: 30%;">恢复文件位置：</span>
-                      <el-input style="width: 66%;" v-model.trim="data.restoreInfo.path" />
+                      <el-input style="width: 66%;" v-model="data.restoreInfo.path" />
                     </div>
                     <div style="font-size: 14px; display: flex; align-items: center;">
                       <span style="width: 30%;">数据库名称：</span>
-                      <el-input style="width: 66%;" v-model.trim="data.restoreInfo.dbName" />
+                      <el-input style="width: 66%;" v-model="data.restoreInfo.dbName" />
                     </div>
                   </section>
                 </el-card>

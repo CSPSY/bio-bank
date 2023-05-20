@@ -88,6 +88,13 @@ const routes = [
     }
   },
   {
+    path: '/admin/manage-log',
+    component: () => import('../pages/admin/ManageLog.vue'),
+    meta: {
+      title: '日志管理'
+    }
+  },
+  {
     path: '/admin/monitor-system',
     component: () => import('../pages/admin/MonitorSystem.vue'),
     meta: {

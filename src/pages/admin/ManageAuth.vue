@@ -1,5 +1,5 @@
 <script setup>
-import { House, SwitchButton, MessageBox, Tickets, Warning, Setting } from '@element-plus/icons-vue'
+import { House, SwitchButton, MessageBox, Tickets, Warning, Setting, User, Folder } from '@element-plus/icons-vue'
 import { ref, reactive } from 'vue';
 import { judgeInputNull, logout } from '../../utils/index.js';
 import { getAllUser, deleteUser, editUser, addUser } from '../../apis/admin/index.js';
@@ -196,13 +196,19 @@ const userRoleOptions = [{
               <span class="items">系统管理</span>
             </template>
             <el-menu-item class="menu-items items" index="4-1">
-              <el-icon><Tickets /></el-icon>
+              <el-icon><User /></el-icon>
               <span>权限管理</span>
             </el-menu-item>
             <el-menu-item class="menu-items items" index="4-2">
               <RouterLink :to="{ path: '/admin/manage-backup' }">
-                <el-icon><Tickets /></el-icon>
+                <el-icon><Folder /></el-icon>
                 <span>备份管理</span>
+              </RouterLink>
+            </el-menu-item>
+            <el-menu-item class="menu-items items" index="4-3">
+              <RouterLink :to="{ path: '/admin/manage-log'}">
+                <el-icon><Tickets /></el-icon>
+                <span>日志管理</span>
               </RouterLink>
             </el-menu-item>
           </el-sub-menu>
@@ -236,7 +242,7 @@ const userRoleOptions = [{
             <div class="main-top">
               <label for="account-info">用户名：</label>
               <el-input
-                id="account-info" v-model.trim="data.searchAccountInfo"
+                id="account-info" v-model="data.searchAccountInfo"
                 style="height: 32px; width: 212px; padding: 0 22px 0 0;"
                 placeholder="请输入用户名"
               />
@@ -250,32 +256,32 @@ const userRoleOptions = [{
                 <div style="display: flex; flex-direction: row;">
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     用户名：
-                    <el-input style="width: 186px;" v-model.trim="newUserInfo.accountInfo" placeholder="请输入用户名" />
+                    <el-input style="width: 186px;" v-model="newUserInfo.accountInfo" placeholder="请输入用户名" />
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     密码：
-                    <el-input style="width: 186px;" v-model.trim="newUserInfo.passcode" placeholder="请输入用户密码" />
+                    <el-input style="width: 186px;" v-model="newUserInfo.passcode" placeholder="请输入用户密码" />
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     姓名：
-                    <el-input style="width: 186px;" v-model.trim="newUserInfo.fullName" placeholder="请输入用户真实姓名" />
+                    <el-input style="width: 186px;" v-model="newUserInfo.fullName" placeholder="请输入用户真实姓名" />
                   </div>
                 </div>
                 <div style="display: flex; flex-direction: row;">
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     用户<br>权限：
-                    <!-- <el-input style="width: 186px;" v-model.trim="newUserInfo.userRole" placeholder="请输入用户权限" />                     -->
+                    <!-- <el-input style="width: 186px;" v-model="newUserInfo.userRole" placeholder="请输入用户权限" />                     -->
                     <el-select style="width: 186px;" v-model="newUserInfo.userRole">
                       <el-option v-for="item in userRoleOptions" :key="item.value" :label="item.label" :value="item.value"/>
                     </el-select>
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     用户<br>电话：
-                    <el-input style="width: 186px;" v-model.trim="newUserInfo.phoneNumber" placeholder="请输入用户电话" />
+                    <el-input style="width: 186px;" v-model="newUserInfo.phoneNumber" placeholder="请输入用户电话" />
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     用户<br>邮箱：
-                    <el-input style="width: 186px;" v-model.trim="newUserInfo.email" placeholder="请输入用户邮箱" />
+                    <el-input style="width: 186px;" v-model="newUserInfo.email" placeholder="请输入用户邮箱" />
                   </div>
                 </div>
                 <div style="display: flex; justify-content: flex-end;">
@@ -328,7 +334,7 @@ const userRoleOptions = [{
                   </div>
                   <div style="width: 30%; margin: 0 26px 22px 0; align-items: center; display: flex; justify-content: space-between;">
                     用户<br>权限：
-                    <!-- <el-input style="width: 186px;" v-model.trim="editUserInfo.userRole" placeholder="请输入用户权限" /> -->
+                    <!-- <el-input style="width: 186px;" v-model="editUserInfo.userRole" placeholder="请输入用户权限" /> -->
                     <el-select style="width: 186px;" v-model="editUserInfo.userRole">
                       <el-option v-for="item in userRoleOptions" :key="item.value" :label="item.label" :value="item.value"/>
                     </el-select>

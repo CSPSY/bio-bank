@@ -52,14 +52,14 @@ const sendNewPassword = () => {
           <span :to="{ path: '/admin/login' }" class="mode-select" style="border-bottom: 2px white solid;">重置密码</span>
         </div>
         <div class="items" style="display: flex; justify-content: space-between;">
-          <el-input v-model.trim="data.info.email" placeholder="请输入邮箱">
+          <el-input v-model="data.info.email" placeholder="请输入邮箱">
             <template #prefix>
               <el-icon><Message /></el-icon>
             </template>
           </el-input>
         </div>
         <div class="items">
-          <el-input v-model.trim="data.info.passcode" type="password" placeholder="请输入新密码" show-password>
+          <el-input v-model="data.info.passcode" type="password" placeholder="请输入新密码" show-password>
             <template #prefix>
               <el-icon><Lock /></el-icon>
             </template>

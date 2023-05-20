@@ -23,19 +23,18 @@ export default defineConfig({
       '/biobank': {
         // 正式环境
         target: 'http://150.158.18.74:8082',
-        // 测试
-        // target: 'http://10.161.193.92:8082',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
       },
       '/system': {
         // 正式环境
         target: 'http://150.158.18.74:8082',
-        // 测试
-        // target: 'http://10.161.193.92:8082',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      }
+      },
+      '/common': {
+        // 正式环境
+        target: 'http://150.158.18.74:8082',
+        changeOrigin: true,
+      },
     }
   },
   build: {
